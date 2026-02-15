@@ -143,7 +143,7 @@ export default function ProfilePage() {
                     "uppercase text-[10px] tracking-widest",
                     (role === 'mentor' || role === 'alumni') ? "bg-secondary" : "bg-primary"
                   )}>
-                    {role}
+                    {(role === 'mentor' || role === 'alumni') ? 'ALUMNI' : role}
                   </Badge>
                   <span className="text-muted-foreground text-sm font-medium">{userData?.major} • Class of {userData?.graduationYear}</span>
                 </div>
