@@ -10,20 +10,23 @@ import Image from "next/image"
 import Link from "next/link"
 import { useFirestore, useMemoFirebase, useCollection, useUser } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
+import UserProfileModal from "@/components/UserProfileModal";
 
 export default function DirectoryPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const alumniQuery = useMemoFirebase(() => {
     if (!firestore || !user) return null;
     return query(collection(firestore, 'users'), where('role', 'in', ['mentor', 'alumni']));
   }, [firestore, user]);
 
-  const { data: alumni, isLoading } = useCollection(alumniQuery);
+  const { data: allUsers, isLoading } = useCollection(alumniQuery);
 
-  const filteredAlumni = alumni?.filter(person => {
+  const filteredUsers = allUsers?.filter(person => {
     const fullName = `${person.firstName} ${person.lastName}`.toLowerCase();
     const email = (person.email || "").toLowerCase();
     const skills = (person.skills || []).map((s: string) => s.toLowerCase());
@@ -66,26 +69,44 @@ export default function DirectoryPage() {
           <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
           <p className="text-muted-foreground">Loading directory...</p>
         </div>
-      ) : filteredAlumni && filteredAlumni.length > 0 ? (
+      ) : filteredUsers && filteredUsers.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAlumni.map((person) => (
+          {filteredUsers.map((person) => (
             <Card key={person.id} className="flex flex-col border-none shadow-sm hover:shadow-md transition-shadow group overflow-hidden">
-              <CardHeader className="flex flex-row items-center gap-4 space-y-0">
-                <div className="relative h-16 w-16 overflow-hidden rounded-full border-2 border-muted transition-colors group-hover:border-primary bg-primary/5 flex items-center justify-center">
-                  {person.image ? (
+              <CardHeader className="flex flex-row items-center gap-4 space-y-0 cursor-pointer" onClick={() => { setSelectedUserId(person.id); setIsProfileModalOpen(true); }}>
+                <button className="relative h-16 w-16 overflow-hidden rounded-full border-2 border-muted transition-colors group-hover:border-primary bg-primary/5 flex items-center justify-center flex-shrink-0 hover:border-primary">
+                  {person.photoURL ? (
+                    <Image 
+                      src={person.photoURL} 
+                      alt={`${person.firstName} ${person.lastName}`} 
+                      width={64}
+                      height={64}
+                      priority
+                      className="object-cover w-full h-full" 
+                      onError={(result) => {
+                        console.error('Image failed to load:', result);
+                      }}
+                    />
+                  ) : person.image ? (
                     <Image 
                       src={person.image} 
                       alt={`${person.firstName} ${person.lastName}`} 
-                      fill 
-                      className="object-cover" 
+                      width={64}
+                      height={64}
+                      className="object-cover w-full h-full" 
                       data-ai-hint="portrait"
+                      onError={(result) => {
+                        console.error('Image failed to load:', result);
+                      }}
                     />
                   ) : (
                     <User className="h-8 w-8 text-primary/40" />
                   )}
-                </div>
-                <div>
-                  <CardTitle className="text-lg">{person.firstName} {person.lastName}</CardTitle>
+                </button>
+                <div className="flex-1">
+                  <button onClick={() => { setSelectedUserId(person.id); setIsProfileModalOpen(true); }} className="text-lg font-bold hover:text-primary transition-colors text-left">
+                    {person.firstName} {person.lastName}
+                  </button>
                   <p className="text-xs font-semibold text-secondary uppercase tracking-wider">{person.role}</p>
                 </div>
               </CardHeader>
@@ -124,6 +145,12 @@ export default function DirectoryPage() {
           <p className="text-muted-foreground">No alumni found matching your criteria.</p>
         </div>
       )}
+
+      <UserProfileModal 
+        userId={selectedUserId} 
+        open={isProfileModalOpen} 
+        onOpenChange={setIsProfileModalOpen}
+      />
     </div>
   )
 }

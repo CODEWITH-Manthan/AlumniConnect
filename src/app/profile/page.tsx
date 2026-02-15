@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { User, GraduationCap, Code, Briefcase, Edit2, LogOut, Loader2, Save, X, Plus, Bookmark, MapPin, ArrowRight, Camera } from "lucide-react"
 import { useUser, useDoc, useFirestore, useMemoFirebase, useAuth, useCollection } from '@/firebase';
-import { doc, collection } from 'firebase/firestore';
+import { doc, collection, updateDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useRouter } from 'next/navigation';
@@ -38,6 +38,13 @@ export default function ProfilePage() {
   }, [firestore, user]);
 
   const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
+
+  // Clear photo preview when userData is loaded to show saved photo
+  useEffect(() => {
+    if (userData?.photoURL) {
+      setPhotoPreview(null);
+    }
+  }, [userData?.photoURL]);
 
   // Fetch all opportunities to filter bookmarked ones
   const opportunitiesRef = useMemoFirebase(() => {
@@ -83,12 +90,19 @@ export default function ProfilePage() {
       // Upload to Firebase Storage
       const storage = getStorage();
       const photoRef = ref(storage, `profile-photos/${user.uid}/${Date.now()}-${file.name}`);
+      
+      console.log('Uploading file to:', photoRef.fullPath);
       await uploadBytes(photoRef, file);
+      console.log('File uploaded successfully');
+      
       const photoURL = await getDownloadURL(photoRef);
+      console.log('Download URL:', photoURL);
 
       // Update user profile with photo URL
       if (userDocRef) {
-        updateDocumentNonBlocking(userDocRef, { photoURL });
+        console.log('Updating Firestore with photoURL:', photoURL);
+        await updateDoc(userDocRef, { photoURL });
+        console.log('Firestore updated successfully');
       }
 
       toast({
@@ -198,13 +212,18 @@ export default function ProfilePage() {
         <Tabs defaultValue="overview" className="space-y-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-card p-6 rounded-3xl shadow-sm border">
             <div className="flex items-center gap-6">
-              <div className="relative h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center text-primary border-4 border-background shadow-lg overflow-hidden group">
+              <div className="relative h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center text-primary border-4 border-background shadow-lg overflow-hidden group shrink-0">
                 {photoPreview || userData?.photoURL ? (
                   <Image
-                    src={photoPreview || userData?.photoURL}
+                    src={photoPreview || userData?.photoURL || ''}
                     alt={fullName}
-                    fill
-                    className="object-cover"
+                    width={96}
+                    height={96}
+                    priority
+                    className="object-cover w-full h-full"
+                    onError={(result) => {
+                      console.error('Image failed to load:', result);
+                    }}
                   />
                 ) : (
                   <User className="h-12 w-12" />

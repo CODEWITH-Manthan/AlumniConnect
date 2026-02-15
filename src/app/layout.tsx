@@ -4,6 +4,7 @@ import './globals.css';
 import Navbar from '@/components/layout/Navbar';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
+import MessageNotificationListener from '@/components/MessageNotificationListener';
 
 export const metadata: Metadata = {
   title: 'AlumniConnect | Empowering Futures',
@@ -25,6 +26,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased bg-background text-foreground min-h-screen flex flex-col">
         <FirebaseClientProvider>
+          <MessageNotificationListener />
           <Navbar />
           <main className="flex-1">
             {children}

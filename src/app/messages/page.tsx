@@ -12,6 +12,7 @@ import { collection, query, orderBy, doc, limit, getDocs } from 'firebase/firest
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import UserProfileModal from "@/components/UserProfileModal";
 
 function ChatContent() {
   const { user, isUserLoading } = useUser();
@@ -23,6 +24,8 @@ function ChatContent() {
   const [messageText, setMessageText] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -127,7 +130,10 @@ function ChatContent() {
     const newMessage = {
       id: crypto.randomUUID(),
       senderId: user.uid,
+      senderName: user.displayName || 'Someone',
+      senderEmail: user.email || '',
       receiverId: activeRecipientId,
+      content: messageText.trim(),
       message: messageText.trim(),
       timestamp: new Date().toISOString()
     };
@@ -205,9 +211,8 @@ function ChatContent() {
                 {filteredUsers?.map((person) => (
                   <div
                     key={person.id}
-                    onClick={() => setActiveRecipientId(person.id)}
                     className={cn(
-                      "p-4 hover:bg-muted/50 cursor-pointer transition-all relative group",
+                      "p-4 hover:bg-muted/50 transition-all relative group",
                       activeRecipientId === person.id && "bg-primary/5"
                     )}
                   >
@@ -215,16 +220,22 @@ function ChatContent() {
                       <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
                     )}
                     <div className="flex items-center gap-3">
-                      <div className="relative h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0 border border-primary/20">
+                      <button
+                        onClick={() => { setSelectedUserId(person.id); setIsProfileModalOpen(true); }}
+                        className="relative h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0 border border-primary/20 hover:border-primary transition-colors"
+                      >
                         {getInitials(person.firstName, person.lastName)}
                         <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-card" />
-                      </div>
-                      <div className="flex-1 min-w-0">
+                      </button>
+                      <button
+                        onClick={() => setActiveRecipientId(person.id)}
+                        className="flex-1 min-w-0 text-left hover:opacity-80 transition-opacity cursor-pointer"
+                      >
                         <div className="flex justify-between items-center mb-0.5">
                           <span className="font-bold text-sm truncate">{person.firstName} {person.lastName}</span>
                         </div>
                         <p className="text-[10px] text-muted-foreground truncate uppercase tracking-tighter font-black opacity-60">{person.role || 'Member'}</p>
-                      </div>
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -331,6 +342,12 @@ function ChatContent() {
           )}
         </div>
       </div>
+
+      <UserProfileModal 
+        userId={selectedUserId} 
+        open={isProfileModalOpen} 
+        onOpenChange={setIsProfileModalOpen}
+      />
     </div>
   )
 }

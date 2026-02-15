@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from "@/components/ui/scroll-area";
+import UserProfileModal from "@/components/UserProfileModal";
 
 function ReplySection({ requestId }: { requestId: string }) {
   const { user } = useUser();
@@ -22,6 +23,8 @@ function ReplySection({ requestId }: { requestId: string }) {
   const { toast } = useToast();
   const [replyText, setReplyText] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -79,17 +82,20 @@ function ReplySection({ requestId }: { requestId: string }) {
           replies.map((reply) => (
             <div key={reply.id} className="bg-muted/30 p-4 rounded-xl relative group">
               <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center gap-2">
-                  <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary">
+                <button 
+                  onClick={() => { setSelectedUserId(reply.authorId); setIsProfileModalOpen(true); }}
+                  className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                >
+                  <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary hover:bg-primary/40 transition-colors">
                     {reply.authorName?.[0]}
                   </div>
-                  <div>
-                    <span className="text-xs font-bold">{reply.authorName}</span>
+                  <div className="text-left">
+                    <span className="text-xs font-bold hover:text-primary transition-colors">{reply.authorName}</span>
                     <Badge variant="outline" className="ml-2 text-[8px] py-0 h-4 bg-background uppercase font-bold tracking-tighter">
                       {reply.authorRole}
                     </Badge>
                   </div>
-                </div>
+                </button>
                 <span className="text-[10px] text-muted-foreground">
                   {mounted ? new Date(reply.timestamp).toLocaleDateString() : '...'}
                 </span>
@@ -103,6 +109,12 @@ function ReplySection({ requestId }: { requestId: string }) {
           </div>
         )}
       </div>
+
+      <UserProfileModal 
+        userId={selectedUserId} 
+        open={isProfileModalOpen} 
+        onOpenChange={setIsProfileModalOpen}
+      />
 
       <form onSubmit={handlePostReply} className="mt-4 pt-4 border-t">
         <div className="relative">
