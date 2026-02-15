@@ -118,7 +118,7 @@ export default function Home() {
     return matchesSearch && matchesFilter;
   });
 
-  const filters = ["All", "Internship", "Full-time", "Referral", "Project"];
+  const filters = ["All", "Internship", "Referral", "Project"];
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -172,7 +172,7 @@ export default function Home() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="Internship">Internship</SelectItem>
-                          <SelectItem value="Full-time">Jobs</SelectItem>
+
                           <SelectItem value="Referral">Referral</SelectItem>
                           <SelectItem value="Project">Project</SelectItem>
                         </SelectContent>
