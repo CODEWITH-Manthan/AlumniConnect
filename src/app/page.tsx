@@ -25,7 +25,7 @@ export default function Home() {
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  
+
   // Search and Filter State
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState<string>("All");
@@ -83,7 +83,7 @@ export default function Home() {
     };
 
     addDocumentNonBlocking(collection(firestore, 'opportunities'), newOpp);
-    
+
     toast({
       title: "Opportunity posted!",
       description: "Your post is now live in the feed.",
@@ -93,14 +93,14 @@ export default function Home() {
 
   const toggleBookmark = (oppId: string) => {
     if (!userDocRef || !userData) return;
-    
+
     const isBookmarked = bookmarks.includes(oppId);
-    const newBookmarks = isBookmarked 
+    const newBookmarks = isBookmarked
       ? bookmarks.filter((id: string) => id !== oppId)
       : [...bookmarks, oppId];
 
     updateDocumentNonBlocking(userDocRef, { bookmarkedOpportunities: newBookmarks });
-    
+
     toast({
       title: isBookmarked ? "Removed from bookmarks" : "Added to bookmarks",
       description: isBookmarked ? "The opportunity has been removed from your list." : "You can find this in your profile now.",
@@ -108,13 +108,13 @@ export default function Home() {
   };
 
   const filteredOpportunities = opportunities?.filter(opp => {
-    const matchesSearch = 
-      opp.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    const matchesSearch =
+      opp.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       opp.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
       opp.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesFilter = activeFilter === "All" || opp.type === activeFilter;
-    
+
     return matchesSearch && matchesFilter;
   });
 
@@ -127,7 +127,7 @@ export default function Home() {
           <h1 className="text-3xl font-bold tracking-tight mb-2 font-headline text-primary">Opportunity Feed</h1>
           <p className="text-muted-foreground">Discover internships, referrals, and projects posted by your alumni network.</p>
         </div>
-        
+
         {isUserLoading || isUserDataLoading ? (
           <div className="flex items-center gap-2 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -200,14 +200,14 @@ export default function Home() {
           <div className="bg-card p-4 rounded-2xl shadow-sm border space-y-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search by title, company, or skills..." 
+              <Input
+                placeholder="Search by title, company, or skills..."
                 className="pl-10 h-11 bg-muted/30 border-none focus-visible:ring-1 focus-visible:ring-primary/20"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               {searchTerm && (
-                <button 
+                <button
                   onClick={() => setSearchTerm("")}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
@@ -242,17 +242,17 @@ export default function Home() {
             filteredOpportunities.map((opp) => (
               <Card key={opp.id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow group">
                 <div className="relative h-48 w-full overflow-hidden">
-                  <Image 
-                    src={opp.image || `https://picsum.photos/seed/${opp.id}/800/400`} 
-                    alt={opp.title} 
-                    fill 
-                    className="object-cover transition-transform duration-500 group-hover:scale-105" 
+                  <Image
+                    src={opp.image || `https://picsum.photos/seed/${opp.id}/800/400`}
+                    alt={opp.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                     data-ai-hint="office tech"
                   />
                   <div className="absolute top-4 right-4 flex gap-2">
-                    <Button 
-                      variant="secondary" 
-                      size="icon" 
+                    <Button
+                      variant="secondary"
+                      size="icon"
                       className="h-8 w-8 rounded-full shadow-md bg-white/80 hover:bg-white text-primary"
                       onClick={(e) => {
                         e.preventDefault();
@@ -267,8 +267,8 @@ export default function Home() {
                     </Button>
                     <Badge className={cn(
                       "font-bold shadow-md px-3 py-1 uppercase tracking-tighter text-[10px]",
-                      opp.type === "Internship" ? "bg-secondary text-white" : 
-                      opp.type === "Referral" ? "bg-primary text-white" : "bg-teal-600 text-white"
+                      opp.type === "Internship" ? "bg-secondary text-white" :
+                        opp.type === "Referral" ? "bg-primary text-white" : "bg-teal-600 text-white"
                     )}>
                       {opp.type}
                     </Badge>
@@ -302,7 +302,27 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full text-muted-foreground hover:text-primary hover:bg-primary/5">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 rounded-full text-muted-foreground hover:text-primary hover:bg-primary/5"
+                      onClick={() => {
+                        const shareUrl = `${window.location.origin}/?opportunity=${opp.id}`;
+                        navigator.clipboard.writeText(shareUrl).then(() => {
+                          toast({
+                            title: "Link copied!",
+                            description: "Opportunity link copied to clipboard.",
+                          });
+                        }).catch((err) => {
+                          console.error('Failed to copy:', err);
+                          toast({
+                            variant: "destructive",
+                            title: "Copy failed",
+                            description: "Could not copy link. Please try again.",
+                          });
+                        });
+                      }}
+                    >
                       <Share2 className="h-4 w-4" />
                     </Button>
                     {user && user.uid !== opp.alumniId && (
@@ -326,9 +346,9 @@ export default function Home() {
               <Briefcase className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-10" />
               <h3 className="text-xl font-bold font-headline">No opportunities found</h3>
               <p className="text-muted-foreground max-w-xs mx-auto mt-2">Try adjusting your search terms or filter to see more results.</p>
-              <Button 
-                variant="outline" 
-                className="mt-6 rounded-full" 
+              <Button
+                variant="outline"
+                className="mt-6 rounded-full"
                 onClick={() => { setSearchTerm(""); setActiveFilter("All"); }}
               >
                 Clear all filters
@@ -380,7 +400,7 @@ export default function Home() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className="bg-primary text-primary-foreground border-none shadow-xl overflow-hidden relative">
             <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
             <CardHeader>
