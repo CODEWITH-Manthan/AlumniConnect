@@ -9,10 +9,11 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { User, GraduationCap, Code, Briefcase, Edit2, LogOut, Loader2, Save, X, Plus, Bookmark, MapPin, ArrowRight } from "lucide-react"
+import { User, GraduationCap, Code, Briefcase, Edit2, LogOut, Loader2, Save, X, Plus, Bookmark, MapPin, ArrowRight, Camera } from "lucide-react"
 import { useUser, useDoc, useFirestore, useMemoFirebase, useAuth, useCollection } from '@/firebase';
 import { doc, collection } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
@@ -28,6 +29,8 @@ export default function ProfilePage() {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [newSkill, setNewSkill] = useState("");
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -42,6 +45,68 @@ export default function ProfilePage() {
     return collection(firestore, 'opportunities');
   }, [firestore, user]);
   const { data: allOpportunities } = useCollection(opportunitiesRef);
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !firestore) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        variant: "destructive",
+        title: "Invalid file type",
+        description: "Please upload an image file.",
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        variant: "destructive",
+        title: "File too large",
+        description: "Please upload an image smaller than 5MB.",
+      });
+      return;
+    }
+
+    try {
+      setIsUploadingPhoto(true);
+
+      // Show preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      // Upload to Firebase Storage
+      const storage = getStorage();
+      const photoRef = ref(storage, `profile-photos/${user.uid}/${Date.now()}-${file.name}`);
+      await uploadBytes(photoRef, file);
+      const photoURL = await getDownloadURL(photoRef);
+
+      // Update user profile with photo URL
+      if (userDocRef) {
+        updateDocumentNonBlocking(userDocRef, { photoURL });
+      }
+
+      toast({
+        title: "Photo uploaded",
+        description: "Your profile photo has been updated successfully.",
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Upload failed",
+        description: error.message || "Failed to upload photo.",
+      });
+    } finally {
+      setIsUploadingPhoto(false);
+      // Reset file input
+      if (e.target) e.target.value = '';
+    }
+  };
 
   // Redirect to login if not authenticated (must be before any conditional returns)
   useEffect(() => {
@@ -133,8 +198,32 @@ export default function ProfilePage() {
         <Tabs defaultValue="overview" className="space-y-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-card p-6 rounded-3xl shadow-sm border">
             <div className="flex items-center gap-6">
-              <div className="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center text-primary border-4 border-background shadow-lg">
-                <User className="h-12 w-12" />
+              <div className="relative h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center text-primary border-4 border-background shadow-lg overflow-hidden group">
+                {photoPreview || userData?.photoURL ? (
+                  <Image
+                    src={photoPreview || userData?.photoURL}
+                    alt={fullName}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <User className="h-12 w-12" />
+                )}
+                {isEditing && (
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <label htmlFor="photo-upload" className="cursor-pointer p-2 bg-primary rounded-full hover:bg-primary/80 transition-colors">
+                      <Camera className="h-5 w-5 text-white" />
+                      <input
+                        id="photo-upload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handlePhotoUpload}
+                        disabled={isUploadingPhoto}
+                      />
+                    </label>
+                  </div>
+                )}
               </div>
               <div>
                 <h1 className="text-3xl font-bold font-headline">{fullName}</h1>

@@ -43,14 +43,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="container flex items-center justify-center min-h-[calc(100vh-80px)] py-12">
+    <div className="container flex items-center justify-center min-h-[calc(100vh-80px)] py-8 md:py-12 px-4 md:px-6">
       <Card className="w-full max-w-md border-none shadow-xl">
         <CardHeader className="space-y-1 flex flex-col items-center">
           <div className="bg-primary p-3 rounded-2xl mb-4">
-            <GraduationCap className="h-8 w-8 text-primary-foreground" />
+            <GraduationCap className="h-6 md:h-8 w-6 md:w-8 text-primary-foreground" />
           </div>
-          <CardTitle className="text-2xl font-bold font-headline">Welcome back</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-xl md:text-2xl font-bold font-headline">Welcome back</CardTitle>
+          <CardDescription className="text-xs md:text-sm text-center">
             Enter your email to sign in to your account
           </CardDescription>
         </CardHeader>
@@ -87,11 +87,11 @@ export default function LoginPage() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full h-9 md:h-10" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Sign In
+              <span className="text-xs md:text-sm">Sign In</span>
             </Button>
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-xs md:text-sm text-muted-foreground">
               Don&apos;t have an account?{" "}
               <Link href="/register" className="text-primary font-semibold hover:underline">
                 Sign up

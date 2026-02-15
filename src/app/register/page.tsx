@@ -101,24 +101,24 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="container flex items-center justify-center min-h-[calc(100vh-80px)] py-12">
+    <div className="container flex items-center justify-center min-h-[calc(100vh-80px)] py-8 md:py-12 px-4 md:px-6">
       <Card className="w-full max-w-lg border-none shadow-xl">
         <CardHeader className="space-y-1 flex flex-col items-center text-center">
           <div className="bg-primary p-3 rounded-2xl mb-4">
-            <GraduationCap className="h-8 w-8 text-primary-foreground" />
+            <GraduationCap className="h-6 md:h-8 w-6 md:w-8 text-primary-foreground" />
           </div>
-          <CardTitle className="text-2xl font-bold font-headline">Create an account</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-xl md:text-2xl font-bold font-headline">Create an account</CardTitle>
+          <CardDescription className="text-xs md:text-sm">
             Join the network and start connecting
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleRegister}>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4 md:space-y-6">
             <div className="space-y-3">
-              <Label className="text-base">I am a...</Label>
+              <Label className="text-sm md:text-base">I am a...</Label>
               <RadioGroup
                 defaultValue="student"
-                className="grid grid-cols-2 gap-4"
+                className="grid grid-cols-2 gap-2 md:gap-4"
                 onValueChange={(val) => setFormData({ ...formData, role: val as any })}
               >
                 <div>
@@ -158,23 +158,25 @@ export default function RegisterPage() {
               </RadioGroup>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName" className="text-xs md:text-sm">First Name</Label>
                 <Input
                   id="firstName"
                   placeholder="John"
                   required
+                  className="h-8 md:h-10 text-xs md:text-sm"
                   value={formData.firstName}
                   onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="lastName" className="text-xs md:text-sm">Last Name</Label>
                 <Input
                   id="lastName"
                   placeholder="Doe"
                   required
+                  className="h-8 md:h-10 text-xs md:text-sm"
                   value={formData.lastName}
                   onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                 />
@@ -182,54 +184,58 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-xs md:text-sm">Email</Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="m@example.com"
                 required
+                className="h-8 md:h-10 text-xs md:text-sm"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-xs md:text-sm">Password</Label>
               <Input
                 id="password"
                 type="password"
                 required
+                className="h-8 md:h-10 text-xs md:text-sm"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Department</Label>
+              <Label htmlFor="department" className="text-xs md:text-sm">Department</Label>
               <Input
-                id="lastName"
+                id="department"
                 placeholder="CMPN, IT, AIDS, ECS, EXTC, ETRX, AURO"
                 required
+                className="h-8 md:h-10 text-xs md:text-sm"
                 value={formData.department}
                 onChange={(e) => setFormData({ ...formData, department: e.target.value })}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Graduation Year</Label>
+              <Label htmlFor="gdy" className="text-xs md:text-sm">Graduation Year</Label>
               <Input
-                id="lastName"
+                id="gdy"
                 placeholder="2024,2025..."
                 required
+                className="h-8 md:h-10 text-xs md:text-sm"
                 value={formData.gdy}
                 onChange={(e) => setFormData({ ...formData, gdy: e.target.value })}
               />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full h-11 text-base font-semibold" disabled={isLoading}>
+            <Button type="submit" className="w-full h-8 md:h-10 text-xs md:text-sm font-semibold" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create Account
             </Button>
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-xs md:text-sm text-muted-foreground">
               Already have an account?{" "}
               <Link href="/login" className="text-primary font-semibold hover:underline">
                 Sign in
