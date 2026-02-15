@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Search, Send, Phone, Video, MoreVertical, Loader2, MessageSquare, LogIn } from "lucide-react"
+import { Search, Send, MoreVertical, Loader2, MessageSquare, LogIn } from "lucide-react"
 import { useUser, useFirestore, useMemoFirebase, useCollection, useDoc } from '@/firebase';
 import { collection, query, orderBy, doc, limit, getDocs } from 'firebase/firestore';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
@@ -265,8 +265,6 @@ function ChatContent() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-primary" suppressHydrationWarning><Phone className="h-4 w-4" /></Button>
-                  <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-primary" suppressHydrationWarning><Video className="h-4 w-4" /></Button>
                   <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-primary" suppressHydrationWarning><MoreVertical className="h-4 w-4" /></Button>
                 </div>
               </div>
