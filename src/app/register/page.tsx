@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth, useFirestore } from '@/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,8 +21,8 @@ export default function RegisterPage() {
     lastName: '',
     email: '',
     password: '',
-    department:'',
-    gdy:'',
+    department: '',
+    gdy: '',
     role: 'student' as 'student' | 'mentor'
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -37,11 +37,11 @@ export default function RegisterPage() {
 
     try {
       const userCredential = await createUserWithEmailAndPassword(
-        auth, 
-        formData.email, 
+        auth,
+        formData.email,
         formData.password
       );
-      
+
       const user = userCredential.user;
 
       // Create user profile in Firestore
@@ -56,16 +56,44 @@ export default function RegisterPage() {
         createdAt: new Date().toISOString()
       });
 
+      // Send email verification - always redirect to verification page
+      let emailSentSuccessfully = false;
+      try {
+        await sendEmailVerification(user, {
+          url: `${window.location.origin}/`,
+          handleCodeInApp: false,
+        });
+        emailSentSuccessfully = true;
+      } catch (verifyError: any) {
+        console.error('Error sending verification email:', verifyError);
+      }
+
+      // Always redirect to verification page regardless
       toast({
         title: "Account created!",
-        description: `Welcome to AlumniConnect, ${formData.firstName}!`,
+        description: emailSentSuccessfully
+          ? "Please check your email to verify your account."
+          : "Account created! Click 'Resend email' on the next page.",
       });
-      router.push('/');
+
+      router.push('/verify-email');
     } catch (error: any) {
+      let errorMessage = "An error occurred during registration.";
+
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = "This email is already registered. Please sign in.";
+      } else if (error.code === 'auth/weak-password') {
+        errorMessage = "Password should be at least 6 characters.";
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = "Please enter a valid email address.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
       toast({
         variant: "destructive",
         title: "Registration failed",
-        description: error.message || "An error occurred during registration.",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -88,8 +116,8 @@ export default function RegisterPage() {
           <CardContent className="space-y-6">
             <div className="space-y-3">
               <Label className="text-base">I am a...</Label>
-              <RadioGroup 
-                defaultValue="student" 
+              <RadioGroup
+                defaultValue="student"
                 className="grid grid-cols-2 gap-4"
                 onValueChange={(val) => setFormData({ ...formData, role: val as any })}
               >
@@ -133,64 +161,64 @@ export default function RegisterPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name</Label>
-                <Input 
-                  id="firstName" 
-                  placeholder="John" 
-                  required 
+                <Input
+                  id="firstName"
+                  placeholder="John"
+                  required
                   value={formData.firstName}
                   onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lastName">Last Name</Label>
-                <Input 
-                  id="lastName" 
-                  placeholder="Doe" 
-                  required 
+                <Input
+                  id="lastName"
+                  placeholder="Doe"
+                  required
                   value={formData.lastName}
                   onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                 />
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input 
-                id="email" 
-                type="email" 
-                placeholder="m@example.com" 
-                required 
+              <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input 
-                id="password" 
-                type="password" 
-                required 
+              <Input
+                id="password"
+                type="password"
+                required
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Department</Label>
-              <Input 
+              <Input
                 id="lastName"
-                placeholder="CMPN, IT, AIDS, ECS, EXTC, ETRX, AURO" 
-                required 
+                placeholder="CMPN, IT, AIDS, ECS, EXTC, ETRX, AURO"
+                required
                 value={formData.department}
                 onChange={(e) => setFormData({ ...formData, department: e.target.value })}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Graduation Year</Label>
-              <Input 
-                id="lastName" 
+              <Input
+                id="lastName"
                 placeholder="2024,2025..."
-                required 
+                required
                 value={formData.gdy}
                 onChange={(e) => setFormData({ ...formData, gdy: e.target.value })}
               />
