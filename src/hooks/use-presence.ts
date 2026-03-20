@@ -2,8 +2,7 @@
 
 import { useEffect } from 'react';
 import { useUser, useFirestore } from '@/firebase';
-import { doc, setDoc, onDisconnect } from 'firebase/firestore';
-import { serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
  * Hook to manage user presence (online status)
@@ -17,22 +16,16 @@ export function usePresence() {
     if (!user || !firestore) return;
 
     try {
-      // Set user as online
       const presenceRef = doc(firestore, 'presence', user.uid);
-      
+
+      // Set user as online
       setDoc(presenceRef, {
         userId: user.uid,
         online: true,
         lastSeen: serverTimestamp(),
       });
 
-      // Set user as offline when they disconnect
-      onDisconnect(presenceRef).setData({
-        online: false,
-        lastSeen: serverTimestamp(),
-      });
-
-      // Also set offline when component unmounts (for graceful logout)
+      // Set offline when component unmounts
       return () => {
         setDoc(presenceRef, {
           online: false,

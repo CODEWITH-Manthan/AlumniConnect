@@ -25,17 +25,23 @@ export default function MessageNotificationListener() {
         orderBy('timestamp', 'desc')
       );
 
+      let isInitialSnapshot = true;
+
       const unsubscribe = onSnapshot(
         messagesQuery,
         (snapshot) => {
+          // Skip notifications for the initial snapshot (existing messages on page load)
+          if (isInitialSnapshot) {
+            isInitialSnapshot = false;
+            return;
+          }
+
           snapshot.docChanges().forEach((change) => {
             if (change.type === 'added') {
               const message = change.doc.data();
 
-              // Only notify for messages sent after component mounted
-              const messageTime = message.timestamp?.toDate?.() || new Date();
-
-              if (messageTime > lastNotificationTime && message.senderId !== user.uid) {
+              // Don't notify for messages sent by the current user
+              if (message.senderId !== user.uid) {
                 const senderName = message.senderName || message.senderEmail || 'Someone';
 
                 toast({
@@ -61,7 +67,7 @@ export default function MessageNotificationListener() {
       return () => unsubscribe();
     } catch (error) {
       console.error('Error setting up message listeners:', error);
-      return () => {};
+      return () => { };
     }
   }, [user, firestore, toast]);
 

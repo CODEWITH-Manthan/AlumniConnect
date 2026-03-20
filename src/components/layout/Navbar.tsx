@@ -10,6 +10,7 @@ import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase"
 import { doc } from 'firebase/firestore'
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { useGlobalUnreadMessages } from "@/hooks/useGlobalUnreadMessages"
 
 const navItems = [
   { name: "Opportunities", href: "/", icon: Briefcase },
@@ -29,6 +30,9 @@ export default function Navbar() {
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
   const { data: userData } = useDoc(userDocRef);
+
+  // Check for global unread messages
+  const { hasUnread: hasGlobalUnread } = useGlobalUnreadMessages(user?.uid || null);
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-md">
@@ -54,12 +58,13 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => {
               const Icon = item.icon
+              const isMessages = item.name === "Messages"
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all hover:bg-muted",
+                    "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all hover:bg-muted relative",
                     pathname === item.href
                       ? "text-primary bg-primary/5"
                       : "text-muted-foreground"
@@ -67,6 +72,10 @@ export default function Navbar() {
                 >
                   <Icon className="h-4 w-4" />
                   {item.name}
+                  {/* Show red dot for Messages if there are unread messages */}
+                  {isMessages && hasGlobalUnread && (
+                    <div className="absolute -top-0.5 -right-0.5 h-2 w-2 bg-red-500 rounded-full animate-pulse" />
+                  )}
                 </Link>
               )
             })}
@@ -84,13 +93,14 @@ export default function Navbar() {
                   <h2 className="text-lg font-bold font-headline">Menu</h2>
                   {navItems.map((item) => {
                     const Icon = item.icon
+                    const isMessages = item.name === "Messages"
                     return (
                       <Link
                         key={item.href}
                         href={item.href}
                         onClick={() => setMobileMenuOpen(false)}
                         className={cn(
-                          "flex items-center gap-3 px-2 py-2 rounded-md text-sm font-medium transition-all",
+                          "flex items-center gap-3 px-2 py-2 rounded-md text-sm font-medium transition-all relative",
                           pathname === item.href
                             ? "text-primary bg-primary/5"
                             : "text-muted-foreground hover:text-foreground"
@@ -98,6 +108,10 @@ export default function Navbar() {
                       >
                         <Icon className="h-4 w-4" />
                         {item.name}
+                        {/* Show red dot for Messages if there are unread messages */}
+                        {isMessages && hasGlobalUnread && (
+                          <div className="ml-auto h-2 w-2 bg-red-500 rounded-full animate-pulse" />
+                        )}
                       </Link>
                     )
                   })}

@@ -8,11 +8,24 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Search, Send, MoreVertical, Loader2, MessageSquare, LogIn } from "lucide-react"
 import { useUser, useFirestore, useMemoFirebase, useCollection, useDoc } from '@/firebase';
-import { collection, query, orderBy, doc, limit, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, doc, limit, getDocs, where, updateDoc, arrayRemove } from 'firebase/firestore';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import UserProfileModal from "@/components/UserProfileModal";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
+
+// Helper component to show unread indicator for a conversation
+function UnreadIndicator({ personId, currentUserId }: { personId: string; currentUserId: string }) {
+  const conversationId = [currentUserId, personId].sort().join('_');
+  const { hasUnread } = useUnreadMessages(conversationId, currentUserId);
+
+  if (!hasUnread) return null;
+
+  return (
+    <div className="h-2.5 w-2.5 bg-red-500 rounded-full shrink-0 animate-pulse" />
+  );
+}
 
 function ChatContent() {
   const { user, isUserLoading } = useUser();
@@ -71,6 +84,36 @@ function ChatContent() {
     }
     prevMessageCountRef.current = currentCount;
   }, [messages]);
+
+  // Mark messages as read when conversation is opened
+  useEffect(() => {
+    if (!conversationId || !user || !firestore) return;
+
+    const markMessagesAsRead = async () => {
+      try {
+        // Query for unread messages in this conversation
+        const unreadQuery = query(
+          collection(firestore, 'conversations', conversationId, 'messages'),
+          where('unreadBy', 'array-contains', user.uid)
+        );
+
+        const snapshot = await getDocs(unreadQuery);
+
+        // Update each unread message to remove current user from unreadBy
+        const updatePromises = snapshot.docs.map((docSnapshot) =>
+          updateDoc(docSnapshot.ref, {
+            unreadBy: arrayRemove(user.uid)
+          })
+        );
+
+        await Promise.all(updatePromises);
+      } catch (error) {
+        console.error('Error marking messages as read:', error);
+      }
+    };
+
+    markMessagesAsRead();
+  }, [conversationId, user, firestore]);
 
   // Get all users first
   const allUsersQuery = useMemoFirebase(() => {
@@ -135,7 +178,8 @@ function ChatContent() {
       receiverId: activeRecipientId,
       content: messageText.trim(),
       message: messageText.trim(),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      unreadBy: [activeRecipientId] // Mark as unread for the receiver
     };
 
     addDocumentNonBlocking(
@@ -236,6 +280,8 @@ function ChatContent() {
                         </div>
                         <p className="text-[10px] text-muted-foreground truncate uppercase tracking-tighter font-black opacity-60">{person.role || 'Member'}</p>
                       </button>
+                      {/* Unread indicator at the right edge */}
+                      {user && <UnreadIndicator personId={person.id} currentUserId={user.uid} />}
                     </div>
                   </div>
                 ))}
@@ -343,9 +389,9 @@ function ChatContent() {
         </div>
       </div>
 
-      <UserProfileModal 
-        userId={selectedUserId} 
-        open={isProfileModalOpen} 
+      <UserProfileModal
+        userId={selectedUserId}
+        open={isProfileModalOpen}
         onOpenChange={setIsProfileModalOpen}
       />
     </div>
