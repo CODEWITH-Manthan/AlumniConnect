@@ -11,29 +11,42 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
+    function isAdmin() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
     match /users/{userId} {
       allow get, list: if isSignedIn();
       allow create: if isOwner(userId);
-      allow update: if isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
     }
 
     match /guidanceRequests/{guidanceRequestId} {
       allow get, list: if isSignedIn();
       allow create: if isOwner(request.resource.data.studentId);
-      allow update: if isSignedIn(); // Allow updating likes/reply count
-      allow delete: if isOwner(resource.data.studentId);
+      allow update: if isSignedIn() && (
+        // Author can update their own post content
+        isOwner(resource.data.studentId)
+        ||
+        // Others can only update the likes field, and only if they're not the author
+        (request.auth.uid != resource.data.studentId
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']))
+      );
+      allow delete: if isOwner(resource.data.studentId) || isAdmin();
 
       match /replies/{replyId} {
         allow read: if isSignedIn();
         allow create: if isSignedIn();
-        allow update, delete: if isOwner(resource.data.authorId);
+        allow update, delete: if isOwner(resource.data.authorId) || isAdmin();
       }
     }
 
     match /opportunities/{opportunityId} {
       allow get, list: if isSignedIn();
       allow create: if isOwner(request.resource.data.alumniId);
-      allow update, delete: if isOwner(resource.data.alumniId);
+      allow update, delete: if isOwner(resource.data.alumniId) || isAdmin();
     }
 
     // Allow collectionGroup queries for messages where user is sender, receiver, or in unreadBy
@@ -52,6 +65,11 @@ service cloud.firestore {
       allow update: if isSignedIn() 
         && (conversationId.split('_')[0] == request.auth.uid || conversationId.split('_')[1] == request.auth.uid)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['unreadBy']);
+    }
+    // Global stats counters (read-only for all signed-in users, writable to increment)
+    match /stats/{docId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
     }
   }
 }

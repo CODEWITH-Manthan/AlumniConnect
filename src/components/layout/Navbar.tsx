@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { GraduationCap, Briefcase, Users, MessageSquare, User, ShieldAlert, ShieldCheck, Menu, X } from "lucide-react"
+import { GraduationCap, Briefcase, Users, MessageSquare, User, ShieldAlert, ShieldCheck, Menu, X, LayoutDashboard } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase"
 import { doc } from 'firebase/firestore'
@@ -56,7 +56,7 @@ export default function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center space-x-1">
-            {navItems.map((item) => {
+            {userData?.role !== 'admin' && navItems.map((item) => {
               const Icon = item.icon
               const isMessages = item.name === "Messages"
               return (
@@ -79,6 +79,21 @@ export default function Navbar() {
                 </Link>
               )
             })}
+            {/* Admin link — only visible to admins */}
+            {userData?.role === 'admin' && (
+              <Link
+                href="/admin"
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all relative",
+                  pathname === '/admin'
+                    ? "text-red-600 bg-red-50"
+                    : "text-red-500 hover:bg-red-50 hover:text-red-600"
+                )}
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                Admin
+              </Link>
+            )}
           </div>
 
           <div className="md:hidden">
@@ -91,7 +106,7 @@ export default function Navbar() {
               <SheetContent side="right" className="w-64">
                 <div className="flex flex-col gap-6 py-6">
                   <h2 className="text-lg font-bold font-headline">Menu</h2>
-                  {navItems.map((item) => {
+                  {userData?.role !== 'admin' && navItems.map((item) => {
                     const Icon = item.icon
                     const isMessages = item.name === "Messages"
                     return (
@@ -115,6 +130,22 @@ export default function Navbar() {
                       </Link>
                     )
                   })}
+                  {/* Admin link — only visible to admins */}
+                  {userData?.role === 'admin' && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={cn(
+                        "flex items-center gap-3 px-2 py-2 rounded-md text-sm font-medium transition-all",
+                        pathname === '/admin'
+                          ? "text-red-600 bg-red-50"
+                          : "text-red-500 hover:text-red-600 hover:bg-red-50"
+                      )}
+                    >
+                      <LayoutDashboard className="h-4 w-4" />
+                      Admin Panel
+                    </Link>
+                  )}
                 </div>
               </SheetContent>
             </Sheet>

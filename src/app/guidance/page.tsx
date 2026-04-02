@@ -6,13 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { cn } from "@/lib/utils"
 import { MessageCircle, ThumbsUp, Plus, Loader2, Send, MessageSquareQuote } from "lucide-react"
 import { useUser, useFirestore, useMemoFirebase, useCollection, useDoc } from '@/firebase';
-import { collection, query, orderBy, doc, limit } from 'firebase/firestore';
+import { collection, query, orderBy, doc, limit, increment, arrayUnion } from 'firebase/firestore';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { incrementStat } from '@/lib/stats';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import UserProfileModal from "@/components/UserProfileModal";
@@ -184,6 +186,8 @@ export default function GuidancePage() {
     };
 
     addDocumentNonBlocking(collection(firestore, 'guidanceRequests'), newRequest);
+    // Increment the global discussions counter
+    incrementStat(firestore, { activeDiscussions: 1 });
     
     toast({
       title: "Question posted!",
@@ -192,10 +196,24 @@ export default function GuidancePage() {
     setIsPostDialogOpen(false);
   };
 
-  const handleLike = (requestId: string, currentLikes: number) => {
-    if (!firestore) return;
+  const likedRequests: string[] = userData?.likedRequests || [];
+
+  const handleLike = (requestId: string, postAuthorId: string) => {
+    if (!firestore || !user || !userDocRef) return;
+    // Block self-likes
+    if (user.uid === postAuthorId) {
+      toast({ title: "Can't like your own post", description: "Ask others to upvote your question!" });
+      return;
+    }
+    // Block re-likes (already liked)
+    if (likedRequests.includes(requestId)) return;
+
+    // Atomically increment the like count on the guidance request
     const requestRef = doc(firestore, 'guidanceRequests', requestId);
-    updateDocumentNonBlocking(requestRef, { likes: (currentLikes || 0) + 1 });
+    updateDocumentNonBlocking(requestRef, { likes: increment(1) });
+
+    // Track this like in the user's profile to prevent re-liking
+    updateDocumentNonBlocking(userDocRef, { likedRequests: arrayUnion(requestId) });
   };
 
   const filteredRequests = requests?.filter(req => 
@@ -302,11 +320,21 @@ export default function GuidancePage() {
                     </div>
                   </div>
                   <div className="flex gap-4">
-                    <button 
-                      onClick={() => handleLike(q.id, q.likes)}
-                      className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-primary transition-colors bg-background px-2.5 py-1 rounded-full border shadow-sm active:scale-95"
+                    <button
+                      onClick={() => handleLike(q.id, q.studentId)}
+                      disabled={likedRequests.includes(q.id) || user?.uid === q.studentId}
+                      title={likedRequests.includes(q.id) ? 'Already liked' : user?.uid === q.studentId ? "Can't like your own post" : 'Like'}
+                      className={cn(
+                        "flex items-center gap-1.5 text-xs font-bold transition-colors px-2.5 py-1 rounded-full border shadow-sm active:scale-95",
+                        likedRequests.includes(q.id)
+                          ? "bg-primary/10 text-primary border-primary/20 cursor-not-allowed"
+                          : user?.uid === q.studentId
+                          ? "bg-muted text-muted-foreground/50 border-muted cursor-not-allowed"
+                          : "bg-background text-muted-foreground hover:text-primary hover:border-primary/30"
+                      )}
                     >
-                      <ThumbsUp className="h-3.5 w-3.5" /> {q.likes || 0}
+                      <ThumbsUp className={cn("h-3.5 w-3.5", likedRequests.includes(q.id) && "fill-primary")} />
+                      {q.likes || 0}
                     </button>
                     <button 
                       onClick={() => setSelectedRequestId(q.id)}

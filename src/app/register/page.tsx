@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth, useFirestore } from '@/firebase';
 import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
+import { incrementStat } from '@/lib/stats';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -55,6 +56,11 @@ export default function RegisterPage() {
         gdy: formData.gdy,
         createdAt: new Date().toISOString()
       });
+
+      // Increment alumni counter (only for mentor/alumni role)
+      if (formData.role === 'mentor') {
+        incrementStat(db, { alumniCount: 1 });
+      }
 
       // Send email verification - always redirect to verification page
       let emailSentSuccessfully = false;

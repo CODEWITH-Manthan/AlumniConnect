@@ -10,7 +10,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useUser, useDoc, useFirestore, useMemoFirebase, useCollection } from '@/firebase';
-import { doc, collection, query, orderBy, limit, where } from 'firebase/firestore';
+import { doc, collection, query, orderBy, limit } from 'firebase/firestore';
+import { incrementStat } from '@/lib/stats';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -48,18 +49,12 @@ export default function Home() {
   }, [firestore, user]);
   const { data: opportunities, isLoading: isOppLoading } = useCollection(opportunitiesQuery);
 
-  // Network Stats Queries
-  const alumniCountQuery = useMemoFirebase(() => {
+  // Network Stats — single document read instead of full collection scans
+  const statsDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
-    return query(collection(firestore, 'users'), where('role', 'in', ['mentor', 'alumni']));
+    return doc(firestore, 'stats', 'global');
   }, [firestore, user]);
-  const { data: alumniList } = useCollection(alumniCountQuery);
-
-  const discussionsCountQuery = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return query(collection(firestore, 'guidanceRequests'));
-  }, [firestore, user]);
-  const { data: discussionsList } = useCollection(discussionsCountQuery);
+  const { data: globalStats } = useDoc(statsDocRef);
 
   const isMentor = userData?.role === 'mentor' || userData?.role === 'alumni';
   const bookmarks = userData?.bookmarkedOpportunities || [];
@@ -83,6 +78,8 @@ export default function Home() {
     };
 
     addDocumentNonBlocking(collection(firestore, 'opportunities'), newOpp);
+    // Increment the global open roles counter
+    incrementStat(firestore, { openRoles: 1 });
 
     toast({
       title: "Opportunity posted!",
@@ -369,7 +366,7 @@ export default function Home() {
                 <div className="flex flex-col">
                   <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Verified Alumni</span>
                   <span className="text-2xl font-black text-primary font-headline">
-                    {alumniList ? alumniList.length.toLocaleString() : "..."}
+                    {globalStats ? (globalStats.alumniCount ?? 0).toLocaleString() : "..."}
                   </span>
                 </div>
                 <div className="bg-primary/10 p-2 rounded-lg">
@@ -380,7 +377,7 @@ export default function Home() {
                 <div className="flex flex-col">
                   <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Open Roles</span>
                   <span className="text-2xl font-black text-secondary font-headline">
-                    {opportunities ? opportunities.length.toLocaleString() : "..."}
+                    {globalStats ? (globalStats.openRoles ?? 0).toLocaleString() : "..."}
                   </span>
                 </div>
                 <div className="bg-secondary/10 p-2 rounded-lg">
@@ -391,7 +388,7 @@ export default function Home() {
                 <div className="flex flex-col">
                   <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Active Discussions</span>
                   <span className="text-2xl font-black text-accent font-headline">
-                    {discussionsList ? discussionsList.length.toLocaleString() : "..."}
+                    {globalStats ? (globalStats.activeDiscussions ?? 0).toLocaleString() : "..."}
                   </span>
                 </div>
                 <div className="bg-accent/10 p-2 rounded-lg">

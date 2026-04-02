@@ -1,0 +1,78 @@
+# Deploying AlumniConnect (Production Guide)
+
+Since your project uses **Next.js** for the frontend/API routes and Google **Firebase** for the backend (Authentication, Database, Storage), your application is considered **serverless**. This means you do not need to manage or rent traditional backend servers!
+
+Here are the step-by-step instructions to get your platform live on the internet!
+
+---
+
+## Phase 1: Securing Your Firebase Backend
+Your backend is already "deployed" since it is safely hosted by Google Firebase. Before giving your web app to real users, you must ensure your Google Cloud backend is fully secured.
+
+### 1. Upgrade Authentication (Optional)
+Right now, you are using standard Email/Password authentication. Go to **Firebase Console -> Authentication -> Settings** and ensure "Email enumeration protection" is enabled. You can also add Google Sign-in as an extra login provider if you want single-sign-on.
+
+### 2. Lock Down Firestore Database Rules
+Ensure that the exact contents of your updated `firestore.rules` file in your code editor have been fully copied and published into the **Firebase Console -> Firestore Database -> Rules** tab. This is your core wall of security.
+
+### 3. Setup Firebase Storage Rules
+Similarly, you must protect where users upload their profile pictures. 
+Go to **Firebase Console -> Storage -> Rules** and paste this basic security configuration:
+```javascript
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Only allow signed-in users to upload or edit their own Profile Photos
+    match /profile-photos/{userId}/{fileName} {
+      allow read: if true; 
+      allow write: if request.auth != null && request.auth.uid == userId; 
+    }
+  }
+}
+```
+
+---
+
+## Phase 2: Deploying the Next.js Frontend (Vercel)
+**Vercel** is the company behind Next.js. Deploying there is **completely free**, blazing fast, and practically acts as a one-click deployment.
+
+### 1. Push Your Code to GitHub
+Vercel needs a place to read your code from.
+1. Create a free account at [GitHub](https://github.com/).
+2. Download [GitHub Desktop](https://desktop.github.com/) or use VS Code's Source Control tab to commit all your local files.
+3. Publish your folder as a **Private Repository** to your GitHub account.
+
+### 2. Connect to Vercel
+1. Create a free account at [Vercel](https://vercel.com/) and link/authorize your new GitHub account.
+2. Click **Add New...** -> **Project**.
+3. Select your shiny new AlumniConnect repository from the list and hit **Import**.
+
+### 3. Configure Environment Variables
+Before clicking "Deploy", Vercel will ask for your Environment Variables. The internet needs to know how to connect to *your* unique Firebase backend. 
+
+Open your local `.env.local` file and copy ALL the Next.js and Firebase variables over to Vercel one by one. It should look something like this:
+*   `NEXT_PUBLIC_FIREBASE_API_KEY` = *AIzaSyC...*
+*   `NEXT_PUBLIC_FIREBASE_PROJECT_ID` = *studio-3739...*
+*   *(... continue for all variables ...)*
+
+### 4. Deploy!
+Click **Deploy**. 
+Vercel will install your dependencies, build the production-ready version of your app automatically (`npm run build`), and assign you a live, secured HTTPS URL (e.g., `https://alumniconnect-x1y2.vercel.app`).
+
+---
+
+## Phase 3: Post-Deployment Steps
+
+### 1. Important: Update Firebase Authorized Domains
+Firebase Authentication has built-in hijack protection. It will **block** login attempts from your new Vercel URL unless you explicitly tell Firebase you trust it!
+1. Go to **Firebase Console -> Authentication -> Settings -> Authorized Domains**.
+2. Click **Add domain** and paste your exact live Vercel URL *(e.g., `alumniconnect.vercel.app`)*.
+
+### 2. Add an Admins Account
+When users sign up on your live site, they default to `student`. You will need to manually open your Live Firebase Database console and change your own account's `role` field from `"student"` to `"admin"` to access the admin panel we just built!
+
+### 3. Purchase a Custom Domain (Optional)
+If you buy a domain like `alumniconnect.com` from a registrar like Namecheap or Google Domains:
+1. Go to your **Vercel Project Settings -> Domains**.
+2. Type in your custom domain.
+3. Vercel will provide you with DNS Records. Add those to your domain registrar, and Vercel will auto-generate your SSL certificates for free.

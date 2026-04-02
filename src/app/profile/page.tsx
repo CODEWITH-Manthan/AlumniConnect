@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { User, GraduationCap, Code, Briefcase, Edit2, LogOut, Loader2, Save, X, Plus, Bookmark, MapPin, ArrowRight, Camera } from "lucide-react"
+import { User, GraduationCap, Code, Briefcase, Edit2, LogOut, Loader2, Save, X, Plus, Bookmark, MapPin, ArrowRight, Camera, ShieldAlert, CheckCircle } from "lucide-react"
 import { useUser, useDoc, useFirestore, useMemoFirebase, useAuth, useCollection } from '@/firebase';
 import { doc, collection, updateDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
@@ -201,6 +201,7 @@ export default function ProfilePage() {
   }
 
   const role = userData?.role || 'student';
+  const isAdmin = role === 'admin';
   const fullName = userData ? `${userData.firstName} ${userData.lastName}` : 'User';
   const userSkills = userData?.skills || [];
   const bookmarkedIds = userData?.bookmarkedOpportunities || [];
@@ -267,14 +268,82 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <TabsList className="bg-transparent border-b rounded-none w-full justify-start h-auto p-0 space-x-8">
-            <TabsTrigger value="overview" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent pb-4 px-0 font-bold text-base">Overview</TabsTrigger>
-            <TabsTrigger value="saved" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent pb-4 px-0 font-bold text-base">
-              Saved Opportunities <Badge variant="secondary" className="ml-2 bg-primary/10 text-primary">{bookmarkedOpps.length}</Badge>
-            </TabsTrigger>
-          </TabsList>
+          {!isAdmin && (
+            <TabsList className="bg-transparent border-b rounded-none w-full justify-start h-auto p-0 space-x-8">
+              <TabsTrigger value="overview" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent pb-4 px-0 font-bold text-base">Overview</TabsTrigger>
+              <TabsTrigger value="saved" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent pb-4 px-0 font-bold text-base">
+                Saved Opportunities <Badge variant="secondary" className="ml-2 bg-primary/10 text-primary">{bookmarkedOpps.length}</Badge>
+              </TabsTrigger>
+            </TabsList>
+          )}
 
           <TabsContent value="overview" className="mt-0 space-y-8 animate-in fade-in-50 duration-500">
+            {isAdmin ? (
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 <div className="space-y-8">
+                   <form onSubmit={handleSaveProfile}>
+                     <Card className="border-none shadow-sm">
+                       <CardHeader>
+                         <CardTitle className="flex items-center gap-2 font-headline">
+                           <User className="h-5 w-5 text-primary" /> Identity Details
+                         </CardTitle>
+                         <CardDescription>Manage your administrative identity.</CardDescription>
+                       </CardHeader>
+                       <CardContent className="space-y-6">
+                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                           <div className="space-y-2">
+                             <Label htmlFor="firstName">First Name</Label>
+                             <Input id="firstName" name="firstName" defaultValue={userData?.firstName} disabled={!isEditing} required className="bg-muted/30" suppressHydrationWarning />
+                           </div>
+                           <div className="space-y-2">
+                             <Label htmlFor="lastName">Last Name</Label>
+                             <Input id="lastName" name="lastName" defaultValue={userData?.lastName} disabled={!isEditing} required className="bg-muted/30" suppressHydrationWarning />
+                           </div>
+                         </div>
+                         <div className="space-y-2">
+                           <Label>Email Address</Label>
+                           <Input value={user.email || ""} disabled className="bg-muted/50 text-muted-foreground" />
+                         </div>
+                       </CardContent>
+                       {isEditing && (
+                         <CardFooter className="flex justify-end border-t pt-6 bg-muted/10">
+                           <Button type="submit" className="bg-primary px-8 rounded-full">
+                             <Save className="mr-2 h-4 w-4" /> Save Changes
+                           </Button>
+                         </CardFooter>
+                       )}
+                     </Card>
+                   </form>
+                 </div>
+                 
+                 <div className="space-y-8">
+                   <Card className="border-none shadow-sm bg-primary/5">
+                     <CardHeader>
+                       <CardTitle className="text-lg font-headline flex items-center gap-2">
+                         <ShieldAlert className="h-5 w-5 text-primary" /> Security & Access
+                       </CardTitle>
+                     </CardHeader>
+                     <CardContent className="space-y-4">
+                       <div className="bg-white dark:bg-black/20 p-4 rounded-xl border border-primary/10">
+                         <h4 className="font-bold text-sm mb-1">Administrative Privileges</h4>
+                         <p className="text-xs text-muted-foreground mb-3">Your account is granted top-level access to the AlumniConnect framework.</p>
+                         <ul className="text-xs space-y-2 font-medium">
+                           <li className="flex items-center gap-2 text-green-600 dark:text-green-500"><CheckCircle className="h-3 w-3" /> Full user moderation</li>
+                           <li className="flex items-center gap-2 text-green-600 dark:text-green-500"><CheckCircle className="h-3 w-3" /> Role assignments</li>
+                           <li className="flex items-center gap-2 text-green-600 dark:text-green-500"><CheckCircle className="h-3 w-3" /> Content lifecycle control</li>
+                         </ul>
+                       </div>
+                       <div className="bg-white dark:bg-black/20 p-4 rounded-xl border border-primary/10">
+                         <h4 className="font-bold text-sm mb-1 text-primary">System Notification</h4>
+                         <p className="text-xs text-muted-foreground flex items-center gap-2">
+                           Remember to lock your terminal when away. All actions taken by your account are logged and directly affect users.
+                         </p>
+                       </div>
+                     </CardContent>
+                   </Card>
+                 </div>
+               </div>
+            ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="md:col-span-1 space-y-8">
                 <Card className="border-none shadow-sm">
@@ -386,10 +455,12 @@ export default function ProfilePage() {
                 </form>
               </div>
             </div>
+            )}
           </TabsContent>
 
-          <TabsContent value="saved" className="mt-0 animate-in slide-in-from-bottom-4 duration-500">
-            {bookmarkedOpps.length > 0 ? (
+          {!isAdmin && (
+            <TabsContent value="saved" className="mt-0 animate-in slide-in-from-bottom-4 duration-500">
+              {bookmarkedOpps.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {bookmarkedOpps.map((opp) => (
                   <Card key={opp.id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all group">
@@ -443,6 +514,7 @@ export default function ProfilePage() {
               </div>
             )}
           </TabsContent>
+          )}
         </Tabs>
       </div>
     </div>
