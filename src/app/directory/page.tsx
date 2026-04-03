@@ -21,7 +21,7 @@ export default function DirectoryPage() {
 
   const alumniQuery = useMemoFirebase(() => {
     if (!firestore || !user) return null;
-    return query(collection(firestore, 'users'), where('role', 'in', ['mentor', 'alumni']));
+    return query(collection(firestore, 'users'), where('role', '==', 'alumni'));
   }, [firestore, user]);
 
   const { data: allUsers, isLoading } = useCollection(alumniQuery);
@@ -107,7 +107,10 @@ export default function DirectoryPage() {
                   <button onClick={() => { setSelectedUserId(person.id); setIsProfileModalOpen(true); }} className="text-lg font-bold hover:text-primary transition-colors text-left">
                     {person.firstName} {person.lastName}
                   </button>
-                  <p className="text-xs font-semibold text-secondary uppercase tracking-wider">{person.role}</p>
+                  <p className="text-xs font-semibold text-secondary uppercase tracking-wider">{person.role === 'alumni' ? 'Alumni' : person.role}</p>
+                  {person.fieldOfWorking && (
+                    <p className="text-xs text-muted-foreground mt-0.5 truncate">{person.fieldOfWorking}</p>
+                  )}
                 </div>
               </CardHeader>
               <CardContent className="flex-1">

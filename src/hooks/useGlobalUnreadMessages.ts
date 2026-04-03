@@ -1,19 +1,30 @@
 'use client';
 
+import { doc } from 'firebase/firestore';
+import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+
 /**
- * Hook to check if the user has ANY unread messages across ALL conversations
+ * Hook to check if the user has ANY unread messages across ALL conversations.
  * 
- * NOTE: This feature is disabled due to Firestore collectionGroup security rule limitations.
- * The sidebar per-conversation red dots work perfectly and provide the same functionality.
+ * Uses a simple `hasUnreadMessages` boolean field on the user document.
+ * This field is set to `true` when someone sends the user a message,
+ * and set to `false` when the user opens the messages page.
  * 
  * @param userId - The current user's ID
  * @returns Object with hasUnread boolean and isLoading state
  */
 export function useGlobalUnreadMessages(userId: string | null) {
-    // Disabled to prevent Firestore permission errors
-    // Sidebar indicators still work perfectly
+    const firestore = useFirestore();
+
+    const userDocRef = useMemoFirebase(() => {
+        if (!firestore || !userId) return null;
+        return doc(firestore, 'users', userId);
+    }, [firestore, userId]);
+
+    const { data: userData, isLoading } = useDoc(userDocRef);
+
     return {
-        hasUnread: false,
-        isLoading: false
+        hasUnread: userData?.hasUnreadMessages === true,
+        isLoading
     };
 }

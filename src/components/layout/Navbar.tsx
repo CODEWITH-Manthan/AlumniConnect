@@ -34,6 +34,9 @@ export default function Navbar() {
   // Check for global unread messages
   const { hasUnread: hasGlobalUnread } = useGlobalUnreadMessages(user?.uid || null);
 
+  // Block navigation for unverified users
+  const isVerified = !user || user.emailVerified;
+
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-md">
       <div className="container mx-auto px-4">
@@ -56,7 +59,7 @@ export default function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center space-x-1">
-            {userData?.role !== 'admin' && navItems.map((item) => {
+            {isVerified && userData?.role !== 'admin' && navItems.map((item) => {
               const Icon = item.icon
               const isMessages = item.name === "Messages"
               return (
@@ -79,8 +82,8 @@ export default function Navbar() {
                 </Link>
               )
             })}
-            {/* Admin link — only visible to admins */}
-            {userData?.role === 'admin' && (
+            {/* Admin link — only visible to verified admins */}
+            {isVerified && userData?.role === 'admin' && (
               <Link
                 href="/admin"
                 className={cn(
@@ -106,7 +109,7 @@ export default function Navbar() {
               <SheetContent side="right" className="w-64">
                 <div className="flex flex-col gap-6 py-6">
                   <h2 className="text-lg font-bold font-headline">Menu</h2>
-                  {userData?.role !== 'admin' && navItems.map((item) => {
+                  {isVerified && userData?.role !== 'admin' && navItems.map((item) => {
                     const Icon = item.icon
                     const isMessages = item.name === "Messages"
                     return (
@@ -130,8 +133,8 @@ export default function Navbar() {
                       </Link>
                     )
                   })}
-                  {/* Admin link — only visible to admins */}
-                  {userData?.role === 'admin' && (
+                  {/* Admin link — only visible to verified admins */}
+                  {isVerified && userData?.role === 'admin' && (
                     <Link
                       href="/admin"
                       onClick={() => setMobileMenuOpen(false)}
@@ -174,12 +177,14 @@ export default function Navbar() {
                   </div>
                 )}
 
-                <Link href="/profile" className="flex items-center gap-1 md:gap-2 bg-muted hover:bg-muted/80 p-1.5 md:pr-4 rounded-full transition-colors border">
-                  <div className="bg-primary/10 p-1 rounded-full text-primary">
-                    <User className="h-4 md:h-5 w-4 md:w-5" />
-                  </div>
-                  <span className="text-xs md:text-sm font-medium hidden sm:inline-block">My Profile</span>
-                </Link>
+                {isVerified && (
+                  <Link href="/profile" className="flex items-center gap-1 md:gap-2 bg-muted hover:bg-muted/80 p-1.5 md:pr-4 rounded-full transition-colors border">
+                    <div className="bg-primary/10 p-1 rounded-full text-primary">
+                      <User className="h-4 md:h-5 w-4 md:w-5" />
+                    </div>
+                    <span className="text-xs md:text-sm font-medium hidden sm:inline-block">My Profile</span>
+                  </Link>
+                )}
               </>
             ) : (
               <div className="flex items-center gap-1 md:gap-2">

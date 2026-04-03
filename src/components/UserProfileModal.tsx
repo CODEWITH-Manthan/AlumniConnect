@@ -69,12 +69,15 @@ export default function UserProfileModal({ userId, open, onOpenChange }: UserPro
                 <div className="flex items-center justify-center gap-2 mt-1">
                   <Badge className={cn(
                     "uppercase text-[10px] tracking-widest",
-                    (role === 'mentor' || role === 'alumni') ? "bg-secondary" : "bg-primary"
+                    role === 'alumni' ? "bg-secondary" : "bg-primary"
                   )}>
-                    {(role === 'mentor' || role === 'alumni') ? 'ALUMNI' : role}
+                    {role === 'alumni' ? 'ALUMNI' : role}
                   </Badge>
                   {userData?.major && userData?.gdy && (
                     <span className="text-sm text-muted-foreground font-medium">{userData.major} • Class of {userData.gdy}</span>
+                  )}
+                  {userData?.fieldOfWorking && (
+                    <span className="text-sm text-muted-foreground font-medium">{userData.fieldOfWorking}</span>
                   )}
                 </div>
               </div>
@@ -106,19 +109,21 @@ export default function UserProfileModal({ userId, open, onOpenChange }: UserPro
             )}
 
             {/* Career Interests */}
+            {(userData?.careerInterests || []).length > 0 && (
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Briefcase className="h-4 w-4 text-primary" />
-                <h3 className="font-semibold text-sm">Interests</h3>
+                <h3 className="font-semibold text-sm">Career Interests</h3>
               </div>
               <div className="flex flex-wrap gap-2">
-                {["Open Source", "FinTech", "AI/ML", "DevOps", "Startups"].map(i => (
+                {(userData?.careerInterests || []).map((i: string) => (
                   <Badge key={i} className="bg-teal-500/10 text-teal-600 border-none text-xs py-1">
                     {i}
                   </Badge>
                 ))}
               </div>
             </div>
+            )}
 
             {/* Contact Information */}
             {userData?.email && (

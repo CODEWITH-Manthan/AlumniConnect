@@ -19,6 +19,7 @@ import { doc, collection, query, orderBy, limit, where, deleteDoc } from 'fireba
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { incrementStat, decrementStat } from '@/lib/stats';
 
 // ── Animated counter ──────────────────────────────────────────────────────────
 function AnimatedStat({ value, label }: { value: number; label: string }) {
@@ -92,7 +93,7 @@ function UserRow({ user: u, currentUserId, onRoleChange, onRemoveUser }: {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <p className="text-sm font-bold truncate">{u.firstName} {u.lastName}</p>
-          {(u as any).emailVerified && <CheckCircle className="h-3 w-3 text-green-600" title="Email Verified" />}
+          {(u as any).emailVerified && <span title="Email Verified"><CheckCircle className="h-3 w-3 text-green-600" /></span>}
         </div>
         <p className="text-xs text-muted-foreground truncate">{u.email}</p>
       </div>
@@ -143,7 +144,7 @@ export default function AdminPage() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'alumni' | 'content' | 'activity'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'alumni' | 'students' | 'content' | 'activity'>('overview');
   const [searchTerm, setSearchTerm] = useState('');
   const [mounted, setMounted] = useState(false);
 
@@ -193,9 +194,10 @@ export default function AdminPage() {
   const { data: guidanceRequests } = useCollection(guidanceQuery);
 
   // ── Derived counts ──
-  const alumniUsers = allUsers?.filter(u => u.role === 'alumni' || u.role === 'mentor') || [];
+  const alumniUsers = allUsers?.filter(u => u.role === 'alumni') || [];
   const studentUsers = allUsers?.filter(u => !u.role || u.role === 'student') || [];
   const adminUsers = allUsers?.filter(u => u.role === 'admin') || [];
+  const nonAdminUsers = allUsers?.filter(u => u.role !== 'admin') || [];
 
   const filteredUsers = allUsers?.filter(u =>
     `${u.firstName} ${u.lastName} ${u.email}`.toLowerCase().includes(searchTerm.toLowerCase())
@@ -205,11 +207,28 @@ export default function AdminPage() {
     `${u.firstName} ${u.lastName} ${u.email}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const filteredStudents = studentUsers.filter(u =>
+    `${u.firstName} ${u.lastName} ${u.email}`.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   // ── Handlers ──
   const handleRoleChange = (uid: string, newRole: string) => {
     if (!firestore || !uid) return;
     const ref = doc(firestore, 'users', uid);
+    
+    // Find the user to check their current role
+    const targetUser = allUsers?.find(u => (u.uid || (u as any).id) === uid);
+    const currentRole = targetUser?.role || 'student';
+    
     updateDocumentNonBlocking(ref, { role: newRole });
+    
+    // Update alumni count stats
+    if (newRole === 'alumni' && currentRole !== 'alumni') {
+      incrementStat(firestore, { alumniCount: 1 });
+    } else if (currentRole === 'alumni' && newRole !== 'alumni') {
+      decrementStat(firestore, { alumniCount: 1 });
+    }
+    
     toast({
       title: 'Role updated',
       description: `User role changed to ${newRole}.`,
@@ -306,6 +325,7 @@ export default function AdminPage() {
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'users', label: 'All Users', icon: Users },
     { id: 'alumni', label: 'Alumni', icon: GraduationCap },
+    { id: 'students', label: 'Students', icon: Award },
     { id: 'content', label: 'Content', icon: BookOpen },
     { id: 'activity', label: 'Activity', icon: Activity },
   ] as const;
@@ -378,11 +398,11 @@ export default function AdminPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <StatCard
                 title="Total Users"
-                value={allUsers?.length || 0}
+                value={nonAdminUsers.length}
                 icon={Users}
                 color="bg-primary text-primary-foreground"
                 trend="Platform members"
-                subtitle={`${adminUsers.length} admins`}
+                subtitle={`${adminUsers.length} admins (excluded)`}
               />
               <StatCard
                 title="Alumni & Mentors"
@@ -453,7 +473,7 @@ export default function AdminPage() {
                       { label: 'Opportunities', value: opportunities?.length || 0, icon: Briefcase, color: 'text-primary' },
                       { label: 'Discussions', value: guidanceRequests?.length || 0, icon: MessageSquare, color: 'text-secondary' },
                       { label: 'Alumni Posts', value: opportunities?.filter(o => o.alumniId)?.length || 0, icon: UserCheck, color: 'text-accent' },
-                      { label: 'Active Mentors', value: allUsers?.filter(u => u.role === 'mentor').length || 0, icon: GraduationCap, color: 'text-primary' },
+                      { label: 'Active Alumni', value: alumniUsers.length, icon: GraduationCap, color: 'text-primary' },
                     ].map((item) => {
                       const Icon = item.icon;
                       return (
@@ -556,7 +576,7 @@ export default function AdminPage() {
               {[
                 { label: 'Admin', count: adminUsers.length, color: 'bg-red-50 text-red-700 border-red-200' },
                 { label: 'Alumni', count: allUsers?.filter(u => u.role === 'alumni').length || 0, color: 'bg-primary/10 text-primary border-primary/20' },
-                { label: 'Mentor', count: allUsers?.filter(u => u.role === 'mentor').length || 0, color: 'bg-secondary/10 text-secondary border-secondary/20' },
+                { label: 'Mentor', count: 0, color: 'bg-secondary/10 text-secondary border-secondary/20' },
                 { label: 'Student', count: studentUsers.length, color: 'bg-muted text-muted-foreground border-border' },
               ].map(item => (
                 <Badge key={item.label} className={cn('px-3 py-1 border text-xs font-bold capitalize', item.color)}>
@@ -633,6 +653,12 @@ export default function AdminPage() {
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-xs">
+                      {u.fieldOfWorking && (
+                        <div className="bg-muted/30 rounded-lg p-2 col-span-2">
+                          <p className="text-muted-foreground mb-0.5">Field of Working</p>
+                          <p className="font-bold truncate">{u.fieldOfWorking}</p>
+                        </div>
+                      )}
                       {u.company && (
                         <div className="bg-muted/30 rounded-lg p-2">
                           <p className="text-muted-foreground mb-0.5">Company</p>
@@ -663,6 +689,103 @@ export default function AdminPage() {
                 <div className="col-span-3 text-center py-20 text-muted-foreground">
                   <GraduationCap className="h-10 w-10 mx-auto mb-3 opacity-20" />
                   <p>No alumni found</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ═══════════════════════════════════ STUDENTS TAB ══════════════════════════════════ */}
+        {activeTab === 'students' && (
+          <div className="space-y-6">
+            <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
+              <div>
+                <h2 className="text-2xl font-bold font-headline text-primary">Students</h2>
+                <p className="text-muted-foreground text-sm">{studentUsers.length} registered students</p>
+              </div>
+              <div className="relative w-full md:w-72">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search students…"
+                  className="pl-10 h-10"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredStudents.length > 0 ? filteredStudents.map((u, idx) => (
+                <Card key={u.uid || (u as any).id || idx} className="border-none shadow-sm hover:shadow-md transition-all group">
+                  <CardContent className="p-5">
+                    <div className="flex items-start gap-3 mb-4">
+                      <div className="h-12 w-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent font-black text-lg border border-accent/20 flex-shrink-0 group-hover:scale-105 transition-transform">
+                        {u.firstName?.[0]}{u.lastName?.[0]}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold truncate">{u.firstName} {u.lastName}</p>
+                        <p className="text-xs text-muted-foreground truncate">{u.email}</p>
+                        <Badge className="mt-1 text-[9px] uppercase font-black tracking-wider border px-2 py-0.5 bg-muted text-muted-foreground border-border">
+                          Student
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      {u.department && (
+                        <div className="bg-muted/30 rounded-lg p-2">
+                          <p className="text-muted-foreground mb-0.5">Department</p>
+                          <p className="font-bold truncate">{u.department}</p>
+                        </div>
+                      )}
+                      {(u.graduationYear || u.gdy) && (
+                        <div className="bg-muted/30 rounded-lg p-2">
+                          <p className="text-muted-foreground mb-0.5">Grad Year</p>
+                          <p className="font-bold">{u.graduationYear || u.gdy}</p>
+                        </div>
+                      )}
+                    </div>
+                    {(u.skills || []).length > 0 && (
+                      <div className="mt-2">
+                        <p className="text-[10px] text-muted-foreground mb-1 font-bold uppercase tracking-wider">Skills</p>
+                        <div className="flex flex-wrap gap-1">
+                          {(u.skills || []).slice(0, 4).map((s: string) => (
+                            <span key={s} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">{s}</span>
+                          ))}
+                          {(u.skills || []).length > 4 && (
+                            <span className="text-[10px] text-muted-foreground">+{(u.skills || []).length - 4} more</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between mt-3">
+                      {u.emailVerified ? (
+                        <div className="flex items-center gap-1 text-[10px] text-green-600 font-bold">
+                          <CheckCircle className="h-3 w-3" /> Email Verified
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-[10px] text-yellow-600 font-bold">
+                          <AlertTriangle className="h-3 w-3" /> Not Verified
+                        </div>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 px-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => {
+                          const uid = u.uid || (u as any).id;
+                          if (uid) handleRoleChange(uid, 'alumni');
+                        }}
+                        title="Promote to alumni"
+                      >
+                        <UserCheck className="h-3 w-3 mr-1" /> Promote
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )) : (
+                <div className="col-span-3 text-center py-20 text-muted-foreground">
+                  <Award className="h-10 w-10 mx-auto mb-3 opacity-20" />
+                  <p>No students found</p>
                 </div>
               )}
             </div>

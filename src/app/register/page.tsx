@@ -24,7 +24,10 @@ export default function RegisterPage() {
     password: '',
     department: '',
     gdy: '',
-    role: 'student' as 'student' | 'mentor'
+    role: 'student' as 'student' | 'alumni',
+    skills: '' as string,
+    careerInterests: '' as string,
+    fieldOfWorking: '' as string,
   });
   const [isLoading, setIsLoading] = useState(false);
   const auth = useAuth();
@@ -34,6 +37,17 @@ export default function RegisterPage() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // VES email restriction for students
+    if (formData.role === 'student' && !formData.email.toLowerCase().endsWith('@ves.ac.in')) {
+      toast({
+        variant: "destructive",
+        title: "Invalid email domain",
+        description: "Students must register with a @ves.ac.in email address.",
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -53,12 +67,15 @@ export default function RegisterPage() {
         email: formData.email,
         role: formData.role,
         department: formData.department,
-        gdy: formData.gdy,
+        graduationYear: formData.gdy,
+        skills: formData.skills ? formData.skills.split(',').map(s => s.trim()).filter(Boolean) : [],
+        careerInterests: formData.role === 'student' && formData.careerInterests ? formData.careerInterests.split(',').map(s => s.trim()).filter(Boolean) : [],
+        fieldOfWorking: formData.role === 'alumni' ? formData.fieldOfWorking.trim() : '',
         createdAt: new Date().toISOString()
       });
 
       // Increment alumni counter (only for mentor/alumni role)
-      if (formData.role === 'mentor') {
+      if (formData.role === 'alumni') {
         incrementStat(db, { alumniCount: 1 });
       }
 
@@ -146,15 +163,15 @@ export default function RegisterPage() {
                 </div>
                 <div>
                   <RadioGroupItem
-                    value="mentor"
-                    id="mentor"
+                    value="alumni"
+                    id="alumni"
                     className="peer sr-only"
                   />
                   <Label
-                    htmlFor="mentor"
+                    htmlFor="alumni"
                     className={cn(
                       "flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer transition-all",
-                      formData.role === 'mentor' && "border-primary bg-primary/5"
+                      formData.role === 'alumni' && "border-primary bg-primary/5"
                     )}
                   >
                     <Briefcase className="mb-3 h-6 w-6" />
@@ -194,7 +211,7 @@ export default function RegisterPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder={formData.role === 'student' ? "you@ves.ac.in" : "m@example.com"}
                 required
                 className="h-8 md:h-10 text-xs md:text-sm"
                 value={formData.email}
@@ -235,6 +252,43 @@ export default function RegisterPage() {
                 onChange={(e) => setFormData({ ...formData, gdy: e.target.value })}
               />
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="skills" className="text-xs md:text-sm">Skills <span className="text-muted-foreground font-normal">(comma separated)</span></Label>
+              <Input
+                id="skills"
+                placeholder="e.g. React, Python, Machine Learning"
+                className="h-8 md:h-10 text-xs md:text-sm"
+                value={formData.skills}
+                onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
+              />
+            </div>
+
+            {formData.role === 'student' && (
+              <div className="space-y-2">
+                <Label htmlFor="careerInterests" className="text-xs md:text-sm">Career Interests <span className="text-muted-foreground font-normal">(comma separated)</span></Label>
+                <Input
+                  id="careerInterests"
+                  placeholder="e.g. AI/ML, FinTech, Open Source, DevOps"
+                  className="h-8 md:h-10 text-xs md:text-sm"
+                  value={formData.careerInterests}
+                  onChange={(e) => setFormData({ ...formData, careerInterests: e.target.value })}
+                />
+              </div>
+            )}
+
+            {formData.role === 'alumni' && (
+              <div className="space-y-2">
+                <Label htmlFor="fieldOfWorking" className="text-xs md:text-sm">Field of Working</Label>
+                <Input
+                  id="fieldOfWorking"
+                  placeholder="e.g. Software Engineering at Google"
+                  className="h-8 md:h-10 text-xs md:text-sm"
+                  value={formData.fieldOfWorking}
+                  onChange={(e) => setFormData({ ...formData, fieldOfWorking: e.target.value })}
+                />
+              </div>
+            )}
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full h-8 md:h-10 text-xs md:text-sm font-semibold" disabled={isLoading}>

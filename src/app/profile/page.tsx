@@ -29,6 +29,7 @@ export default function ProfilePage() {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [newSkill, setNewSkill] = useState("");
+  const [newCareerInterest, setNewCareerInterest] = useState("");
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
@@ -151,13 +152,18 @@ export default function ProfilePage() {
     if (!userDocRef) return;
 
     const formData = new FormData(e.currentTarget);
-    const updates = {
+    const updates: any = {
       firstName: formData.get('firstName'),
       lastName: formData.get('lastName'),
       bio: formData.get('bio'),
-      major: formData.get('major'),
+      department: formData.get('department'),
       graduationYear: formData.get('graduationYear'),
     };
+
+    // Include fieldOfWorking for alumni
+    if (role === 'alumni') {
+      updates.fieldOfWorking = formData.get('fieldOfWorking') || '';
+    }
 
     updateDocumentNonBlocking(userDocRef, updates);
 
@@ -184,6 +190,25 @@ export default function ProfilePage() {
     const currentSkills = userData.skills || [];
     updateDocumentNonBlocking(userDocRef, {
       skills: currentSkills.filter((s: string) => s !== skillToRemove)
+    });
+  };
+
+  const handleAddCareerInterest = () => {
+    if (!newCareerInterest.trim() || !userDocRef || !userData) return;
+    const current = userData.careerInterests || [];
+    if (current.includes(newCareerInterest.trim())) return;
+
+    updateDocumentNonBlocking(userDocRef, {
+      careerInterests: [...current, newCareerInterest.trim()]
+    });
+    setNewCareerInterest("");
+  };
+
+  const handleRemoveCareerInterest = (interest: string) => {
+    if (!userDocRef || !userData) return;
+    const current = userData.careerInterests || [];
+    updateDocumentNonBlocking(userDocRef, {
+      careerInterests: current.filter((i: string) => i !== interest)
     });
   };
 
@@ -250,11 +275,11 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-2 mt-1">
                   <Badge className={cn(
                     "uppercase text-[10px] tracking-widest",
-                    (role === 'mentor' || role === 'alumni') ? "bg-secondary" : "bg-primary"
+                    role === 'alumni' ? "bg-secondary" : "bg-primary"
                   )}>
-                    {(role === 'mentor' || role === 'alumni') ? 'ALUMNI' : role}
+                    {role === 'alumni' ? 'ALUMNI' : role}
                   </Badge>
-                  <span className="text-muted-foreground text-sm font-medium">{userData?.major} • Class of {userData?.graduationYear}</span>
+                  <span className="text-muted-foreground text-sm font-medium">{userData?.department} • Class of {userData?.graduationYear || userData?.gdy}</span>
                 </div>
               </div>
             </div>
@@ -390,17 +415,54 @@ export default function ProfilePage() {
                 <Card className="border-none shadow-sm">
                   <CardHeader>
                     <CardTitle className="text-lg font-headline flex items-center gap-2">
-                      <Briefcase className="h-5 w-5 text-primary" /> Career Interests
+                      <Briefcase className="h-5 w-5 text-primary" />
+                      {role === 'alumni' ? 'Field of Working' : 'Career Interests'}
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {["Open Source", "FinTech", "AI/ML", "DevOps", "Startups"].map(i => (
-                        <Badge key={i} className="bg-teal-500/10 text-teal-600 border-none">
-                          {i}
-                        </Badge>
-                      ))}
-                    </div>
+                  <CardContent className="space-y-4">
+                    {role === 'alumni' ? (
+                      <>
+                        {isEditing ? null : (
+                          <p className="text-sm font-medium text-foreground">
+                            {userData?.fieldOfWorking || <span className="text-muted-foreground italic">Not specified yet.</span>}
+                          </p>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex flex-wrap gap-2">
+                          {(userData?.careerInterests || []).length > 0 ? (
+                            (userData?.careerInterests || []).map((i: string) => (
+                              <Badge key={i} className="bg-teal-500/10 text-teal-600 border-none flex items-center gap-1 py-1 px-3">
+                                {i}
+                                {isEditing && (
+                                  <button onClick={() => handleRemoveCareerInterest(i)} className="hover:text-destructive">
+                                    <X className="h-3 w-3" />
+                                  </button>
+                                )}
+                              </Badge>
+                            ))
+                          ) : (
+                            <p className="text-sm text-muted-foreground italic">No career interests listed yet.</p>
+                          )}
+                        </div>
+                        {isEditing && (
+                          <div className="flex gap-2">
+                            <Input
+                              placeholder="Add an interest..."
+                              value={newCareerInterest}
+                              onChange={(e) => setNewCareerInterest(e.target.value)}
+                              className="h-10 text-sm"
+                              onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddCareerInterest())}
+                              suppressHydrationWarning
+                            />
+                            <Button size="icon" variant="secondary" onClick={handleAddCareerInterest}>
+                              <Plus className="h-5 w-5" />
+                            </Button>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -425,14 +487,20 @@ export default function ProfilePage() {
                           <Input id="lastName" name="lastName" defaultValue={userData?.lastName} disabled={!isEditing} required className="bg-muted/30" suppressHydrationWarning />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="major">Department</Label>
-                          <Input id="major" name="major" defaultValue={userData?.department || ""} disabled={!isEditing} className="bg-muted/30" suppressHydrationWarning />
+                          <Label htmlFor="department">Department</Label>
+                          <Input id="department" name="department" defaultValue={userData?.department || ""} disabled={!isEditing} className="bg-muted/30" suppressHydrationWarning />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="graduationYear">Graduation Year</Label>
-                          <Input id="graduationYear" name="graduationYear" defaultValue={userData?.gdy || ""} disabled={!isEditing} className="bg-muted/30" suppressHydrationWarning />
+                          <Input id="graduationYear" name="graduationYear" defaultValue={userData?.graduationYear || userData?.gdy || ""} disabled={!isEditing} className="bg-muted/30" suppressHydrationWarning />
                         </div>
                       </div>
+                      {role === 'alumni' && (
+                        <div className="space-y-2">
+                          <Label htmlFor="fieldOfWorking">Field of Working</Label>
+                          <Input id="fieldOfWorking" name="fieldOfWorking" defaultValue={userData?.fieldOfWorking || ""} disabled={!isEditing} className="bg-muted/30" placeholder="e.g. Software Engineering at Google" suppressHydrationWarning />
+                        </div>
+                      )}
                       <div className="space-y-2">
                         <Label htmlFor="bio">Professional Bio</Label>
                         <Textarea

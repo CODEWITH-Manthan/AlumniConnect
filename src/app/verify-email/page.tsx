@@ -151,12 +151,12 @@ export default function VerifyEmailPage() {
                         </ol>
                     </div>
 
-                    <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 p-3 rounded-lg">
+                    <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 p-3 rounded-lg">
                         <div className="flex gap-2">
-                            <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
-                            <div className="text-sm text-yellow-800 dark:text-yellow-200">
-                                <p className="font-semibold mb-1">Limited access</p>
-                                <p className="text-xs">Some features are restricted until you verify your email address.</p>
+                            <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-500 flex-shrink-0 mt-0.5" />
+                            <div className="text-sm text-blue-800 dark:text-blue-200">
+                                <p className="font-semibold mb-1">Can't find the email?</p>
+                                <p className="text-xs">Check your <strong>Spam</strong> or <strong>Junk</strong> folder. Search for "noreply@" in your inbox. The email may take a minute to arrive.</p>
                             </div>
                         </div>
                     </div>
@@ -192,11 +192,7 @@ export default function VerifyEmailPage() {
                             : "Resend verification email"}
                     </Button>
 
-                    <div className="text-center text-sm text-muted-foreground pt-2">
-                        <Link href="/" className="text-primary font-semibold hover:underline">
-                            Continue to home
-                        </Link>
-                    </div>
+
                 </CardFooter>
             </Card>
         </div>

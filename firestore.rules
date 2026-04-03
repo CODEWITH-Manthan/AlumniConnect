@@ -19,7 +19,9 @@ service cloud.firestore {
     match /users/{userId} {
       allow get, list: if isSignedIn();
       allow create: if isOwner(userId);
-      allow update: if isOwner(userId) || isAdmin();
+      allow update: if isOwner(userId) || isAdmin()
+        // Allow any signed-in user to update ONLY the hasUnreadMessages field (for message notifications)
+        || (isSignedIn() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hasUnreadMessages']));
       allow delete: if isAdmin();
     }
 

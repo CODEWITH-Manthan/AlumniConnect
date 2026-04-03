@@ -61,7 +61,7 @@ export default function Footer() {
             </p>
             {/* VESIT link */}
             <a
-              href="https://www.ves.ac.in"
+              href="https://vesit.ves.ac.in/"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-secondary hover:text-secondary/80 transition-colors"

@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/firebase';
+import { useAuth, useFirestore } from '@/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,6 +18,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const auth = useAuth();
+  const db = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -25,7 +27,34 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const signedInUser = userCredential.user;
+
+      // Redirect unverified users to verify-email page
+      if (!signedInUser.emailVerified) {
+        toast({
+          title: "Email not verified",
+          description: "Please verify your email before accessing the platform.",
+        });
+        router.push('/verify-email');
+        return;
+      }
+
+      // Check if user is admin and redirect accordingly
+      try {
+        const userDoc = await getDoc(doc(db, 'users', signedInUser.uid));
+        if (userDoc.exists() && userDoc.data()?.role === 'admin') {
+          toast({
+            title: "Welcome back, Admin!",
+            description: "You have successfully signed in.",
+          });
+          router.push('/admin');
+          return;
+        }
+      } catch (e) {
+        // If we can't read the user doc, fall through to default redirect
+      }
+
       toast({
         title: "Welcome back!",
         description: "You have successfully signed in.",

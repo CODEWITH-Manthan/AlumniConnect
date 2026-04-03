@@ -2,10 +2,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Briefcase, MapPin, Clock, PlusCircle, Share2, MessageCircle, Loader2, Send, Users, MessageSquareQuote, Search, Filter, X, Bookmark, BookmarkCheck } from "lucide-react";
+import { Briefcase, MapPin, Clock, PlusCircle, Share2, MessageCircle, Loader2, Send, Users, MessageSquareQuote, Search, Filter, X, Bookmark, BookmarkCheck, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -26,6 +27,7 @@ export default function Home() {
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const router = useRouter();
 
   // Search and Filter State
   const [searchTerm, setSearchTerm] = useState("");
@@ -42,6 +44,13 @@ export default function Home() {
   }, [firestore, user]);
   const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
 
+  // Redirect admin to admin panel
+  useEffect(() => {
+    if (userData?.role === 'admin') {
+      router.replace('/admin');
+    }
+  }, [userData, router]);
+
   // Opportunities Collection
   const opportunitiesQuery = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -56,7 +65,7 @@ export default function Home() {
   }, [firestore, user]);
   const { data: globalStats } = useDoc(statsDocRef);
 
-  const isMentor = userData?.role === 'mentor' || userData?.role === 'alumni';
+  const isMentor = userData?.role === 'alumni';
   const bookmarks = userData?.bookmarkedOpportunities || [];
 
   const handlePostOpportunity = (e: React.FormEvent<HTMLFormElement>) => {
@@ -73,6 +82,7 @@ export default function Home() {
       location: formData.get('location') as string,
       type: formData.get('type') as string,
       description: formData.get('description') as string,
+      externalUrl: (formData.get('externalUrl') as string)?.trim() || null,
       datePosted: new Date().toISOString(),
       image: `https://picsum.photos/seed/${crypto.randomUUID()}/800/400`
     };
@@ -115,7 +125,7 @@ export default function Home() {
     return matchesSearch && matchesFilter;
   });
 
-  const filters = ["All", "Internship", "Referral", "Project"];
+  const filters = ["All", "Internship", "Referral", "Project", "Research"];
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -169,15 +179,19 @@ export default function Home() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="Internship">Internship</SelectItem>
-
                           <SelectItem value="Referral">Referral</SelectItem>
                           <SelectItem value="Project">Project</SelectItem>
+                          <SelectItem value="Research">Research</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="description">Description</Label>
                       <Textarea id="description" name="description" placeholder="Tell us about the role..." className="min-h-[100px]" required />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="externalUrl">External Link <span className="text-muted-foreground font-normal">(optional)</span></Label>
+                      <Input id="externalUrl" name="externalUrl" placeholder="e.g. https://unstop.com/... or LinkedIn URL" type="url" />
                     </div>
                   </div>
                   <DialogFooter>
@@ -264,8 +278,10 @@ export default function Home() {
                     </Button>
                     <Badge className={cn(
                       "font-bold shadow-md px-3 py-1 uppercase tracking-tighter text-[10px]",
-                      opp.type === "Internship" ? "bg-secondary text-white" :
-                        opp.type === "Referral" ? "bg-primary text-white" : "bg-teal-600 text-white"
+                      opp.type === "Internship" ? "bg-blue-600 text-white" :
+                        opp.type === "Referral" ? "bg-purple-600 text-white" :
+                        opp.type === "Research" ? "bg-amber-600 text-white" :
+                        "bg-teal-600 text-white"
                     )}>
                       {opp.type}
                     </Badge>
@@ -322,6 +338,13 @@ export default function Home() {
                     >
                       <Share2 className="h-4 w-4" />
                     </Button>
+                    {opp.externalUrl && (
+                      <Button size="sm" variant="outline" className="rounded-full font-bold shadow-sm text-xs h-9" asChild>
+                        <a href={opp.externalUrl} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="mr-1.5 h-3.5 w-3.5" /> Apply ↗
+                        </a>
+                      </Button>
+                    )}
                     {user && user.uid !== opp.alumniId && (
                       <Button size="sm" className="bg-primary hover:bg-primary/90 rounded-full font-bold shadow-sm" asChild>
                         <Link href={`/messages?recipientId=${opp.alumniId}`}>
