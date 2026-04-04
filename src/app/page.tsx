@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Briefcase, MapPin, Clock, PlusCircle, Share2, MessageCircle, Loader2, Send, Users, MessageSquareQuote, Search, Filter, X, Bookmark, BookmarkCheck, ExternalLink } from "lucide-react";
+import { Briefcase, MapPin, Clock, PlusCircle, Share2, MessageCircle, Loader2, Send, Users, MessageSquareQuote, Search, Filter, X, Bookmark, BookmarkCheck, ExternalLink, MoreVertical, Edit, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -18,7 +18,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
 
 const typeImages: Record<string, string[]> = {
@@ -56,6 +58,8 @@ export default function Home() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingOpp, setEditingOpp] = useState<any>(null);
+  const [oppToDelete, setOppToDelete] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
@@ -103,32 +107,60 @@ export default function Home() {
     if (!user || !firestore) return;
 
     const formData = new FormData(e.currentTarget);
-    const oppId = crypto.randomUUID();
     const oppType = formData.get('type') as string;
     
-    const newOpp = {
-      id: oppId,
-      alumniId: user.uid,
-      postedBy: `${userData?.firstName} ${userData?.lastName}`,
-      title: formData.get('title') as string,
-      company: formData.get('company') as string,
-      location: formData.get('location') as string,
-      type: oppType,
-      description: formData.get('description') as string,
-      externalUrl: (formData.get('externalUrl') as string)?.trim() || null,
-      datePosted: new Date().toISOString(),
-      image: getOppImage(oppType, oppId)
-    };
+    if (editingOpp) {
+      updateDocumentNonBlocking(doc(firestore, 'opportunities', editingOpp.id), {
+        title: formData.get('title') as string,
+        company: formData.get('company') as string,
+        location: formData.get('location') as string,
+        type: oppType,
+        description: formData.get('description') as string,
+        externalUrl: (formData.get('externalUrl') as string)?.trim() || null,
+      });
 
-    addDocumentNonBlocking(collection(firestore, 'opportunities'), newOpp);
-    // Increment the global open roles counter
-    incrementStat(firestore, { openRoles: 1 });
+      toast({
+        title: "Opportunity updated!",
+        description: "Your post changes have been saved.",
+      });
+    } else {
+      const oppId = crypto.randomUUID();
+      const newOpp = {
+        id: oppId,
+        alumniId: user.uid,
+        postedBy: `${userData?.firstName} ${userData?.lastName}`,
+        title: formData.get('title') as string,
+        company: formData.get('company') as string,
+        location: formData.get('location') as string,
+        type: oppType,
+        description: formData.get('description') as string,
+        externalUrl: (formData.get('externalUrl') as string)?.trim() || null,
+        datePosted: new Date().toISOString(),
+        image: getOppImage(oppType, oppId)
+      };
 
-    toast({
-      title: "Opportunity posted!",
-      description: "Your post is now live in the feed.",
-    });
+      addDocumentNonBlocking(collection(firestore, 'opportunities'), newOpp);
+      // Increment the global open roles counter
+      incrementStat(firestore, { openRoles: 1 });
+
+      toast({
+        title: "Opportunity posted!",
+        description: "Your post is now live in the feed.",
+      });
+    }
+
     setIsDialogOpen(false);
+    setEditingOpp(null);
+  };
+
+  const handleDeleteOpportunity = () => {
+    if (!oppToDelete || !firestore) return;
+    deleteDocumentNonBlocking(doc(firestore, 'opportunities', oppToDelete));
+    toast({
+      title: "Opportunity deleted",
+      description: "Your post was removed from the feed.",
+    });
+    setOppToDelete(null);
   };
 
   const toggleBookmark = (oppId: string) => {
@@ -175,7 +207,10 @@ export default function Home() {
           </div>
         ) : (
           isMentor && (
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Dialog open={isDialogOpen} onOpenChange={(open) => {
+              setIsDialogOpen(open);
+              if (!open) setEditingOpp(null);
+            }}>
               <DialogTrigger asChild>
                 <Button className="bg-primary hover:bg-primary/90 rounded-full shadow-lg h-11 px-6">
                   <PlusCircle className="mr-2 h-5 w-5" /> Post Opportunity
@@ -184,29 +219,31 @@ export default function Home() {
               <DialogContent className="sm:max-w-[525px]">
                 <form onSubmit={handlePostOpportunity}>
                   <DialogHeader>
-                    <DialogTitle className="font-headline text-xl">Post New Opportunity</DialogTitle>
+                    <DialogTitle className="font-headline text-xl">
+                      {editingOpp ? "Edit Opportunity" : "Post New Opportunity"}
+                    </DialogTitle>
                     <DialogDescription>
-                      Share a job opening, internship, or project with the student community.
+                      {editingOpp ? "Update the details of your opportunity." : "Share a job opening, internship, or project with the student community."}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
                       <Label htmlFor="title">Title</Label>
-                      <Input id="title" name="title" placeholder="e.g. Software Engineering Intern" required />
+                      <Input id="title" name="title" defaultValue={editingOpp?.title} placeholder="e.g. Software Engineering Intern" required />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
                         <Label htmlFor="company">Company</Label>
-                        <Input id="company" name="company" placeholder="Company Name" required />
+                        <Input id="company" name="company" defaultValue={editingOpp?.company} placeholder="Company Name" required />
                       </div>
                       <div className="grid gap-2">
                         <Label htmlFor="location">Location</Label>
-                        <Input id="location" name="location" placeholder="e.g. Remote" required />
+                        <Input id="location" name="location" defaultValue={editingOpp?.location} placeholder="e.g. Remote" required />
                       </div>
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="type">Opportunity Type</Label>
-                      <Select name="type" defaultValue="Internship">
+                      <Select name="type" defaultValue={editingOpp?.type || "Internship"}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
@@ -221,16 +258,16 @@ export default function Home() {
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="description">Description</Label>
-                      <Textarea id="description" name="description" placeholder="Tell us about the role..." className="min-h-[100px]" required />
+                      <Textarea id="description" name="description" defaultValue={editingOpp?.description} placeholder="Tell us about the role..." className="min-h-[100px]" required />
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="externalUrl">External Link <span className="text-muted-foreground font-normal">(optional)</span></Label>
-                      <Input id="externalUrl" name="externalUrl" placeholder="e.g. https://unstop.com/... or LinkedIn URL" type="url" />
+                      <Input id="externalUrl" name="externalUrl" defaultValue={editingOpp?.externalUrl || ""} placeholder="e.g. https://unstop.com/... or LinkedIn URL" type="url" />
                     </div>
                   </div>
                   <DialogFooter>
                     <Button type="submit" className="w-full h-11 font-bold">
-                      <Send className="mr-2 h-4 w-4" /> Publish Opportunity
+                      <Send className="mr-2 h-4 w-4" /> {editingOpp ? "Save Changes" : "Publish Opportunity"}
                     </Button>
                   </DialogFooter>
                 </form>
@@ -387,9 +424,35 @@ export default function Home() {
                       </Button>
                     )}
                     {user && user.uid === opp.alumniId && (
-                      <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-black py-1 px-3 border-primary/20 text-primary bg-primary/5">
-                        Your Post
-                      </Badge>
+                      <>
+                        <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-black py-1 px-3 border-primary/20 text-primary bg-primary/5">
+                          Your Post
+                        </Badge>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onSelect={() => {
+                              setTimeout(() => {
+                                setEditingOpp(opp);
+                                setIsDialogOpen(true);
+                              }, 150);
+                            }}>
+                              <Edit className="mr-2 h-4 w-4" /> Edit Post
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive focus:bg-destructive/10 focus:text-destructive" onSelect={() => {
+                              setTimeout(() => {
+                                setOppToDelete(opp.id);
+                              }, 150);
+                            }}>
+                              <Trash2 className="mr-2 h-4 w-4" /> Delete Post
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </>
                     )}
                   </div>
                 </CardFooter>
@@ -409,6 +472,23 @@ export default function Home() {
               </Button>
             </div>
           )}
+
+          <AlertDialog open={!!oppToDelete} onOpenChange={(open) => !open && setOppToDelete(null)}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This opportunity will be permanently deleted from the feed.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteOpportunity} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
 
         <div className="space-y-6">
