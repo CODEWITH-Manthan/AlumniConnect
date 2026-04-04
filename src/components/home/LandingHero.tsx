@@ -7,21 +7,21 @@ import { ArrowRight, GraduationCap, Users, Briefcase } from "lucide-react"
 
 export default function LandingHero() {
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-mesh pt-20">
+    <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-mesh">
       {/* Decorative Elements */}
       <div className="absolute top-1/4 -left-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float" />
       <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
 
       <div className="container mx-auto px-4 relative z-10 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 backdrop-blur-md border border-white/20 shadow-sm mb-8 animate-fade-in">
+        <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/50 backdrop-blur-md border border-white/20 shadow-sm mb-8 animate-fade-in">
           <Image
             src="/vivekanand-logo.png"
             alt="VESIT Logo"
-            width={24}
-            height={24}
+            width={48}
+            height={48}
             className="object-contain"
           />
-          <span className="text-xs font-bold tracking-wider uppercase text-primary/80">
+          <span className="text-sm font-bold tracking-wider uppercase text-primary/80">
             Official Alumni Network of VESIT
           </span>
         </div>
@@ -43,7 +43,7 @@ export default function LandingHero() {
               Join Now <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>
-          <Button asChild variant="outline" size="lg" className="rounded-full h-14 px-8 text-base font-bold bg-white/50 backdrop-blur-md hover:bg-white/80 transition-all">
+          <Button asChild variant="outline" size="lg" className="rounded-full h-14 px-8 text-base font-bold bg-white/50 backdrop-blur-md border-primary/20 text-primary hover:bg-primary hover:text-white transition-all shadow-sm hover:shadow-md">
             <Link href="/login">Sign In</Link>
           </Button>
         </div>

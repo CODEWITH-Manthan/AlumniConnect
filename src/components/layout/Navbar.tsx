@@ -37,6 +37,11 @@ export default function Navbar() {
   // Block navigation for unverified users
   const isVerified = !user || user.emailVerified;
 
+  // Hide Navbar for unauthenticated users (Landing Page)
+  if (isUserLoading || !user) {
+    return null;
+  }
+
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-md">
       <div className="container mx-auto px-4">

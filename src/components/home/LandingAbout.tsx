@@ -9,11 +9,11 @@ export default function LandingAbout() {
       
       <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row items-center gap-16">
-          <div className="flex-1 relative animate-fade-up">
-            <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl border-8 border-white">
+          <div className="flex-1 relative animate-fade-up px-6 pb-6">
+            <div className="relative z-20 rounded-3xl overflow-hidden shadow-2xl border-8 border-white">
               <Image 
-                src="https://images.unsplash.com/photo-1523050853063-da803d2ba45c?auto=format&fit=crop&w=1200&q=80"
-                alt="University Life"
+                src="/vesit-campus.jpg"
+                alt="Vivekanand Education Society Institute of Technology Campus"
                 width={600}
                 height={450}
                 className="object-cover h-[450px]"
@@ -21,12 +21,15 @@ export default function LandingAbout() {
             </div>
             
             {/* Glass Card Overlay */}
-            <div className="absolute -bottom-10 -right-10 p-8 rounded-3xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-2xl max-w-xs animate-float">
+            <div className="absolute -bottom-4 -right-2 z-30 p-8 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-2xl max-w-xs animate-float">
               <p className="text-3xl font-black text-primary mb-2">40+ Years</p>
               <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest leading-tight">
                 Legacy of Vivekanand Education Society
               </p>
             </div>
+
+            {/* Decorative Card Behind */}
+            <div className="absolute -top-6 -left-6 z-0 w-full h-full border-2 border-primary/20 rounded-3xl opacity-50" />
           </div>
 
           <div className="flex-1 space-y-8 animate-fade-up" style={{ animationDelay: '0.2s' }}>

@@ -32,6 +32,17 @@ export default function Footer() {
 
   const isAdmin = userData?.role === 'admin';
 
+  // Standalone Footer for Landing Page (Guests)
+  if (!user) {
+    return (
+      <footer className="py-10 bg-neutral-50 border-t items-center justify-center flex flex-col text-center">
+        <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+          © {currentYear} AlumniConnect · Vivekanand Education Society Institute of Technology.
+        </p>
+      </footer>
+    );
+  }
+
   return (
     <footer className="relative mt-auto border-t bg-foreground text-primary-foreground overflow-hidden">
       {/* Decorative blobs */}
