@@ -45,23 +45,23 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-md">
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between gap-4 lg:gap-8">
-          <div className="flex items-center gap-4 lg:gap-6 shrink-0">
-            <Link href="/" className="shrink-0 flex items-center">
+        <div className="flex h-20 md:h-24 items-center justify-between gap-4 lg:gap-8">
+          <div className="flex items-center gap-6 lg:gap-8 shrink-0">
+            <Link href="/" className="shrink-0 flex items-center h-full py-1">
               <Image
-                src="/vivekanand-logo.png"
-                alt="Vivekanand Education Society Logo"
-                width={160}
-                height={50}
+                src="/vesit-logo.png"
+                alt="VESIT Logo"
+                width={300}
+                height={80}
                 priority
-                className="h-10 lg:h-12 w-auto object-contain"
+                className="h-16 md:h-20 w-auto object-contain"
               />
             </Link>
             <Link href="/" className="flex items-center gap-2 group shrink-0">
-              <div className="bg-primary p-2 rounded-lg transition-transform group-hover:scale-110">
-                <GraduationCap className="h-5 w-5 lg:h-6 lg:w-6 text-primary-foreground" />
+              <div className="bg-primary p-2 md:p-3 rounded-lg transition-transform group-hover:scale-110">
+                <GraduationCap className="h-5 w-5 md:h-7 md:w-7 text-primary-foreground" />
               </div>
-              <span className="text-xl font-headline font-bold text-primary tracking-tight hidden lg:block">AlumniConnect</span>
+              <span className="text-xl md:text-2xl font-headline font-bold text-primary tracking-tight hidden lg:block">AlumniConnect</span>
             </Link>
           </div>
 
@@ -74,13 +74,13 @@ export default function Navbar() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all hover:bg-muted relative",
+                    "flex items-center gap-2 px-4 py-2 rounded-md text-base lg:text-lg font-medium transition-all hover:bg-muted relative",
                     pathname === item.href
                       ? "text-primary bg-primary/5"
                       : "text-muted-foreground"
                   )}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-5 w-5 lg:h-6 lg:w-6" />
                   {item.name}
                   {/* Show red dot for Messages if there are unread messages */}
                   {isMessages && hasGlobalUnread && (
@@ -94,13 +94,13 @@ export default function Navbar() {
               <Link
                 href="/admin"
                 className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all relative",
+                  "flex items-center gap-2 px-4 py-2 rounded-md text-base lg:text-lg font-medium transition-all relative",
                   pathname === '/admin'
                     ? "text-red-600 bg-red-50"
                     : "text-red-500 hover:bg-red-50 hover:text-red-600"
                 )}
               >
-                <LayoutDashboard className="h-4 w-4" />
+                <LayoutDashboard className="h-5 w-5 lg:h-6 lg:w-6" />
                 Admin
               </Link>
             )}

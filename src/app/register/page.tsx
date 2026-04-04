@@ -27,6 +27,7 @@ export default function RegisterPage() {
     role: 'student' as 'student' | 'alumni',
     skills: '' as string,
     careerInterests: '' as string,
+    jobTitle: '' as string,
     fieldOfWorking: '' as string,
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -70,6 +71,7 @@ export default function RegisterPage() {
         graduationYear: formData.gdy,
         skills: formData.skills ? formData.skills.split(',').map(s => s.trim()).filter(Boolean) : [],
         careerInterests: formData.role === 'student' && formData.careerInterests ? formData.careerInterests.split(',').map(s => s.trim()).filter(Boolean) : [],
+        jobTitle: formData.role === 'alumni' ? formData.jobTitle.trim() : '',
         fieldOfWorking: formData.role === 'alumni' ? formData.fieldOfWorking.trim() : '',
         createdAt: new Date().toISOString()
       });
@@ -278,16 +280,30 @@ export default function RegisterPage() {
             )}
 
             {formData.role === 'alumni' && (
-              <div className="space-y-2">
-                <Label htmlFor="fieldOfWorking" className="text-xs md:text-sm">Field of Working</Label>
-                <Input
-                  id="fieldOfWorking"
-                  placeholder="e.g. Software Engineering at Google"
-                  className="h-8 md:h-10 text-xs md:text-sm"
-                  value={formData.fieldOfWorking}
-                  onChange={(e) => setFormData({ ...formData, fieldOfWorking: e.target.value })}
-                />
-              </div>
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="jobTitle" className="text-xs md:text-sm">Job Title</Label>
+                  <Input
+                    id="jobTitle"
+                    placeholder="e.g. Software Engineer"
+                    required={formData.role === 'alumni'}
+                    className="h-8 md:h-10 text-xs md:text-sm"
+                    value={formData.jobTitle}
+                    onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="fieldOfWorking" className="text-xs md:text-sm">Field of Working / Company</Label>
+                  <Input
+                    id="fieldOfWorking"
+                    placeholder="e.g. Software Engineering at Google"
+                    required={formData.role === 'alumni'}
+                    className="h-8 md:h-10 text-xs md:text-sm"
+                    value={formData.fieldOfWorking}
+                    onChange={(e) => setFormData({ ...formData, fieldOfWorking: e.target.value })}
+                  />
+                </div>
+              </>
             )}
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
