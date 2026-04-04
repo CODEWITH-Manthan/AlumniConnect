@@ -23,6 +23,11 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
 
+// Landing Page Components
+import LandingHero from '@/components/home/LandingHero';
+import LandingFeatures from '@/components/home/LandingFeatures';
+import LandingAbout from '@/components/home/LandingAbout';
+
 const typeImages: Record<string, string[]> = {
   "Internship": [
     "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
@@ -192,6 +197,28 @@ export default function Home() {
 
   const filters = ["All", "Internship", "Project", "Research", "Hackathon"];
 
+  // Loading State
+  if (isUserLoading && !user) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-primary opacity-50" />
+        <p className="text-sm font-bold tracking-widest text-muted-foreground uppercase animate-pulse">Initializing AlumniConnect...</p>
+      </div>
+    );
+  }
+
+  // Not Logged In State (Landing Page)
+  if (!user) {
+    return (
+      <div className="flex flex-col">
+        <LandingHero />
+        <LandingFeatures />
+        <LandingAbout />
+      </div>
+    );
+  }
+
+  // Logged In State (Opportunity Feed)
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -200,10 +227,10 @@ export default function Home() {
           <p className="text-muted-foreground">Discover internships and projects posted by your alumni network.</p>
         </div>
 
-        {isUserLoading || isUserDataLoading ? (
+        {isUserDataLoading ? (
           <div className="flex items-center gap-2 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-sm">Checking permissions...</span>
+            <span className="text-sm font-bold tracking-tight uppercase opacity-60">Syncing Feed...</span>
           </div>
         ) : (
           isMentor && (
