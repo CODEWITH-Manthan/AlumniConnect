@@ -15,7 +15,7 @@ import {
   ChevronRight, Eye, Trash2, BookOpen, Award
 } from 'lucide-react';
 import { useUser, useDoc, useFirestore, useMemoFirebase, useCollection } from '@/firebase';
-import { doc, collection, query, orderBy, limit, where, deleteDoc } from 'firebase/firestore';
+import { doc, collection, query, orderBy, limit, where, deleteDoc, setDoc } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
@@ -235,6 +235,30 @@ export default function AdminPage() {
     });
   };
 
+  const handleSyncStats = async () => {
+    if (!firestore) return;
+    try {
+      const stats = {
+        alumniCount: alumniUsers.length,
+        openRoles: opportunities?.length || 0,
+        activeDiscussions: guidanceRequests?.length || 0,
+        lastSynced: new Date().toISOString(),
+      };
+      await setDoc(doc(firestore, 'stats', 'global'), stats);
+      toast({
+        title: 'Stats Synchronized',
+        description: `Platform statistics updated: ${stats.activeDiscussions} discussions, ${stats.openRoles} roles, ${stats.alumniCount} alumni.`,
+      });
+    } catch (err) {
+      console.error('Failed to sync stats:', err);
+      toast({
+        variant: 'destructive',
+        title: 'Sync Failed',
+        description: 'Could not update the global statistics document.',
+      });
+    }
+  };
+
   const handleRemoveUser = async (uid: string) => {
     if (!firestore || !uid) return;
     try {
@@ -440,8 +464,8 @@ export default function AdminPage() {
                 <CardContent className="space-y-3">
                   {[
                     { label: 'Verified Alumni', count: alumniUsers.filter(u => u.emailVerified).length, total: alumniUsers.length, color: 'bg-secondary' },
-                    { label: 'Open Opportunities', count: globalStats?.openRoles ?? 0, total: null, color: 'bg-primary' },
-                    { label: 'Community Posts', count: globalStats?.activeDiscussions ?? 0, total: null, color: 'bg-accent' },
+                    { label: 'Open Opportunities', count: opportunities?.length || 0, total: null, color: 'bg-primary' },
+                    { label: 'Community Posts', count: guidanceRequests?.length || 0, total: null, color: 'bg-accent' },
                   ].map(item => (
                     <div key={item.label}>
                       <div className="flex justify-between text-xs mb-1">
@@ -526,7 +550,7 @@ export default function AdminPage() {
                   {[
                     { label: 'Manage Users', icon: Users, action: () => setActiveTab('users'), color: 'bg-primary/5 hover:bg-primary/10 text-primary border-primary/20' },
                     { label: 'View Alumni', icon: GraduationCap, action: () => setActiveTab('alumni'), color: 'bg-secondary/5 hover:bg-secondary/10 text-secondary border-secondary/20' },
-                    { label: 'Review Content', icon: BookOpen, action: () => setActiveTab('content'), color: 'bg-accent/5 hover:bg-accent/10 text-accent border-accent/20' },
+                    { label: 'Sync Stats', icon: TrendingUp, action: handleSyncStats, color: 'bg-accent/5 hover:bg-accent/10 text-accent border-accent/20' },
                     { label: 'Activity Log', icon: Activity, action: () => setActiveTab('activity'), color: 'bg-muted hover:bg-muted/80 text-muted-foreground border-border' },
                     { label: 'Deep Clean', icon: Trash2, action: handleCleanup, color: 'bg-red-50 hover:bg-red-100 text-red-600 border-red-200' },
                   ].map((actionItem) => {

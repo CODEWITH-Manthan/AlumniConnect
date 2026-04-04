@@ -44,9 +44,9 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-md">
-      <div className="container mx-auto px-4">
-        <div className="flex h-20 md:h-24 items-center justify-between gap-4 lg:gap-8">
-          <div className="flex items-center gap-6 lg:gap-8 shrink-0">
+      <div className="container mx-auto px-2 sm:px-4">
+        <div className="flex h-16 md:h-20 items-center justify-between gap-2 lg:gap-6">
+          <div className="flex items-center gap-3 lg:gap-6 shrink-0">
             <Link href="/" className="shrink-0 flex items-center h-full py-1">
               <Image
                 src="/vesit-logo.png"
@@ -54,18 +54,18 @@ export default function Navbar() {
                 width={300}
                 height={80}
                 priority
-                className="h-16 md:h-20 w-auto object-contain"
+                className="h-12 md:h-14 lg:h-16 w-auto object-contain"
               />
             </Link>
-            <Link href="/" className="flex items-center gap-2 group shrink-0">
-              <div className="bg-primary p-2 md:p-3 rounded-lg transition-transform group-hover:scale-110">
-                <GraduationCap className="h-5 w-5 md:h-7 md:w-7 text-primary-foreground" />
+            <Link href="/" className="flex items-center gap-1.5 lg:gap-2 group shrink-0">
+              <div className="bg-primary p-1.5 md:p-2 rounded-lg transition-transform group-hover:scale-110">
+                <GraduationCap className="h-4 w-4 md:h-6 md:w-6 text-primary-foreground" />
               </div>
-              <span className="text-xl md:text-2xl font-headline font-bold text-primary tracking-tight hidden lg:block">AlumniConnect</span>
+              <span className="text-lg md:text-xl font-headline font-bold text-primary tracking-tight hidden xl:block">AlumniConnect</span>
             </Link>
           </div>
 
-          <div className="hidden md:flex items-center space-x-1 flex-1 justify-start">
+          <div className="hidden md:flex items-center space-x-0.5 flex-1 justify-start">
             {isVerified && userData?.role !== 'admin' && navItems.map((item) => {
               const Icon = item.icon
               const isMessages = item.name === "Messages"
@@ -74,13 +74,13 @@ export default function Navbar() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-md text-base lg:text-lg font-medium transition-all hover:bg-muted relative",
+                    "flex items-center gap-1.5 px-2 lg:px-4 py-2 rounded-md text-sm lg:text-base font-medium transition-all hover:bg-muted relative whitespace-nowrap",
                     pathname === item.href
                       ? "text-primary bg-primary/5"
                       : "text-muted-foreground"
                   )}
                 >
-                  <Icon className="h-5 w-5 lg:h-6 lg:w-6" />
+                  <Icon className="h-4 w-4 lg:h-5 lg:w-5" />
                   {item.name}
                   {/* Show red dot for Messages if there are unread messages */}
                   {isMessages && hasGlobalUnread && (
@@ -94,13 +94,13 @@ export default function Navbar() {
               <Link
                 href="/admin"
                 className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-md text-base lg:text-lg font-medium transition-all relative",
+                  "flex items-center gap-1.5 px-2 lg:px-4 py-2 rounded-md text-sm lg:text-base font-medium transition-all relative whitespace-nowrap",
                   pathname === '/admin'
                     ? "text-red-600 bg-red-50"
                     : "text-red-500 hover:bg-red-50 hover:text-red-600"
                 )}
               >
-                <LayoutDashboard className="h-5 w-5 lg:h-6 lg:w-6" />
+                <LayoutDashboard className="h-4 w-4 lg:h-5 lg:w-5" />
                 Admin
               </Link>
             )}
@@ -161,9 +161,9 @@ export default function Navbar() {
             </Sheet>
           </div>
 
-          <div className="flex items-center gap-2 md:gap-4 shrink-0">
+          <div className="flex items-center gap-1.5 md:gap-3 shrink-0">
             {isUserLoading ? (
-              <div className="h-9 w-20 md:w-24 bg-muted animate-pulse rounded-md" />
+              <div className="h-8 w-20 md:w-24 bg-muted animate-pulse rounded-md" />
             ) : user ? (
               <>
                 {/* Email Verification Badge */}
@@ -185,11 +185,11 @@ export default function Navbar() {
                 )}
 
                 {isVerified && (
-                  <Link href="/profile" className="flex items-center gap-1 md:gap-2 bg-muted hover:bg-muted/80 p-1.5 md:pr-4 rounded-full transition-colors border">
+                  <Link href="/profile" className="flex items-center gap-1 md:gap-2 bg-muted hover:bg-muted/80 p-1 md:pr-3 lg:pr-4 rounded-full transition-colors border whitespace-nowrap">
                     <div className="bg-primary/10 p-1 rounded-full text-primary">
-                      <User className="h-4 md:h-5 w-4 md:w-5" />
+                      <User className="h-4 w-4 md:h-5 md:w-5" />
                     </div>
-                    <span className="text-xs md:text-sm font-medium hidden sm:inline-block">My Profile</span>
+                    <span className="text-[10px] md:text-xs lg:text-sm font-medium hidden sm:inline-block">My Profile</span>
                   </Link>
                 )}
               </>

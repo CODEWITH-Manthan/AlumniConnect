@@ -1,0 +1,13 @@
+{
+  "tailwindCSS.includeLanguages": {
+    "plaintext": "ts",
+    "html": "html",
+    "css": "css"
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.quickSuggestions": {
+    "strings": "on"
+  }
+}
