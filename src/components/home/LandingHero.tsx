@@ -13,15 +13,19 @@ export default function LandingHero() {
       <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
 
       <div className="container mx-auto px-4 relative z-10 text-center">
-        <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/50 backdrop-blur-md border border-white/20 shadow-sm mb-8 animate-fade-in">
-          <Image
-            src="/vivekanand-logo.png"
-            alt="VESIT Logo"
-            width={48}
-            height={48}
-            className="object-contain"
-          />
-          <span className="text-sm font-bold tracking-wider uppercase text-primary/80">
+        <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white border border-slate-200 shadow-md mb-8 animate-fade-in hover:shadow-lg transition-shadow">
+          <div className="bg-white p-1 rounded-sm">
+            <Image
+              src="/vesit-logo.png"
+              alt="VESIT Logo"
+              width={160}
+              height={160}
+              quality={100}
+              className="h-10 md:h-12 w-auto object-contain"
+            />
+          </div>
+          <div className="w-[1px] h-8 bg-slate-200 mx-1" />
+          <span className="text-[10px] md:text-xs font-bold tracking-widest uppercase text-[#3b5998] pr-2">
             Official Alumni Network of VESIT
           </span>
         </div>
