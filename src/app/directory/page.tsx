@@ -132,7 +132,7 @@ export default function DirectoryPage() {
       ) : filteredUsers && filteredUsers.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredUsers.map((person) => (
-            <Card key={person.id} className="flex flex-col border-none shadow-sm hover:shadow-md transition-shadow group overflow-hidden">
+            <Card key={person.id} className="flex flex-col border shadow-sm hover:shadow-md transition-shadow group overflow-hidden">
               <CardHeader className="flex flex-row items-center gap-4 space-y-0 cursor-pointer" onClick={() => { setSelectedUserId(person.id); setIsProfileModalOpen(true); }}>
                 <button className="relative h-16 w-16 overflow-hidden rounded-full border-2 border-muted transition-colors group-hover:border-primary bg-primary/5 flex items-center justify-center flex-shrink-0 hover:border-primary">
                   {person.photoURL ? (

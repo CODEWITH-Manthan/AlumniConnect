@@ -477,8 +477,8 @@ function ChatContent() {
                             <div className={cn(
                               "max-w-[75%] p-3 px-4 rounded-2xl text-sm shadow-sm transition-all relative",
                               isMe
-                                ? 'bg-primary text-primary-foreground rounded-tr-none'
-                                : 'bg-white border text-foreground rounded-tl-none'
+                                ? 'bg-emerald-100 text-emerald-950 dark:bg-emerald-900/40 dark:text-emerald-50 border border-emerald-200 dark:border-emerald-800 rounded-tr-none'
+                                : 'bg-card border text-foreground rounded-tl-none'
                             )}>
                               {/* Image message */}
                               {msg.type === 'image' && msg.imageUrl && (

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { MessageCircle, ThumbsUp, Plus, Loader2, Send, MessageSquareQuote } from "lucide-react"
 import { useUser, useFirestore, useMemoFirebase, useCollection, useDoc } from '@/firebase';
-import { collection, query, orderBy, doc, limit, increment, arrayUnion } from 'firebase/firestore';
+import { collection, query, orderBy, doc, limit, increment, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -99,7 +99,7 @@ function ReplySection({ requestId }: { requestId: string }) {
                   </div>
                 </button>
                 <span className="text-[10px] text-muted-foreground">
-                  {mounted ? new Date(reply.timestamp).toLocaleDateString() : '...'}
+                  {mounted ? new Date(reply.timestamp).toLocaleDateString('en-GB') : '...'}
                 </span>
               </div>
               <p className="text-sm text-foreground/80 leading-relaxed">{reply.content}</p>
@@ -205,15 +205,18 @@ export default function GuidancePage() {
       toast({ title: "Can't like your own post", description: "Ask others to upvote your question!" });
       return;
     }
-    // Block re-likes (already liked)
-    if (likedRequests.includes(requestId)) return;
 
-    // Atomically increment the like count on the guidance request
     const requestRef = doc(firestore, 'guidanceRequests', requestId);
-    updateDocumentNonBlocking(requestRef, { likes: increment(1) });
 
-    // Track this like in the user's profile to prevent re-liking
-    updateDocumentNonBlocking(userDocRef, { likedRequests: arrayUnion(requestId) });
+    if (likedRequests.includes(requestId)) {
+      // Unlike
+      updateDocumentNonBlocking(requestRef, { likes: increment(-1) });
+      updateDocumentNonBlocking(userDocRef, { likedRequests: arrayRemove(requestId) });
+    } else {
+      // Like
+      updateDocumentNonBlocking(requestRef, { likes: increment(1) });
+      updateDocumentNonBlocking(userDocRef, { likedRequests: arrayUnion(requestId) });
+    }
   };
 
   const filteredRequests = requests?.filter(req => 
@@ -289,14 +292,14 @@ export default function GuidancePage() {
             </div>
           ) : filteredRequests && filteredRequests.length > 0 ? (
             filteredRequests.map((q) => (
-              <Card key={q.id} className="border-none shadow-sm hover:shadow-md transition-all group overflow-hidden bg-card/50 backdrop-blur-sm">
+              <Card key={q.id} className="border shadow-sm hover:shadow-md transition-all group overflow-hidden bg-card/50 backdrop-blur-sm">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-center mb-3">
                     <Badge variant="secondary" className="bg-secondary/10 text-secondary border-none uppercase text-[9px] tracking-widest font-black py-0.5">
                       {q.category || "GENERAL"}
                     </Badge>
                     <span className="text-[10px] text-muted-foreground font-medium">
-                      {mounted ? new Date(q.datePosted).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '...'}
+                      {mounted ? new Date(q.datePosted).toLocaleDateString('en-GB', { month: 'short', day: 'numeric', year: 'numeric' }) : '...'}
                     </span>
                   </div>
                   <CardTitle 
@@ -322,12 +325,12 @@ export default function GuidancePage() {
                   <div className="flex gap-4">
                     <button
                       onClick={() => handleLike(q.id, q.studentId)}
-                      disabled={likedRequests.includes(q.id) || user?.uid === q.studentId}
-                      title={likedRequests.includes(q.id) ? 'Already liked' : user?.uid === q.studentId ? "Can't like your own post" : 'Like'}
+                      disabled={user?.uid === q.studentId}
+                      title={user?.uid === q.studentId ? "Can't like your own post" : likedRequests.includes(q.id) ? 'Unlike' : 'Like'}
                       className={cn(
                         "flex items-center gap-1.5 text-xs font-bold transition-colors px-2.5 py-1 rounded-full border shadow-sm active:scale-95",
                         likedRequests.includes(q.id)
-                          ? "bg-primary/10 text-primary border-primary/20 cursor-not-allowed"
+                          ? "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
                           : user?.uid === q.studentId
                           ? "bg-muted text-muted-foreground/50 border-muted cursor-not-allowed"
                           : "bg-background text-muted-foreground hover:text-primary hover:border-primary/30"
@@ -380,7 +383,7 @@ export default function GuidancePage() {
                   <span className="text-xs font-bold">{selectedRequest.studentName}</span>
                   <span className="text-[10px] text-muted-foreground">•</span>
                   <span className="text-[10px] text-muted-foreground">
-                    Asked {mounted ? new Date(selectedRequest.datePosted).toLocaleDateString() : '...'}
+                    Asked {mounted ? new Date(selectedRequest.datePosted).toLocaleDateString('en-GB') : '...'}
                   </span>
                 </div>
               </DialogHeader>

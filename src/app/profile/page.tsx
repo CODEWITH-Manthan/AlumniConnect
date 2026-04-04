@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { User, GraduationCap, Code, Briefcase, Edit2, LogOut, Loader2, Save, X, Plus, Bookmark, MapPin, ArrowRight, Camera, ShieldAlert, CheckCircle } from "lucide-react"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { User, GraduationCap, Code, Briefcase, Edit2, LogOut, Loader2, Save, X, Plus, Bookmark, MapPin, ArrowRight, Camera, ShieldAlert, CheckCircle, Moon, Sun, Monitor, Settings } from "lucide-react"
 import { useUser, useDoc, useFirestore, useMemoFirebase, useAuth, useCollection } from '@/firebase';
 import { doc, collection, updateDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
@@ -20,6 +21,7 @@ import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTheme } from '@/components/ThemeProvider';
 
 export default function ProfilePage() {
   const { user, isUserLoading } = useUser();
@@ -32,6 +34,7 @@ export default function ProfilePage() {
   const [newCareerInterest, setNewCareerInterest] = useState("");
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const { theme, setTheme } = useTheme();
 
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -309,7 +312,7 @@ export default function ProfilePage() {
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                  <div className="space-y-8">
                    <form onSubmit={handleSaveProfile}>
-                     <Card className="border-none shadow-sm">
+                     <Card className="border shadow-sm">
                        <CardHeader>
                          <CardTitle className="flex items-center gap-2 font-headline">
                            <User className="h-5 w-5 text-primary" /> Identity Details
@@ -344,7 +347,7 @@ export default function ProfilePage() {
                  </div>
                  
                  <div className="space-y-8">
-                   <Card className="border-none shadow-sm bg-primary/5">
+                   <Card className="border shadow-sm bg-primary/5">
                      <CardHeader>
                        <CardTitle className="text-lg font-headline flex items-center gap-2">
                          <ShieldAlert className="h-5 w-5 text-primary" /> Security & Access
@@ -368,12 +371,64 @@ export default function ProfilePage() {
                        </div>
                      </CardContent>
                    </Card>
+
+                   <Card className="border shadow-sm mt-8">
+                     <CardHeader>
+                       <CardTitle className="text-lg font-headline flex items-center gap-2">
+                         <Settings className="h-5 w-5 text-primary" /> App Preferences
+                       </CardTitle>
+                       <CardDescription>Customize your AlumniConnect experience.</CardDescription>
+                     </CardHeader>
+                     <CardContent>
+                       <div className="space-y-4">
+                         <div>
+                           <Label className="text-base mb-3 block">Theme Preference</Label>
+                           <RadioGroup 
+                             value={theme} 
+                             onValueChange={(val) => setTheme(val as 'light' | 'dark' | 'system')}
+                             className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+                           >
+                             <div>
+                               <RadioGroupItem value="light" id="admin-theme-light" className="peer sr-only" />
+                               <Label
+                                 htmlFor="admin-theme-light"
+                                 className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-primary cursor-pointer transition-all"
+                               >
+                                 <Sun className="mb-3 h-6 w-6" />
+                                 Light
+                               </Label>
+                             </div>
+                             <div>
+                               <RadioGroupItem value="dark" id="admin-theme-dark" className="peer sr-only" />
+                               <Label
+                                 htmlFor="admin-theme-dark"
+                                 className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-primary cursor-pointer transition-all"
+                               >
+                                 <Moon className="mb-3 h-6 w-6" />
+                                 Dark
+                               </Label>
+                             </div>
+                             <div>
+                               <RadioGroupItem value="system" id="admin-theme-system" className="peer sr-only" />
+                               <Label
+                                 htmlFor="admin-theme-system"
+                                 className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-primary cursor-pointer transition-all"
+                               >
+                                 <Monitor className="mb-3 h-6 w-6" />
+                                 System
+                               </Label>
+                             </div>
+                           </RadioGroup>
+                         </div>
+                       </div>
+                     </CardContent>
+                   </Card>
                  </div>
                </div>
             ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="md:col-span-1 space-y-8">
-                <Card className="border-none shadow-sm">
+                <Card className="border shadow-sm">
                   <CardHeader>
                     <CardTitle className="text-lg font-headline flex items-center gap-2">
                       <Code className="h-5 w-5 text-secondary" /> Expertise
@@ -414,7 +469,7 @@ export default function ProfilePage() {
                   </CardContent>
                 </Card>
 
-                <Card className="border-none shadow-sm">
+                <Card className="border shadow-sm">
                   <CardHeader>
                     <CardTitle className="text-lg font-headline flex items-center gap-2">
                       <Briefcase className="h-5 w-5 text-primary" />
@@ -471,7 +526,7 @@ export default function ProfilePage() {
 
               <div className="md:col-span-2 space-y-8">
                 <form onSubmit={handleSaveProfile}>
-                  <Card className="border-none shadow-sm">
+                  <Card className="border shadow-sm">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2 font-headline">
                         <GraduationCap className="h-5 w-5 text-primary" /> Personal Information
@@ -523,6 +578,58 @@ export default function ProfilePage() {
                     )}
                   </Card>
                 </form>
+
+                <Card className="border shadow-sm">
+                  <CardHeader>
+                    <CardTitle className="text-lg font-headline flex items-center gap-2">
+                      <Settings className="h-5 w-5 text-primary" /> App Preferences
+                    </CardTitle>
+                    <CardDescription>Customize your AlumniConnect experience.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <Label className="text-base mb-3 block">Theme Preference</Label>
+                        <RadioGroup 
+                          value={theme} 
+                          onValueChange={(val) => setTheme(val as 'light' | 'dark' | 'system')}
+                          className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+                        >
+                          <div>
+                            <RadioGroupItem value="light" id="theme-light" className="peer sr-only" />
+                            <Label
+                              htmlFor="theme-light"
+                              className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-primary cursor-pointer transition-all"
+                            >
+                              <Sun className="mb-3 h-6 w-6" />
+                              Light
+                            </Label>
+                          </div>
+                          <div>
+                            <RadioGroupItem value="dark" id="theme-dark" className="peer sr-only" />
+                            <Label
+                              htmlFor="theme-dark"
+                              className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-primary cursor-pointer transition-all"
+                            >
+                              <Moon className="mb-3 h-6 w-6" />
+                              Dark
+                            </Label>
+                          </div>
+                          <div>
+                            <RadioGroupItem value="system" id="theme-system" className="peer sr-only" />
+                            <Label
+                              htmlFor="theme-system"
+                              className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:text-primary cursor-pointer transition-all"
+                            >
+                              <Monitor className="mb-3 h-6 w-6" />
+                              System
+                            </Label>
+                          </div>
+                        </RadioGroup>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
             )}
@@ -533,7 +640,7 @@ export default function ProfilePage() {
               {bookmarkedOpps.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {bookmarkedOpps.map((opp) => (
-                  <Card key={opp.id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all group">
+                  <Card key={opp.id} className="overflow-hidden border shadow-sm hover:shadow-md transition-all group">
                     <div className="flex flex-col sm:flex-row h-full">
                       <div className="relative w-full sm:w-40 h-32 sm:h-auto">
                         <Image

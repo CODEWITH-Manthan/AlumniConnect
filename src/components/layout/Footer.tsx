@@ -35,7 +35,7 @@ export default function Footer() {
   // Standalone Footer for Landing Page (Guests)
   if (!user) {
     return (
-      <footer className="py-10 bg-neutral-50 border-t items-center justify-center flex flex-col text-center">
+      <footer className="py-10 bg-card border-t items-center justify-center flex flex-col text-center">
         <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
           © {currentYear} AlumniConnect · Vivekanand Education Society Institute of Technology.
         </p>
@@ -44,7 +44,7 @@ export default function Footer() {
   }
 
   return (
-    <footer className="relative mt-auto border-t bg-foreground text-primary-foreground overflow-hidden">
+    <footer className="relative mt-auto border-t bg-slate-950 text-primary-foreground overflow-hidden">
       {/* Decorative blobs */}
       <div className="pointer-events-none absolute -top-24 -left-16 w-72 h-72 rounded-full bg-primary/20 blur-3xl opacity-40" />
       <div className="pointer-events-none absolute -bottom-16 right-0 w-64 h-64 rounded-full bg-secondary/20 blur-3xl opacity-30" />

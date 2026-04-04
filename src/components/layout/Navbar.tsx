@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { GraduationCap, Briefcase, Users, MessageSquare, User, ShieldAlert, ShieldCheck, Menu, X, LayoutDashboard } from "lucide-react"
+import { GraduationCap, Briefcase, Users, MessageSquare, User, ShieldAlert, ShieldCheck, Menu, X, LayoutDashboard, Sun, Moon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase"
 import { doc } from 'firebase/firestore'
@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useGlobalUnreadMessages } from "@/hooks/useGlobalUnreadMessages"
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates'
+import { useTheme } from '@/components/ThemeProvider'
 
 const navItems = [
   { name: "Opportunities", href: "/", icon: Briefcase },
@@ -25,6 +26,7 @@ export default function Navbar() {
   const pathname = usePathname()
   const { user, isUserLoading } = useUser()
   const firestore = useFirestore()
+  const { resolvedTheme, setTheme } = useTheme();
 
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -54,7 +56,7 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-md">
       <div className="container mx-auto px-2 sm:px-4">
         <div className="flex h-16 md:h-20 items-center justify-between gap-2 lg:gap-6">
-          <div className="flex items-center gap-3 lg:gap-6 flex-1">
+          <div className="flex items-center gap-3 lg:gap-6">
             <Link href="/" className="shrink-0 flex items-center h-full py-1">
               <Image
                 src="/vesit-logo.png"
@@ -73,7 +75,7 @@ export default function Navbar() {
             </Link>
           </div>
 
-          <div className="hidden md:flex items-center space-x-0.5 flex-1 justify-center">
+          <div className="hidden md:flex items-center space-x-0.5 flex-1 justify-center overflow-hidden">
             {isVerified && userData?.role !== 'admin' && navItems.map((item) => {
               const Icon = item.icon
               const isMessages = item.name === "Messages"
@@ -169,7 +171,21 @@ export default function Navbar() {
             </Sheet>
           </div>
 
-          <div className="flex items-center gap-1.5 md:gap-3 flex-1 justify-end">
+          <div className="flex items-center gap-1.5 md:gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-full mr-1 lg:mr-2 shrink-0"
+              onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+              aria-label="Toggle theme"
+            >
+              {resolvedTheme === 'dark' ? (
+                <Sun className="h-4 w-4 md:h-5 md:w-5" />
+              ) : (
+                <Moon className="h-4 w-4 md:h-5 md:w-5" />
+              )}
+            </Button>
+            
             {isUserLoading ? (
               <div className="h-8 w-20 md:w-24 bg-muted animate-pulse rounded-md" />
             ) : user ? (

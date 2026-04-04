@@ -408,7 +408,7 @@ export default function Home() {
                     <div>
                       <p className="text-xs font-bold text-foreground">{opp.postedBy}</p>
                       <p className="text-[9px] text-muted-foreground flex items-center gap-1 uppercase font-black tracking-widest opacity-60">
-                        <Clock className="h-2 w-2" /> {mounted ? new Date(opp.datePosted).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '...'}
+                        <Clock className="h-2 w-2" /> {mounted ? new Date(opp.datePosted).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }) : '...'}
                       </p>
                     </div>
                   </div>

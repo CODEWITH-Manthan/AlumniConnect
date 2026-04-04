@@ -863,7 +863,7 @@ export default function AdminPage() {
                         </div>
                         {mounted && (
                           <span className="text-[10px] text-muted-foreground flex-shrink-0">
-                            {new Date(opp.datePosted).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                            {new Date(opp.datePosted).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' })}
                           </span>
                         )}
                       </div>
@@ -893,7 +893,7 @@ export default function AdminPage() {
                         </div>
                         {mounted && (
                           <span className="text-[10px] text-muted-foreground flex-shrink-0">
-                            {new Date(req.datePosted).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                            {new Date(req.datePosted).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' })}
                           </span>
                         )}
                       </div>
