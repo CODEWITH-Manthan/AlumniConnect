@@ -40,25 +40,27 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-md">
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center gap-6 -ml-2">
-            <Image
-              src="/vivekanand-logo.png"
-              alt="Vivekanand Education Society Logo"
-              width={80}
-              height={80}
-              priority
-              className="h-auto w-auto"
-            />
-            <Link href="/" className="flex items-center gap-2 group">
+        <div className="flex h-16 items-center justify-between gap-4 lg:gap-8">
+          <div className="flex items-center gap-4 lg:gap-6 shrink-0">
+            <Link href="/" className="shrink-0 flex items-center">
+              <Image
+                src="/vivekanand-logo.png"
+                alt="Vivekanand Education Society Logo"
+                width={160}
+                height={50}
+                priority
+                className="h-10 lg:h-12 w-auto object-contain"
+              />
+            </Link>
+            <Link href="/" className="flex items-center gap-2 group shrink-0">
               <div className="bg-primary p-2 rounded-lg transition-transform group-hover:scale-110">
-                <GraduationCap className="h-6 w-6 text-primary-foreground" />
+                <GraduationCap className="h-5 w-5 lg:h-6 lg:w-6 text-primary-foreground" />
               </div>
-              <span className="text-xl font-headline font-bold text-primary tracking-tight">AlumniConnect</span>
+              <span className="text-xl font-headline font-bold text-primary tracking-tight hidden lg:block">AlumniConnect</span>
             </Link>
           </div>
 
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden md:flex items-center space-x-1 flex-1 justify-start">
             {isVerified && userData?.role !== 'admin' && navItems.map((item) => {
               const Icon = item.icon
               const isMessages = item.name === "Messages"
@@ -154,7 +156,7 @@ export default function Navbar() {
             </Sheet>
           </div>
 
-          <div className="flex items-center gap-2 md:gap-4">
+          <div className="flex items-center gap-2 md:gap-4 shrink-0">
             {isUserLoading ? (
               <div className="h-9 w-20 md:w-24 bg-muted animate-pulse rounded-md" />
             ) : user ? (

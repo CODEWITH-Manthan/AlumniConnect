@@ -21,6 +21,36 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
 
+const typeImages: Record<string, string[]> = {
+  "Internship": [
+    "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=800&q=80"
+  ],
+  "Research": [
+    "https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?auto=format&fit=crop&w=800&q=80"
+  ],
+  "Project": [
+    "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=800&q=80"
+  ],
+
+  "Hackathon": [
+    "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1528901173705-1a8ab274b5b7?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80"
+  ]
+};
+
+const getOppImage = (type: string, id: string) => {
+  const images = typeImages[type] || typeImages["Project"];
+  const charCodeSum = id.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return images[charCodeSum % images.length];
+};
+
 export default function Home() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
@@ -73,18 +103,21 @@ export default function Home() {
     if (!user || !firestore) return;
 
     const formData = new FormData(e.currentTarget);
+    const oppId = crypto.randomUUID();
+    const oppType = formData.get('type') as string;
+    
     const newOpp = {
-      id: crypto.randomUUID(),
+      id: oppId,
       alumniId: user.uid,
       postedBy: `${userData?.firstName} ${userData?.lastName}`,
       title: formData.get('title') as string,
       company: formData.get('company') as string,
       location: formData.get('location') as string,
-      type: formData.get('type') as string,
+      type: oppType,
       description: formData.get('description') as string,
       externalUrl: (formData.get('externalUrl') as string)?.trim() || null,
       datePosted: new Date().toISOString(),
-      image: `https://picsum.photos/seed/${crypto.randomUUID()}/800/400`
+      image: getOppImage(oppType, oppId)
     };
 
     addDocumentNonBlocking(collection(firestore, 'opportunities'), newOpp);
@@ -125,14 +158,14 @@ export default function Home() {
     return matchesSearch && matchesFilter;
   });
 
-  const filters = ["All", "Internship", "Referral", "Project", "Research"];
+  const filters = ["All", "Internship", "Project", "Research", "Hackathon"];
 
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight mb-2 font-headline text-primary">Opportunity Feed</h1>
-          <p className="text-muted-foreground">Discover internships, referrals, and projects posted by your alumni network.</p>
+          <p className="text-muted-foreground">Discover internships and projects posted by your alumni network.</p>
         </div>
 
         {isUserLoading || isUserDataLoading ? (
@@ -179,9 +212,10 @@ export default function Home() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="Internship">Internship</SelectItem>
-                          <SelectItem value="Referral">Referral</SelectItem>
+
                           <SelectItem value="Project">Project</SelectItem>
                           <SelectItem value="Research">Research</SelectItem>
+                          <SelectItem value="Hackathon">Hackathon</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -254,7 +288,7 @@ export default function Home() {
               <Card key={opp.id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow group">
                 <div className="relative h-48 w-full overflow-hidden">
                   <Image
-                    src={opp.image || `https://picsum.photos/seed/${opp.id}/800/400`}
+                    src={opp.image && !opp.image.includes('picsum.photos') ? opp.image : getOppImage(opp.type, opp.id)}
                     alt={opp.title}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -279,8 +313,8 @@ export default function Home() {
                     <Badge className={cn(
                       "font-bold shadow-md px-3 py-1 uppercase tracking-tighter text-[10px]",
                       opp.type === "Internship" ? "bg-blue-600 text-white" :
-                        opp.type === "Referral" ? "bg-purple-600 text-white" :
                         opp.type === "Research" ? "bg-amber-600 text-white" :
+                        opp.type === "Hackathon" ? "bg-rose-600 text-white" :
                         "bg-teal-600 text-white"
                     )}>
                       {opp.type}

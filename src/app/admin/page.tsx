@@ -811,7 +811,7 @@ export default function AdminPage() {
                         <div className={cn(
                           'px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider flex-shrink-0',
                           opp.type === 'Internship' ? 'bg-secondary/10 text-secondary' :
-                            opp.type === 'Referral' ? 'bg-primary/10 text-primary' : 'bg-teal-100 text-teal-700'
+                          'bg-teal-100 text-teal-700'
                         )}>
                           {opp.type}
                         </div>
