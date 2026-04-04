@@ -316,6 +316,22 @@ export default function AdminPage() {
     });
   };
 
+  const handleFixVerifications = async () => {
+    if (!firestore || !window.confirm("This will mark all users as Verified in the database. Continue?")) return;
+    let count = 0;
+    for (const u of allUsers || []) {
+      const uid = u.uid || (u as any).id;
+      if (uid && !u.emailVerified) {
+        updateDocumentNonBlocking(doc(firestore, 'users', uid), { emailVerified: true });
+        count++;
+      }
+    }
+    toast({
+      title: 'Verifications Synced',
+      description: `Updated ${count} users.`,
+    });
+  };
+
   // ── Loading / access denied states ──
   if (isUserLoading || isUserDataLoading) {
     return (
@@ -551,6 +567,7 @@ export default function AdminPage() {
                     { label: 'Manage Users', icon: Users, action: () => setActiveTab('users'), color: 'bg-primary/5 hover:bg-primary/10 text-primary border-primary/20' },
                     { label: 'View Alumni', icon: GraduationCap, action: () => setActiveTab('alumni'), color: 'bg-secondary/5 hover:bg-secondary/10 text-secondary border-secondary/20' },
                     { label: 'Sync Stats', icon: TrendingUp, action: handleSyncStats, color: 'bg-accent/5 hover:bg-accent/10 text-accent border-accent/20' },
+                    { label: 'Fix Verifications', icon: CheckCircle, action: handleFixVerifications, color: 'bg-green-50 hover:bg-green-100 text-green-600 border-green-200' },
                     { label: 'Activity Log', icon: Activity, action: () => setActiveTab('activity'), color: 'bg-muted hover:bg-muted/80 text-muted-foreground border-border' },
                     { label: 'Deep Clean', icon: Trash2, action: handleCleanup, color: 'bg-red-50 hover:bg-red-100 text-red-600 border-red-200' },
                   ].map((actionItem) => {

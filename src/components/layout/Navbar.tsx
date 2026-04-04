@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -11,6 +11,7 @@ import { doc } from 'firebase/firestore'
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useGlobalUnreadMessages } from "@/hooks/useGlobalUnreadMessages"
+import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates'
 
 const navItems = [
   { name: "Opportunities", href: "/", icon: Briefcase },
@@ -36,6 +37,13 @@ export default function Navbar() {
 
   // Block navigation for unverified users
   const isVerified = !user || user.emailVerified;
+
+  // Sync email verified status to Firestore if needed
+  useEffect(() => {
+    if (user && user.emailVerified && userData && !userData.emailVerified && firestore) {
+      updateDocumentNonBlocking(doc(firestore, 'users', user.uid), { emailVerified: true });
+    }
+  }, [user, userData, firestore]);
 
   // Hide Navbar for unauthenticated users (Landing Page)
   if (isUserLoading || !user) {

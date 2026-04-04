@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth, useUser } from '@/firebase';
+import { useAuth, useUser, useFirestore } from '@/firebase';
 import { sendEmailVerification } from 'firebase/auth';
+import { doc } from 'firebase/firestore';
+import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Mail, CheckCircle2, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
@@ -13,6 +15,7 @@ import Link from 'next/link';
 export default function VerifyEmailPage() {
     const { user, isUserLoading } = useUser();
     const auth = useAuth();
+    const db = useFirestore();
     const router = useRouter();
     const { toast } = useToast();
     const [isResending, setIsResending] = useState(false);
@@ -89,6 +92,9 @@ export default function VerifyEmailPage() {
             await user.reload();
 
             if (user.emailVerified) {
+                if (db) {
+                    updateDocumentNonBlocking(doc(db, 'users', user.uid), { emailVerified: true });
+                }
                 toast({
                     title: "Email verified!",
                     description: "Your email has been successfully verified.",
