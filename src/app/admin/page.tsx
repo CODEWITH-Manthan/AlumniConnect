@@ -293,6 +293,7 @@ export default function AdminPage() {
     const reqsToDelete = guidanceRequests?.filter(r => r.studentName?.toLowerCase().includes('john doe')) || [];
     for (const req of reqsToDelete) {
       await deleteDoc(doc(firestore, 'guidanceRequests', req.id));
+      decrementStat(firestore, { activeDiscussions: 1 });
       deletedCount++;
     }
 

@@ -5,17 +5,24 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Search, Filter, Linkedin, Mail, MessageSquare, Loader2, User } from "lucide-react"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { Search, Filter, Linkedin, Mail, MessageSquare, Loader2, User, X, RotateCcw } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useFirestore, useMemoFirebase, useCollection, useUser } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
 import UserProfileModal from "@/components/UserProfileModal";
+import { cn } from "@/lib/utils"
+
+const DEPARTMENTS = ["CMPN", "IT", "EXTC", "INST", "ETRX", "AIDS", "Other"]
 
 export default function DirectoryPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
@@ -30,16 +37,29 @@ export default function DirectoryPage() {
     const fullName = `${person.firstName} ${person.lastName}`.toLowerCase();
     const email = (person.email || "").toLowerCase();
     const skills = (person.skills || []).map((s: string) => s.toLowerCase());
+    const fieldOfWorking = (person.fieldOfWorking || "").toLowerCase();
     const bio = (person.bio || "").toLowerCase();
+    const dept = person.department || "";
     const queryStr = searchTerm.toLowerCase();
 
-    return (
+    const matchesSearch = 
       fullName.includes(queryStr) ||
       email.includes(queryStr) ||
       bio.includes(queryStr) ||
-      skills.some((skill: string) => skill.includes(queryStr))
-    );
+      fieldOfWorking.includes(queryStr) ||
+      skills.some((skill: string) => skill.includes(queryStr));
+
+    const matchesDepartment = selectedDepartment === "all" || dept === selectedDepartment;
+
+    return matchesSearch && matchesDepartment;
   });
+
+  const resetFilters = () => {
+    setSearchTerm("");
+    setSelectedDepartment("all");
+  };
+
+  const activeFiltersCount = selectedDepartment !== "all" ? 1 : 0;
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -49,18 +69,58 @@ export default function DirectoryPage() {
           <p className="text-muted-foreground">Connect with graduates by name, role, or technical expertise.</p>
         </div>
         <div className="flex w-full md:w-auto gap-2">
-          <div className="relative flex-1 md:w-80">
+          <div className="relative flex-1 md:w-96">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
               className="pl-9 bg-card" 
-              placeholder="Search name or skill (e.g. React)..." 
+              placeholder="Search by name, skill, or field of work (e.g. Google)..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Button variant="outline">
-            <Filter className="mr-2 h-4 w-4" /> Filter
-          </Button>
+          
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className={cn("relative", activeFiltersCount > 0 && "border-primary text-primary bg-primary/5")}>
+                <Filter className="mr-2 h-4 w-4" /> 
+                Filter
+                {activeFiltersCount > 0 && (
+                  <Badge className="ml-2 h-5 w-5 p-0 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px]">
+                    {activeFiltersCount}
+                  </Badge>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-4" align="end">
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h4 className="font-bold font-headline">Refine Directory</h4>
+                  {activeFiltersCount > 0 && (
+                    <Button variant="ghost" size="sm" onClick={resetFilters} className="h-8 px-2 text-xs text-muted-foreground hover:text-primary">
+                      <RotateCcw className="mr-1 h-3 w-3" /> Reset
+                    </Button>
+                  )}
+                </div>
+                
+                <div className="space-y-4 pt-2">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-black uppercase tracking-widest opacity-60">Department</Label>
+                    <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select department" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Departments</SelectItem>
+                        {DEPARTMENTS.map(dept => (
+                          <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 

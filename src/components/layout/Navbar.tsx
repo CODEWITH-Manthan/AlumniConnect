@@ -54,7 +54,7 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-md">
       <div className="container mx-auto px-2 sm:px-4">
         <div className="flex h-16 md:h-20 items-center justify-between gap-2 lg:gap-6">
-          <div className="flex items-center gap-3 lg:gap-6 shrink-0">
+          <div className="flex items-center gap-3 lg:gap-6 flex-1">
             <Link href="/" className="shrink-0 flex items-center h-full py-1">
               <Image
                 src="/vesit-logo.png"
@@ -73,7 +73,7 @@ export default function Navbar() {
             </Link>
           </div>
 
-          <div className="hidden md:flex items-center space-x-0.5 flex-1 justify-start">
+          <div className="hidden md:flex items-center space-x-0.5 flex-1 justify-center">
             {isVerified && userData?.role !== 'admin' && navItems.map((item) => {
               const Icon = item.icon
               const isMessages = item.name === "Messages"
@@ -169,7 +169,7 @@ export default function Navbar() {
             </Sheet>
           </div>
 
-          <div className="flex items-center gap-1.5 md:gap-3 shrink-0">
+          <div className="flex items-center gap-1.5 md:gap-3 flex-1 justify-end">
             {isUserLoading ? (
               <div className="h-8 w-20 md:w-24 bg-muted animate-pulse rounded-md" />
             ) : user ? (

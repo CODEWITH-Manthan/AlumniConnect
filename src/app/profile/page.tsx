@@ -279,7 +279,9 @@ export default function ProfilePage() {
                   )}>
                     {role === 'alumni' ? 'ALUMNI' : role}
                   </Badge>
-                  <span className="text-muted-foreground text-sm font-medium">{userData?.department} • Class of {userData?.graduationYear || userData?.gdy}</span>
+                  {!isAdmin && (
+                    <span className="text-muted-foreground text-sm font-medium">{userData?.department} • Class of {userData?.graduationYear || userData?.gdy}</span>
+                  )}
                 </div>
               </div>
             </div>
