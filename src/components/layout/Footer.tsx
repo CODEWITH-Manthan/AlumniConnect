@@ -44,10 +44,10 @@ export default function Footer() {
   }
 
   return (
-    <footer className="relative mt-auto border-t bg-slate-950 text-primary-foreground overflow-hidden">
+    <footer className="relative mt-auto border-t border-emerald-500/20 bg-black text-primary-foreground overflow-hidden">
       {/* Decorative blobs */}
-      <div className="pointer-events-none absolute -top-24 -left-16 w-72 h-72 rounded-full bg-primary/20 blur-3xl opacity-40" />
-      <div className="pointer-events-none absolute -bottom-16 right-0 w-64 h-64 rounded-full bg-secondary/20 blur-3xl opacity-30" />
+      <div className="pointer-events-none absolute -top-24 -left-16 w-72 h-72 rounded-full bg-emerald-500/10 blur-3xl opacity-40 shadow-[0_0_50px_rgba(16,185,129,0.1)]" />
+      <div className="pointer-events-none absolute -bottom-16 right-0 w-64 h-64 rounded-full bg-emerald-600/10 blur-3xl opacity-30 shadow-[0_0_50px_rgba(16,185,129,0.1)]" />
 
       <div className="relative container mx-auto px-4 pt-14 pb-8">
         {/* Main grid */}
@@ -56,10 +56,10 @@ export default function Footer() {
           {/* Brand column */}
           <div className="lg:col-span-1 space-y-4">
             <Link href="/" className="flex items-center gap-2.5 group w-fit">
-              <div className="bg-primary p-2 rounded-lg transition-transform group-hover:scale-110 shadow-md">
-                <GraduationCap className="h-5 w-5 text-primary-foreground" />
+              <div className="bg-emerald-500 p-2 rounded-lg transition-transform group-hover:scale-110 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                <GraduationCap className="h-5 w-5 text-white" />
               </div>
-              <span className="text-xl font-headline font-bold tracking-tight text-white">
+              <span className="text-xl font-headline font-bold tracking-tight text-white group-hover:text-emerald-400 transition-colors">
                 AlumniConnect
               </span>
             </Link>
@@ -75,7 +75,7 @@ export default function Footer() {
               href="https://vesit.ves.ac.in/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-secondary hover:text-secondary/80 transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-500 hover:text-emerald-400 transition-colors"
             >
               Visit VESIT <ExternalLink className="h-3 w-3" />
             </a>
@@ -138,7 +138,7 @@ export default function Footer() {
               <li className="pt-1">
                 <a
                   href="mailto:alumni@ves.ac.in"
-                  className="hover:text-secondary transition-colors"
+                  className="hover:text-emerald-400 transition-colors"
                 >
                   alumni@ves.ac.in
                 </a>

@@ -53,25 +53,29 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-md">
+    <nav className="sticky top-0 z-50 w-full border-b border-white/5 bg-background shadow-2xl">
       <div className="container mx-auto px-2 sm:px-4">
         <div className="flex h-16 md:h-20 items-center justify-between gap-2 lg:gap-6">
           <div className="flex items-center gap-3 lg:gap-6">
-            <Link href="/" className="shrink-0 flex items-center h-full py-1">
-              <Image
-                src="/vesit-logo.png"
-                alt="VESIT Logo"
-                width={300}
-                height={80}
-                priority
-                className="h-12 md:h-14 lg:h-16 w-auto object-contain"
-              />
-            </Link>
-            <Link href="/" className="flex items-center gap-1.5 lg:gap-2 group shrink-0">
-              <div className="bg-primary p-1.5 md:p-2 rounded-lg transition-transform group-hover:scale-110">
-                <GraduationCap className="h-4 w-4 md:h-6 md:w-6 text-primary-foreground" />
+            <Link href="/" className="shrink-0 flex items-center h-full py-2">
+              <div className="bg-white p-1 md:p-1.5 rounded-xl overflow-hidden border border-emerald-500/20 shadow-sm transition-transform hover:scale-105">
+                <Image
+                  src="/vesit-logo.png"
+                  alt="VESIT Logo"
+                  width={300}
+                  height={80}
+                  priority
+                  className="h-10 md:h-12 lg:h-14 w-auto object-contain"
+                />
               </div>
-              <span className="text-lg md:text-xl font-headline font-bold text-primary tracking-tight hidden xl:block">AlumniConnect</span>
+            </Link>
+            <Link href="/" className="flex items-center gap-2 group shrink-0">
+              <div className="bg-emerald-500 p-1.5 rounded-lg transition-all group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(16,185,129,0.4)]">
+                <GraduationCap className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-xl font-headline font-bold text-foreground dark:text-white tracking-tight group-hover:text-emerald-500 transition-colors">
+                AlumniConnect
+              </span>
             </Link>
           </div>
 
@@ -84,9 +88,9 @@ export default function Navbar() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-1.5 px-2 lg:px-4 py-2 rounded-md text-sm lg:text-base font-medium transition-all hover:bg-muted relative whitespace-nowrap",
+                    "flex items-center gap-1.5 px-2 lg:px-4 py-2 rounded-md text-sm lg:text-base font-medium transition-all hover:bg-emerald-500/10 relative whitespace-nowrap",
                     pathname === item.href
-                      ? "text-primary bg-primary/5"
+                      ? "text-emerald-400 bg-emerald-500/10"
                       : "text-muted-foreground"
                   )}
                 >

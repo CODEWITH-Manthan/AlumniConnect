@@ -312,7 +312,7 @@ export default function GuidancePage() {
                 <CardContent className="pb-6">
                   <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed">{q.description}</p>
                 </CardContent>
-                <CardFooter className="border-t bg-muted/20 pt-4 flex justify-between items-center px-6">
+                <CardFooter className="border-t border-emerald-500/10 bg-emerald-500/5 pt-4 flex justify-between items-center px-6">
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs border border-primary/20 shadow-sm">
                       {q.studentName?.[0] || 'S'}
@@ -341,7 +341,7 @@ export default function GuidancePage() {
                     </button>
                     <button 
                       onClick={() => setSelectedRequestId(q.id)}
-                      className="flex items-center gap-1.5 text-xs font-bold text-primary transition-colors bg-primary/5 px-2.5 py-1 rounded-full border border-primary/10 shadow-sm hover:bg-primary/10"
+                      className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 transition-colors bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 shadow-sm hover:bg-emerald-500/20"
                     >
                       <MessageSquareQuote className="h-3.5 w-3.5" /> View Advice
                     </button>

@@ -360,15 +360,15 @@ function ChatContent() {
 
   return (
     <div className="container mx-auto py-6 px-4 h-[calc(100vh-80px)] overflow-hidden">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border bg-card rounded-xl shadow-lg h-full overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-border bg-background rounded-xl shadow-2xl h-full overflow-hidden">
         {/* Sidebar */}
-        <div className="md:col-span-1 border-r flex flex-col h-full bg-muted/10">
+        <div className="md:col-span-1 border-r border-border flex flex-col h-full bg-card/30">
           <div className="p-4 border-b">
             <h2 className="text-xl font-bold mb-4 font-headline text-primary">Messages</h2>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                className="pl-9 bg-card border-none ring-1 ring-border focus-visible:ring-primary/20"
+                className="pl-9 bg-muted/50 border-none ring-1 ring-border focus-visible:ring-primary/20 text-foreground"
                 placeholder="Find a person..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -385,8 +385,8 @@ function ChatContent() {
                   <div
                     key={person.id}
                     className={cn(
-                      "p-4 hover:bg-muted/50 transition-all relative group",
-                      activeRecipientId === person.id && "bg-primary/5"
+                      "p-4 hover:bg-primary/5 transition-all relative group",
+                      activeRecipientId === person.id && "bg-primary/10"
                     )}
                   >
                     {activeRecipientId === person.id && (
@@ -425,9 +425,9 @@ function ChatContent() {
         </div>
 
         {/* Chat Area */}
-        <div className="hidden md:flex md:col-span-2 flex-col h-full bg-card relative">
+        <div className="hidden md:flex md:col-span-2 flex-col h-full bg-background relative">
           {!activeRecipientId ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8 text-center bg-muted/5">
+            <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8 text-center bg-white/[0.02]">
               <div className="bg-primary/10 p-6 rounded-full mb-4">
                 <MessageSquare className="h-12 w-12 text-primary opacity-40" />
               </div>
@@ -445,7 +445,7 @@ function ChatContent() {
           ) : (
             <>
               {/* Chat Header */}
-              <div className="p-4 border-b flex justify-between items-center bg-card/80 backdrop-blur-sm z-10 sticky top-0">
+              <div className="p-4 border-b border-border flex justify-between items-center bg-background/80 backdrop-blur-sm z-10 sticky top-0">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs shrink-0 border border-primary/10">
                     {getInitials(recipientData?.firstName, recipientData?.lastName)}
@@ -475,10 +475,10 @@ function ChatContent() {
                         return (
                           <div key={msg.id} className={cn("flex group", isMe ? 'justify-end' : 'justify-start')}>
                             <div className={cn(
-                              "max-w-[75%] p-3 px-4 rounded-2xl text-sm shadow-sm transition-all relative",
+                              "max-w-[75%] p-3 px-4 rounded-2xl text-sm shadow-md transition-all relative",
                               isMe
-                                ? 'bg-emerald-100 text-emerald-950 dark:bg-emerald-900/40 dark:text-emerald-50 border border-emerald-200 dark:border-emerald-800 rounded-tr-none'
-                                : 'bg-card border text-foreground rounded-tl-none'
+                                ? 'bg-primary text-primary-foreground rounded-tr-none'
+                                : 'bg-card border border-white/10 text-foreground rounded-tl-none'
                             )}>
                               {/* Image message */}
                               {msg.type === 'image' && msg.imageUrl && (
@@ -533,7 +533,7 @@ function ChatContent() {
               </ScrollArea>
 
               {/* Chat Input */}
-              <div className="p-4 border-t bg-card">
+              <div className="p-4 border-t border-border bg-background">
                 <form onSubmit={handleSendMessage} className="flex items-center gap-2 max-w-4xl mx-auto">
                   {/* Image upload button */}
                   <label className="cursor-pointer p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-primary flex-shrink-0">

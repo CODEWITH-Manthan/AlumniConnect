@@ -441,7 +441,7 @@ export default function AdminPage() {
                 title="Total Users"
                 value={nonAdminUsers.length}
                 icon={Users}
-                color="bg-primary text-primary-foreground"
+                color="bg-emerald-600 text-white"
                 trend="Platform members"
                 subtitle={`${adminUsers.length} admins (excluded)`}
               />
@@ -449,7 +449,7 @@ export default function AdminPage() {
                 title="Alumni & Mentors"
                 value={alumniUsers.length}
                 icon={GraduationCap}
-                color="bg-secondary text-secondary-foreground"
+                color="bg-emerald-900/40 border border-emerald-500/30 text-emerald-400"
                 trend="Verified graduates"
                 subtitle="Active contributors"
               />
@@ -457,7 +457,7 @@ export default function AdminPage() {
                 title="Students"
                 value={studentUsers.length}
                 icon={Award}
-                color="bg-accent text-accent-foreground"
+                color="bg-emerald-950/60 border border-emerald-500/20 text-emerald-500"
                 trend="Learners"
                 subtitle="Seeking opportunities"
               />
@@ -465,7 +465,7 @@ export default function AdminPage() {
                 title="Open Roles"
                 value={globalStats?.openRoles ?? 0}
                 icon={Briefcase}
-                color="bg-card border text-foreground"
+                color="bg-black border border-emerald-500/40 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
                 trend="Posted by alumni"
               />
             </div>
@@ -480,9 +480,9 @@ export default function AdminPage() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {[
-                    { label: 'Verified Alumni', count: alumniUsers.filter(u => u.emailVerified).length, total: alumniUsers.length, color: 'bg-secondary' },
-                    { label: 'Open Opportunities', count: opportunities?.length || 0, total: null, color: 'bg-primary' },
-                    { label: 'Community Posts', count: guidanceRequests?.length || 0, total: null, color: 'bg-accent' },
+                    { label: 'Verified Alumni', count: alumniUsers.filter(u => u.emailVerified).length, total: alumniUsers.length, color: 'bg-emerald-500' },
+                    { label: 'Open Opportunities', count: opportunities?.length || 0, total: null, color: 'bg-emerald-400' },
+                    { label: 'Community Posts', count: guidanceRequests?.length || 0, total: null, color: 'bg-emerald-300' },
                   ].map(item => (
                     <div key={item.label}>
                       <div className="flex justify-between text-xs mb-1">

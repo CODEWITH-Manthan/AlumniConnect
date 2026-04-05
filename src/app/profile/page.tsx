@@ -241,7 +241,7 @@ export default function ProfilePage() {
         <Tabs defaultValue="overview" className="space-y-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-card p-6 rounded-3xl shadow-sm border">
             <div className="flex items-center gap-6">
-              <div className="relative h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center text-primary border-4 border-background shadow-lg overflow-hidden group shrink-0">
+              <div className="relative h-24 w-24 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 border-4 border-background shadow-lg overflow-hidden group shrink-0">
                 {photoPreview || userData?.photoURL ? (
                   <Image
                     src={photoPreview || userData?.photoURL || ''}
@@ -490,7 +490,7 @@ export default function ProfilePage() {
                         <div className="flex flex-wrap gap-2">
                           {(userData?.careerInterests || []).length > 0 ? (
                             (userData?.careerInterests || []).map((i: string) => (
-                              <Badge key={i} className="bg-teal-500/10 text-teal-600 border-none flex items-center gap-1 py-1 px-3">
+                              <Badge key={i} className="bg-emerald-500/10 text-emerald-500 border-none flex items-center gap-1 py-1 px-3">
                                 {i}
                                 {isEditing && (
                                   <button onClick={() => handleRemoveCareerInterest(i)} className="hover:text-destructive">

@@ -9,52 +9,65 @@ export default function LandingHero() {
   return (
     <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-mesh">
       {/* Decorative Elements */}
-      <div className="absolute top-1/4 -left-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+      <div className="absolute top-1/4 -left-20 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl animate-float shadow-[0_0_50px_rgba(16,185,129,0.1)]" />
+      <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-emerald-600/10 rounded-full blur-3xl animate-float-delayed shadow-[0_0_50px_rgba(16,185,129,0.1)]" />
 
       <div className="container mx-auto px-4 relative z-10 text-center">
-        <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white border border-slate-200 shadow-md mb-8 animate-fade-in hover:shadow-lg transition-shadow">
-          <div className="bg-white p-1 rounded-sm">
+        <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-emerald-950/30 border border-emerald-500/20 mb-8 animate-fade-up shadow-[0_0_20px_rgba(16,185,129,0.05)] backdrop-blur-sm">
+          <div className="bg-white/90 backdrop-blur-md p-1 rounded-xl border border-emerald-500/20 shadow-sm transition-transform hover:scale-105">
             <Image
               src="/vesit-logo.png"
               alt="VESIT Logo"
               width={160}
               height={160}
               quality={100}
-              className="h-10 md:h-12 w-auto object-contain"
+              className="h-8 md:h-10 w-auto object-contain"
             />
           </div>
-          <div className="w-[1px] h-8 bg-slate-200 mx-1" />
-          <span className="text-[10px] md:text-xs font-bold tracking-widest uppercase text-[#3b5998] pr-2">
+          <div className="w-[1px] h-8 bg-emerald-500/20 mx-1" />
+          <span className="text-[10px] md:text-xs font-bold tracking-widest uppercase text-emerald-500/80 pr-2">
             Official Alumni Network of VESIT
           </span>
         </div>
 
-        <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-[1.1] animate-fade-up">
-          Connecting Generations, <br />
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-secondary animate-gradient-shift">
-            Building Excellence.
-          </span>
-        </h1>
+        <div className="flex justify-center mb-6 animate-fade-in group">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+            <div className="bg-emerald-500 p-1.5 rounded-lg shadow-lg">
+              <GraduationCap className="h-4 w-4 text-white" />
+            </div>
+            <span className="text-sm font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
+              AlumniConnect
+            </span>
+          </div>
+        </div>
 
-        <p className="max-w-2xl mx-auto text-lg md:text-xl text-muted-foreground mb-10 animate-fade-up" style={{ animationDelay: '0.2s' }}>
-          Welcome to the official Alumni-Student Connect Platform of Vivekanand Education Society's Institute of Technology. Bridge the gap between academia and industry.
-        </p>
+        <div className="relative p-8 md:p-12 rounded-[2.5rem] bg-emerald-950/20 backdrop-blur-sm border border-emerald-500/10 shadow-[0_0_100px_rgba(16,185,129,0.08)] animate-fade-up">
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-[1.1]">
+            Connecting Generations, <br />
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-emerald-500 to-emerald-600 animate-gradient-shift">
+              Building Excellence.
+            </span>
+          </h1>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up" style={{ animationDelay: '0.4s' }}>
-          <Button asChild size="lg" className="rounded-full h-14 px-8 text-base font-bold shadow-xl hover:shadow-primary/20 transition-all group">
-            <Link href="/register">
-              Join Now <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="lg" className="rounded-full h-14 px-8 text-base font-bold bg-white/50 backdrop-blur-md border-primary/20 text-primary hover:bg-primary hover:text-white transition-all shadow-sm hover:shadow-md">
-            <Link href="/login">Sign In</Link>
-          </Button>
+          <p className="max-w-2xl mx-auto text-lg md:text-xl text-muted-foreground mb-10" style={{ animationDelay: '0.2s' }}>
+            Welcome to the official Alumni-Student Connect Platform of Vivekanand Education Society's Institute of Technology. Bridge the gap between academia and industry.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4" style={{ animationDelay: '0.4s' }}>
+            <Button asChild size="lg" className="rounded-full h-14 px-8 text-base font-bold shadow-xl hover:shadow-emerald-500/20 transition-all group bg-emerald-500 hover:bg-emerald-600 border-none">
+              <Link href="/register">
+                Join Now <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="rounded-full h-14 px-8 text-base font-bold bg-white/5 backdrop-blur-md border-white/10 text-white hover:bg-white hover:text-black transition-all shadow-sm hover:shadow-md">
+              <Link href="/login">Sign In</Link>
+            </Button>
+          </div>
         </div>
 
         {/* Stats Preview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20 max-w-4xl mx-auto animate-fade-up" style={{ animationDelay: '0.6s' }}>
-          <div className="p-6 rounded-2xl bg-white/40 backdrop-blur-lg border border-white/40 shadow-sm flex items-center gap-4 text-left">
+          <div className="p-6 rounded-2xl bg-white/[0.03] backdrop-blur-lg border border-white/10 shadow-sm flex items-center gap-4 text-left hover:bg-white/[0.05] transition-all">
             <div className="bg-primary/10 p-3 rounded-xl text-primary">
               <Users className="h-6 w-6" />
             </div>
@@ -63,7 +76,7 @@ export default function LandingHero() {
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest leading-none">Verified Alumni</p>
             </div>
           </div>
-          <div className="p-6 rounded-2xl bg-white/40 backdrop-blur-lg border border-white/40 shadow-sm flex items-center gap-4 text-left">
+          <div className="p-6 rounded-2xl bg-white/[0.03] backdrop-blur-lg border border-white/10 shadow-sm flex items-center gap-4 text-left hover:bg-white/[0.05] transition-all">
             <div className="bg-secondary/10 p-3 rounded-xl text-secondary">
               <Briefcase className="h-6 w-6" />
             </div>
@@ -72,7 +85,7 @@ export default function LandingHero() {
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest leading-none">Open Careers</p>
             </div>
           </div>
-          <div className="p-6 rounded-2xl bg-white/40 backdrop-blur-lg border border-white/40 shadow-sm flex items-center gap-4 text-left">
+          <div className="p-6 rounded-2xl bg-white/[0.03] backdrop-blur-lg border border-white/10 shadow-sm flex items-center gap-4 text-left hover:bg-white/[0.05] transition-all">
             <div className="bg-accent/10 p-3 rounded-xl text-accent">
               <GraduationCap className="h-6 w-6" />
             </div>

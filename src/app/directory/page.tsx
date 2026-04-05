@@ -185,7 +185,7 @@ export default function DirectoryPage() {
                   ))}
                 </div>
               </CardContent>
-              <CardFooter className="border-t bg-muted/20 pt-4 flex justify-between">
+              <CardFooter className="border-t border-emerald-500/10 bg-emerald-500/5 pt-4 flex justify-between">
                 <div className="flex gap-2">
                   <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
                     <Linkedin className="h-4 w-4" />
