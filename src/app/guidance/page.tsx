@@ -341,7 +341,7 @@ export default function GuidancePage() {
                     </button>
                     <button 
                       onClick={() => setSelectedRequestId(q.id)}
-                      className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 transition-colors bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 shadow-sm hover:bg-emerald-500/20"
+                      className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 transition-colors bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 shadow-sm hover:bg-emerald-500/20"
                     >
                       <MessageSquareQuote className="h-3.5 w-3.5" /> View Advice
                     </button>

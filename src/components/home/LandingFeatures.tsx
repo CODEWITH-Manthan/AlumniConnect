@@ -7,37 +7,31 @@ const features = [
     title: "Verified Alumni Network",
     description: "Connect with graduates who are currently working at top companies globally. Every profile is verified.",
     icon: ShieldCheck,
-    color: "bg-blue-500/10 text-blue-500"
   },
   {
     title: "Exclusive Job Postings",
     description: "Get access to internships and job roles posted directly by alumni within their companies.",
     icon: Briefcase,
-    color: "bg-teal-500/10 text-teal-500"
   },
   {
     title: "1-on-1 Mentorship",
     description: "Schedule sessions with experienced mentors to guide you through your career journey.",
     icon: GraduationCap,
-    color: "bg-amber-500/10 text-amber-500"
   },
   {
     title: "Active Discussions",
     description: "Join threads on the latest industry trends, tech stacks, and interview preparation.",
     icon: MessageSquareQuote,
-    color: "bg-rose-500/10 text-rose-500"
   },
   {
     title: "Smart Directory",
     description: "Find alumni by skills, industry, or graduation year with our advanced search filters.",
     icon: Search,
-    color: "bg-indigo-500/10 text-indigo-500"
   },
   {
     title: "Community Wisdom",
     description: "Browse a feed of insights and advice curated from the most active community members.",
     icon: Users,
-    color: "bg-violet-500/10 text-violet-500"
   }
 ]
 

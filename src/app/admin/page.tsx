@@ -79,9 +79,9 @@ function UserRow({ user: u, currentUserId, onRoleChange, onRemoveUser }: {
   onRemoveUser: (uid: string) => void;
 }) {
   const roleColors: Record<string, string> = {
-    admin: 'bg-red-100 text-red-700 border-red-200',
-    alumni: 'bg-primary/10 text-primary border-primary/20',
-    mentor: 'bg-secondary/10 text-secondary border-secondary/20',
+    admin: 'bg-red-500/10 text-red-500 border-red-500/20',
+    alumni: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+    mentor: 'bg-emerald-600/10 text-emerald-600 border-emerald-600/20',
     student: 'bg-muted text-muted-foreground border-border',
   };
 
@@ -93,7 +93,7 @@ function UserRow({ user: u, currentUserId, onRoleChange, onRemoveUser }: {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <p className="text-sm font-bold truncate">{u.firstName} {u.lastName}</p>
-          {(u as any).emailVerified && <span title="Email Verified"><CheckCircle className="h-3 w-3 text-green-600" /></span>}
+          {(u as any).emailVerified && <span title="Email Verified"><CheckCircle className="h-3 w-3 text-emerald-500" /></span>}
         </div>
         <p className="text-xs text-muted-foreground truncate">{u.email}</p>
       </div>

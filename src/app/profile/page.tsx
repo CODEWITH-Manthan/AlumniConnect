@@ -239,9 +239,9 @@ export default function ProfilePage() {
     <div className="container mx-auto py-10 px-4">
       <div className="max-w-6xl mx-auto">
         <Tabs defaultValue="overview" className="space-y-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-card p-6 rounded-3xl shadow-sm border">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-card/50 backdrop-blur-md p-6 rounded-3xl shadow-sm border border-emerald-500/10">
             <div className="flex items-center gap-6">
-              <div className="relative h-24 w-24 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 border-4 border-background shadow-lg overflow-hidden group shrink-0">
+              <div className="relative h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center text-primary border-4 border-background shadow-xl overflow-hidden group shrink-0 transition-transform hover:scale-105">
                 {photoPreview || userData?.photoURL ? (
                   <Image
                     src={photoPreview || userData?.photoURL || ''}
@@ -258,8 +258,8 @@ export default function ProfilePage() {
                   <User className="h-12 w-12" />
                 )}
                 {isEditing && (
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <label htmlFor="photo-upload" className="cursor-pointer p-2 bg-primary rounded-full hover:bg-primary/80 transition-colors">
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <label htmlFor="photo-upload" className="cursor-pointer p-2 bg-emerald-500 rounded-full hover:bg-emerald-600 transition-colors shadow-lg">
                       <Camera className="h-5 w-5 text-white" />
                       <input
                         id="photo-upload"
@@ -273,26 +273,26 @@ export default function ProfilePage() {
                   </div>
                 )}
               </div>
-              <div>
-                <h1 className="text-3xl font-bold font-headline">{fullName}</h1>
-                <div className="flex items-center gap-2 mt-1">
+              <div className="space-y-1">
+                <h1 className="text-3xl font-bold font-headline tracking-tight">{fullName}</h1>
+                <div className="flex items-center gap-2">
                   <Badge className={cn(
-                    "uppercase text-[10px] tracking-widest",
-                    role === 'alumni' ? "bg-secondary" : "bg-primary"
+                    "uppercase text-[10px] tracking-widest font-black py-0.5 px-2.5",
+                    role === 'alumni' ? "bg-emerald-500 text-white" : "bg-primary text-primary-foreground"
                   )}>
                     {role === 'alumni' ? 'ALUMNI' : role}
                   </Badge>
                   {!isAdmin && (
-                    <span className="text-muted-foreground text-sm font-medium">{userData?.department} • Class of {userData?.graduationYear || userData?.gdy}</span>
+                    <span className="text-muted-foreground text-sm font-bold opacity-80">{userData?.department} • Class of {userData?.graduationYear || userData?.gdy}</span>
                   )}
                 </div>
               </div>
             </div>
-            <div className="flex gap-2 w-full md:w-auto">
-              <Button variant="outline" className="flex-1 md:flex-none rounded-full" onClick={() => setIsEditing(!isEditing)}>
+            <div className="flex gap-3 w-full md:w-auto">
+              <Button variant="outline" className="flex-1 md:flex-none rounded-full border-emerald-500/20 hover:bg-emerald-500/5 hover:text-emerald-500 transition-all font-bold" onClick={() => setIsEditing(!isEditing)}>
                 <Edit2 className="mr-2 h-4 w-4" /> Edit Profile
               </Button>
-              <Button variant="destructive" className="flex-1 md:flex-none rounded-full" onClick={handleSignOut}>
+              <Button variant="ghost" className="flex-1 md:flex-none rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/5 font-bold transition-all" onClick={handleSignOut}>
                 <LogOut className="mr-2 h-4 w-4" /> Sign Out
               </Button>
             </div>
@@ -490,10 +490,10 @@ export default function ProfilePage() {
                         <div className="flex flex-wrap gap-2">
                           {(userData?.careerInterests || []).length > 0 ? (
                             (userData?.careerInterests || []).map((i: string) => (
-                              <Badge key={i} className="bg-emerald-500/10 text-emerald-500 border-none flex items-center gap-1 py-1 px-3">
+                              <Badge key={i} className="bg-primary/10 text-primary border-primary/20 flex items-center gap-1 py-1 px-3 font-bold">
                                 {i}
                                 {isEditing && (
-                                  <button onClick={() => handleRemoveCareerInterest(i)} className="hover:text-destructive">
+                                  <button onClick={() => handleRemoveCareerInterest(i)} className="hover:text-destructive transition-colors">
                                     <X className="h-3 w-3" />
                                   </button>
                                 )}
