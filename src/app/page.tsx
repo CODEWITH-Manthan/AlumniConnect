@@ -562,11 +562,11 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="bg-primary text-primary dark:text-accent-foreground border-none shadow-xl overflow-hidden relative">
+          <Card className="bg-primary text-primary-foreground dark:text-accent-foreground border-none shadow-xl overflow-hidden relative">
             <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
             <CardHeader>
               <CardTitle className="text-lg font-headline">Community Wisdom</CardTitle>
-              <CardDescription className="text-primary dark:text-accent-foreground/80">
+              <CardDescription className="text-primary-foreground/80 dark:text-accent-foreground/80">
                 Browse our guidance feed to find advice and insights from experienced graduates.
               </CardDescription>
             </CardHeader>
