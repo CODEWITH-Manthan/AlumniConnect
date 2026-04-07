@@ -80,8 +80,8 @@ function UserRow({ user: u, currentUserId, onRoleChange, onRemoveUser }: {
 }) {
   const roleColors: Record<string, string> = {
     admin: 'bg-red-500/10 text-red-500 border-red-500/20',
-    alumni: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
-    mentor: 'bg-emerald-600/10 text-emerald-600 border-emerald-600/20',
+    alumni: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+    mentor: 'bg-blue-600/10 text-blue-600 border-blue-600/20',
     student: 'bg-muted text-muted-foreground border-border',
   };
 
@@ -93,7 +93,7 @@ function UserRow({ user: u, currentUserId, onRoleChange, onRemoveUser }: {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <p className="text-sm font-bold truncate">{u.firstName} {u.lastName}</p>
-          {(u as any).emailVerified && <span title="Email Verified"><CheckCircle className="h-3 w-3 text-emerald-500" /></span>}
+          {(u as any).emailVerified && <span title="Email Verified"><CheckCircle className="h-3 w-3 text-blue-500" /></span>}
         </div>
         <p className="text-xs text-muted-foreground truncate">{u.email}</p>
       </div>
@@ -338,7 +338,7 @@ export default function AdminPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-4 text-muted-foreground">
-          <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          <Loader2 className="h-10 w-10 animate-spin text-primary dark:text-accent" />
           <p className="text-sm font-medium">Checking permissions…</p>
         </div>
       </div>
@@ -417,7 +417,7 @@ export default function AdminPage() {
                   className={cn(
                     'flex items-center gap-2 px-4 py-4 text-sm font-medium border-b-2 transition-all whitespace-nowrap',
                     activeTab === tab.id
-                      ? 'border-primary text-primary'
+                      ? 'border-primary text-primary dark:text-accent'
                       : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30'
                   )}
                 >
@@ -441,7 +441,7 @@ export default function AdminPage() {
                 title="Total Users"
                 value={nonAdminUsers.length}
                 icon={Users}
-                color="bg-emerald-600 text-white"
+                color="bg-blue-600 text-white"
                 trend="Platform members"
                 subtitle={`${adminUsers.length} admins (excluded)`}
               />
@@ -449,7 +449,7 @@ export default function AdminPage() {
                 title="Alumni & Mentors"
                 value={alumniUsers.length}
                 icon={GraduationCap}
-                color="bg-emerald-900/40 border border-emerald-500/30 text-emerald-400"
+                color="bg-blue-900/40 border border-blue-500/30 text-blue-400"
                 trend="Verified graduates"
                 subtitle="Active contributors"
               />
@@ -457,7 +457,7 @@ export default function AdminPage() {
                 title="Students"
                 value={studentUsers.length}
                 icon={Award}
-                color="bg-emerald-950/60 border border-emerald-500/20 text-emerald-500"
+                color="bg-blue-950/60 border border-blue-500/20 text-blue-500"
                 trend="Learners"
                 subtitle="Seeking opportunities"
               />
@@ -465,7 +465,7 @@ export default function AdminPage() {
                 title="Open Roles"
                 value={globalStats?.openRoles ?? 0}
                 icon={Briefcase}
-                color="bg-black border border-emerald-500/40 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                color="bg-black border border-blue-500/40 text-blue-400 shadow-[0_0_15px_rgba(13,59,102,0.1)]"
                 trend="Posted by alumni"
               />
             </div>
@@ -475,14 +475,14 @@ export default function AdminPage() {
               <Card className="border-none shadow-sm">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                    <Activity className="h-4 w-4 text-primary" /> Platform Health
+                    <Activity className="h-4 w-4 text-primary dark:text-accent" /> Platform Health
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {[
-                    { label: 'Verified Alumni', count: alumniUsers.filter(u => u.emailVerified).length, total: alumniUsers.length, color: 'bg-emerald-500' },
-                    { label: 'Open Opportunities', count: opportunities?.length || 0, total: null, color: 'bg-emerald-400' },
-                    { label: 'Community Posts', count: guidanceRequests?.length || 0, total: null, color: 'bg-emerald-300' },
+                    { label: 'Verified Alumni', count: alumniUsers.filter(u => u.emailVerified).length, total: alumniUsers.length, color: 'bg-blue-500' },
+                    { label: 'Open Opportunities', count: opportunities?.length || 0, total: null, color: 'bg-blue-400' },
+                    { label: 'Community Posts', count: guidanceRequests?.length || 0, total: null, color: 'bg-blue-300' },
                   ].map(item => (
                     <div key={item.label}>
                       <div className="flex justify-between text-xs mb-1">
@@ -505,16 +505,16 @@ export default function AdminPage() {
               <Card className="border-none shadow-sm">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                    <MessageSquare className="h-4 w-4 text-primary" /> Content Summary
+                    <MessageSquare className="h-4 w-4 text-primary dark:text-accent" /> Content Summary
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 gap-3">
                     {[
-                      { label: 'Opportunities', value: opportunities?.length || 0, icon: Briefcase, color: 'text-primary' },
+                      { label: 'Opportunities', value: opportunities?.length || 0, icon: Briefcase, color: 'text-primary dark:text-accent' },
                       { label: 'Discussions', value: guidanceRequests?.length || 0, icon: MessageSquare, color: 'text-secondary' },
                       { label: 'Alumni Posts', value: opportunities?.filter(o => o.alumniId)?.length || 0, icon: UserCheck, color: 'text-accent' },
-                      { label: 'Active Alumni', value: alumniUsers.length, icon: GraduationCap, color: 'text-primary' },
+                      { label: 'Active Alumni', value: alumniUsers.length, icon: GraduationCap, color: 'text-primary dark:text-accent' },
                     ].map((item) => {
                       const Icon = item.icon;
                       return (
@@ -532,7 +532,7 @@ export default function AdminPage() {
               <Card className="border-none shadow-sm">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-primary" /> Recent Signups
+                    <Clock className="h-4 w-4 text-primary dark:text-accent" /> Recent Signups
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -559,7 +559,7 @@ export default function AdminPage() {
             <Card className="border-none shadow-sm">
               <CardHeader>
                 <CardTitle className="text-base font-bold flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-primary" /> Quick Actions
+                  <CheckCircle className="h-4 w-4 text-primary dark:text-accent" /> Quick Actions
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -568,7 +568,7 @@ export default function AdminPage() {
                     { label: 'Manage Users', icon: Users, action: () => setActiveTab('users'), color: 'bg-primary/5 hover:bg-primary/10 text-primary border-primary/20' },
                     { label: 'View Alumni', icon: GraduationCap, action: () => setActiveTab('alumni'), color: 'bg-secondary/5 hover:bg-secondary/10 text-secondary border-secondary/20' },
                     { label: 'Sync Stats', icon: TrendingUp, action: handleSyncStats, color: 'bg-accent/5 hover:bg-accent/10 text-accent border-accent/20' },
-                    { label: 'Fix Verifications', icon: CheckCircle, action: handleFixVerifications, color: 'bg-green-50 hover:bg-green-100 text-green-600 border-green-200' },
+                    { label: 'Fix Verifications', icon: CheckCircle, action: handleFixVerifications, color: 'bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-500 border-blue-200 dark:border-blue-800' },
                     { label: 'Activity Log', icon: Activity, action: () => setActiveTab('activity'), color: 'bg-muted hover:bg-muted/80 text-muted-foreground border-border' },
                     { label: 'Deep Clean', icon: Trash2, action: handleCleanup, color: 'bg-red-50 hover:bg-red-100 text-red-600 border-red-200' },
                   ].map((actionItem) => {
@@ -599,7 +599,7 @@ export default function AdminPage() {
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
               <div>
-                <h2 className="text-2xl font-bold font-headline text-primary">All Users</h2>
+                <h2 className="text-2xl font-bold font-headline text-primary dark:text-accent">All Users</h2>
                 <p className="text-muted-foreground text-sm">{allUsers?.length || 0} registered members</p>
               </div>
               <div className="relative w-full md:w-72">
@@ -631,7 +631,7 @@ export default function AdminPage() {
               <CardContent className="p-4">
                 {isUsersLoading ? (
                   <div className="flex items-center justify-center py-16">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary/30" />
+                    <Loader2 className="h-8 w-8 animate-spin text-primary dark:text-accent/30" />
                   </div>
                 ) : filteredUsers.length > 0 ? (
                   <div className="divide-y">
@@ -661,7 +661,7 @@ export default function AdminPage() {
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
               <div>
-                <h2 className="text-2xl font-bold font-headline text-primary">Alumni & Mentors</h2>
+                <h2 className="text-2xl font-bold font-headline text-primary dark:text-accent">Alumni & Mentors</h2>
                 <p className="text-muted-foreground text-sm">{alumniUsers.length} verified graduates and mentors</p>
               </div>
               <div className="relative w-full md:w-72">
@@ -721,7 +721,7 @@ export default function AdminPage() {
                       )}
                     </div>
                     {u.emailVerified && (
-                      <div className="flex items-center gap-1 mt-3 text-[10px] text-green-600 font-bold">
+                      <div className="flex items-center gap-1 mt-3 text-[10px] text-blue-600 dark:text-blue-500 font-bold">
                         <CheckCircle className="h-3 w-3" /> Email Verified
                       </div>
                     )}
@@ -742,7 +742,7 @@ export default function AdminPage() {
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
               <div>
-                <h2 className="text-2xl font-bold font-headline text-primary">Students</h2>
+                <h2 className="text-2xl font-bold font-headline text-primary dark:text-accent">Students</h2>
                 <p className="text-muted-foreground text-sm">{studentUsers.length} registered students</p>
               </div>
               <div className="relative w-full md:w-72">
@@ -801,7 +801,7 @@ export default function AdminPage() {
                     )}
                     <div className="flex items-center justify-between mt-3">
                       {u.emailVerified ? (
-                        <div className="flex items-center gap-1 text-[10px] text-green-600 font-bold">
+                        <div className="flex items-center gap-1 text-[10px] text-blue-600 dark:text-blue-500 font-bold">
                           <CheckCircle className="h-3 w-3" /> Email Verified
                         </div>
                       ) : (
@@ -837,12 +837,12 @@ export default function AdminPage() {
         {/* ═══════════════════════════════════ CONTENT TAB ══════════════════════════════════ */}
         {activeTab === 'content' && (
           <div className="space-y-8">
-            <h2 className="text-2xl font-bold font-headline text-primary">Content Overview</h2>
+            <h2 className="text-2xl font-bold font-headline text-primary dark:text-accent">Content Overview</h2>
 
             {/* Opportunities */}
             <div>
               <h3 className="text-base font-bold mb-4 flex items-center gap-2">
-                <Briefcase className="h-4 w-4 text-primary" /> Recent Opportunities
+                <Briefcase className="h-4 w-4 text-primary dark:text-accent" /> Recent Opportunities
                 <Badge className="bg-primary/10 text-primary border-none">{opportunities?.length || 0}</Badge>
               </h3>
               <div className="space-y-3">
@@ -908,14 +908,14 @@ export default function AdminPage() {
         {/* ═══════════════════════════════════ ACTIVITY TAB ══════════════════════════════════ */}
         {activeTab === 'activity' && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold font-headline text-primary">Activity Feed</h2>
+            <h2 className="text-2xl font-bold font-headline text-primary dark:text-accent">Activity Feed</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Recent opportunities as activity */}
               <Card className="border-none shadow-sm">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                    <Briefcase className="h-4 w-4 text-primary" /> Latest Posts
+                    <Briefcase className="h-4 w-4 text-primary dark:text-accent" /> Latest Posts
                   </CardTitle>
                 </CardHeader>
                 <CardContent>

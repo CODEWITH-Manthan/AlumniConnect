@@ -201,7 +201,7 @@ export default function Home() {
   if (isUserLoading && !user) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background">
-        <Loader2 className="h-12 w-12 animate-spin text-primary opacity-50" />
+        <Loader2 className="h-12 w-12 animate-spin text-primary dark:text-accent opacity-50" />
         <p className="text-sm font-bold tracking-widest text-muted-foreground uppercase animate-pulse">Initializing AlumniConnect...</p>
       </div>
     );
@@ -223,7 +223,7 @@ export default function Home() {
     <div className="container mx-auto py-8 px-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2 font-headline text-primary">Opportunity Feed</h1>
+          <h1 className="text-3xl font-bold tracking-tight mb-2 font-headline text-primary dark:text-accent">Opportunity Feed</h1>
           <p className="text-muted-foreground">Discover internships and projects posted by your alumni network.</p>
         </div>
 
@@ -333,7 +333,7 @@ export default function Home() {
                   onClick={() => setActiveFilter(filter)}
                   className={cn(
                     "rounded-full px-4 font-medium transition-all",
-                    activeFilter === filter ? "bg-primary text-primary-foreground shadow-md" : "hover:bg-primary/5 hover:text-primary"
+                    activeFilter === filter ? "shadow-md" : "hover:bg-primary/5 hover:text-primary dark:hover:text-accent"
                   )}
                 >
                   {filter}
@@ -344,7 +344,7 @@ export default function Home() {
 
           {isOppLoading ? (
             <div className="flex flex-col items-center justify-center py-20 bg-muted/20 rounded-xl border border-dashed">
-              <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+              <Loader2 className="h-8 w-8 animate-spin text-primary dark:text-accent mb-4" />
               <p className="text-muted-foreground">Loading the latest opportunities...</p>
             </div>
           ) : filteredOpportunities && filteredOpportunities.length > 0 ? (
@@ -362,7 +362,7 @@ export default function Home() {
                     <Button
                       variant="secondary"
                       size="icon"
-                      className="h-8 w-8 rounded-full shadow-md bg-white/80 hover:bg-white text-primary"
+                      className="h-8 w-8 rounded-full shadow-md bg-white/80 hover:bg-white text-primary dark:text-accent"
                       onClick={(e) => {
                         e.preventDefault();
                         toggleBookmark(opp.id);
@@ -388,9 +388,9 @@ export default function Home() {
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-xl mb-1 font-headline group-hover:text-primary transition-colors">{opp.title}</CardTitle>
+                      <CardTitle className="text-xl mb-1 font-headline group-hover:text-primary dark:group-hover:text-accent transition-colors">{opp.title}</CardTitle>
                       <CardDescription className="flex items-center gap-2">
-                        <span className="font-bold text-primary">{opp.company}</span>
+                        <span className="font-bold text-primary dark:text-accent">{opp.company}</span>
                         <span className="text-muted-foreground/30">•</span>
                         <span className="flex items-center gap-1 font-medium"><MapPin className="h-3 w-3" /> {opp.location}</span>
                       </CardDescription>
@@ -402,7 +402,7 @@ export default function Home() {
                 </CardContent>
                 <CardFooter className="flex justify-between border-t bg-muted/10 pt-4 px-6">
                   <div className="flex items-center gap-2">
-                    <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold border border-primary/20 shadow-sm">
+                    <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary dark:text-accent text-xs font-bold border border-primary/20 shadow-sm">
                       {opp.postedBy?.split(' ').map((n: string) => n[0]).join('') || 'A'}
                     </div>
                     <div>
@@ -416,7 +416,7 @@ export default function Home() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-9 w-9 rounded-full text-muted-foreground hover:text-primary hover:bg-primary/5"
+                      className="h-9 w-9 rounded-full text-muted-foreground hover:text-primary dark:text-accent hover:bg-primary/5"
                       onClick={() => {
                         const shareUrl = `${window.location.origin}/?opportunity=${opp.id}`;
                         navigator.clipboard.writeText(shareUrl).then(() => {
@@ -452,7 +452,7 @@ export default function Home() {
                     )}
                     {user && user.uid === opp.alumniId && (
                       <>
-                        <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-black py-1 px-3 border-primary/20 text-primary bg-primary/5">
+                        <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-black py-1 px-3 border-primary/20 text-primary dark:text-accent bg-primary/5">
                           Your Post
                         </Badge>
                         <DropdownMenu>
@@ -522,51 +522,51 @@ export default function Home() {
           <Card className="border-none shadow-sm bg-card overflow-hidden">
             <CardHeader className="bg-muted/30 border-b">
               <CardTitle className="text-lg font-headline flex items-center gap-2">
-                <Users className="h-5 w-5 text-primary" /> Network Overview
+                <Users className="h-5 w-5 text-primary dark:text-accent" /> Network Overview
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
               <div className="flex justify-between items-center p-4 bg-primary/5 rounded-xl border border-primary/10">
                 <div className="flex flex-col">
                   <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Verified Alumni</span>
-                  <span className="text-2xl font-black text-primary font-headline">
+                  <span className="text-2xl font-black text-primary dark:text-accent font-headline">
                     {globalStats ? (globalStats.alumniCount ?? 0).toLocaleString() : "..."}
                   </span>
                 </div>
                 <div className="bg-primary/10 p-2 rounded-lg">
-                  <Users className="h-5 w-5 text-primary" />
+                  <Users className="h-5 w-5 text-primary dark:text-accent" />
                 </div>
               </div>
               <div className="flex justify-between items-center p-4 bg-secondary/5 rounded-xl border border-secondary/10">
                 <div className="flex flex-col">
                   <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Open Roles</span>
-                  <span className="text-2xl font-black text-secondary font-headline">
+                  <span className="text-2xl font-black text-primary dark:text-accent font-headline">
                     {globalStats ? (globalStats.openRoles ?? 0).toLocaleString() : "..."}
                   </span>
                 </div>
                 <div className="bg-secondary/10 p-2 rounded-lg">
-                  <Briefcase className="h-5 w-5 text-secondary" />
+                  <Briefcase className="h-5 w-5 text-primary dark:text-accent" />
                 </div>
               </div>
               <div className="flex justify-between items-center p-4 bg-accent/5 rounded-xl border border-accent/10">
                 <div className="flex flex-col">
                   <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Active Discussions</span>
-                  <span className="text-2xl font-black text-accent font-headline">
+                  <span className="text-2xl font-black text-primary dark:text-accent font-headline">
                     {globalStats ? (globalStats.activeDiscussions ?? 0).toLocaleString() : "..."}
                   </span>
                 </div>
                 <div className="bg-accent/10 p-2 rounded-lg">
-                  <MessageSquareQuote className="h-5 w-5 text-accent" />
+                  <MessageSquareQuote className="h-5 w-5 text-primary dark:text-accent" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-primary text-primary-foreground border-none shadow-xl overflow-hidden relative">
+          <Card className="bg-primary text-primary dark:text-accent-foreground border-none shadow-xl overflow-hidden relative">
             <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
             <CardHeader>
               <CardTitle className="text-lg font-headline">Community Wisdom</CardTitle>
-              <CardDescription className="text-primary-foreground/80">
+              <CardDescription className="text-primary dark:text-accent-foreground/80">
                 Browse our guidance feed to find advice and insights from experienced graduates.
               </CardDescription>
             </CardHeader>

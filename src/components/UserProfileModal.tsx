@@ -112,7 +112,7 @@ export default function UserProfileModal({ userId, open, onOpenChange }: UserPro
             {(userData?.careerInterests || []).length > 0 && (
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Briefcase className="h-4 w-4 text-primary" />
+                <Briefcase className="h-4 w-4 text-primary dark:text-accent" />
                 <h3 className="font-semibold text-sm">Career Interests</h3>
               </div>
               <div className="flex flex-wrap gap-2">

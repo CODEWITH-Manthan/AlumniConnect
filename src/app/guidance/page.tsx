@@ -73,7 +73,7 @@ function ReplySection({ requestId }: { requestId: string }) {
   return (
     <div className="mt-6 space-y-6">
       <div className="flex items-center gap-2 border-b pb-2 mb-4">
-        <MessageCircle className="h-4 w-4 text-primary" />
+        <MessageCircle className="h-4 w-4 text-primary dark:text-accent" />
         <h3 className="text-sm font-bold font-headline uppercase tracking-wider">Discussion</h3>
       </div>
 
@@ -230,7 +230,7 @@ export default function GuidancePage() {
     <div className="container mx-auto py-8 px-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2 font-headline text-primary">Community Wisdom</h1>
+          <h1 className="text-3xl font-bold tracking-tight mb-2 font-headline text-primary dark:text-accent">Community Wisdom</h1>
           <p className="text-muted-foreground">Ask questions, share advice, and grow with your network.</p>
         </div>
         
@@ -287,7 +287,7 @@ export default function GuidancePage() {
         <div className="grid gap-6">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="h-10 w-10 animate-spin text-primary/30 mb-4" />
+              <Loader2 className="h-10 w-10 animate-spin text-primary dark:text-accent/30 mb-4" />
               <p className="text-muted-foreground animate-pulse">Gathering community insights...</p>
             </div>
           ) : filteredRequests && filteredRequests.length > 0 ? (
@@ -312,7 +312,7 @@ export default function GuidancePage() {
                 <CardContent className="pb-6">
                   <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed">{q.description}</p>
                 </CardContent>
-                <CardFooter className="border-t border-emerald-500/10 bg-emerald-500/5 pt-4 flex justify-between items-center px-6">
+                <CardFooter className="border-t border-blue-500/10 bg-blue-500/5 pt-4 flex justify-between items-center px-6">
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs border border-primary/20 shadow-sm">
                       {q.studentName?.[0] || 'S'}
@@ -341,7 +341,7 @@ export default function GuidancePage() {
                     </button>
                     <button 
                       onClick={() => setSelectedRequestId(q.id)}
-                      className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 transition-colors bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 shadow-sm hover:bg-emerald-500/20"
+                      className="flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 transition-colors bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-500/20 shadow-sm hover:bg-blue-500/20"
                     >
                       <MessageSquareQuote className="h-3.5 w-3.5" /> View Advice
                     </button>
@@ -377,7 +377,7 @@ export default function GuidancePage() {
                   {selectedRequest.title}
                 </DialogTitle>
                 <div className="flex items-center gap-2 mt-4">
-                  <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary">
+                  <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary dark:text-accent">
                     {selectedRequest.studentName?.[0]}
                   </div>
                   <span className="text-xs font-bold">{selectedRequest.studentName}</span>

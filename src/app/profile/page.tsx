@@ -239,7 +239,7 @@ export default function ProfilePage() {
     <div className="container mx-auto py-10 px-4">
       <div className="max-w-6xl mx-auto">
         <Tabs defaultValue="overview" className="space-y-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-card/50 backdrop-blur-md p-6 rounded-3xl shadow-sm border border-emerald-500/10">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-card/50 backdrop-blur-md p-6 rounded-3xl shadow-sm border border-blue-500/10">
             <div className="flex items-center gap-6">
               <div className="relative h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center text-primary border-4 border-background shadow-xl overflow-hidden group shrink-0 transition-transform hover:scale-105">
                 {photoPreview || userData?.photoURL ? (
@@ -259,7 +259,7 @@ export default function ProfilePage() {
                 )}
                 {isEditing && (
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <label htmlFor="photo-upload" className="cursor-pointer p-2 bg-emerald-500 rounded-full hover:bg-emerald-600 transition-colors shadow-lg">
+                    <label htmlFor="photo-upload" className="cursor-pointer p-2 bg-blue-500 rounded-full hover:bg-blue-600 transition-colors shadow-lg">
                       <Camera className="h-5 w-5 text-white" />
                       <input
                         id="photo-upload"
@@ -278,7 +278,7 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-2">
                   <Badge className={cn(
                     "uppercase text-[10px] tracking-widest font-black py-0.5 px-2.5",
-                    role === 'alumni' ? "bg-emerald-500 text-white" : "bg-primary text-primary-foreground"
+                    role === 'alumni' ? "bg-blue-500 text-white" : "bg-primary text-primary-foreground"
                   )}>
                     {role === 'alumni' ? 'ALUMNI' : role}
                   </Badge>
@@ -289,7 +289,7 @@ export default function ProfilePage() {
               </div>
             </div>
             <div className="flex gap-3 w-full md:w-auto">
-              <Button variant="outline" className="flex-1 md:flex-none rounded-full border-emerald-500/20 hover:bg-emerald-500/5 hover:text-emerald-500 transition-all font-bold" onClick={() => setIsEditing(!isEditing)}>
+              <Button variant="outline" className="flex-1 md:flex-none rounded-full border-blue-500/20 hover:bg-blue-500/5 hover:text-blue-500 transition-all font-bold" onClick={() => setIsEditing(!isEditing)}>
                 <Edit2 className="mr-2 h-4 w-4" /> Edit Profile
               </Button>
               <Button variant="ghost" className="flex-1 md:flex-none rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/5 font-bold transition-all" onClick={handleSignOut}>
@@ -302,7 +302,7 @@ export default function ProfilePage() {
             <TabsList className="bg-transparent border-b rounded-none w-full justify-start h-auto p-0 space-x-8">
               <TabsTrigger value="overview" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent pb-4 px-0 font-bold text-base">Overview</TabsTrigger>
               <TabsTrigger value="saved" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent pb-4 px-0 font-bold text-base">
-                Saved Opportunities <Badge variant="secondary" className="ml-2 bg-primary/10 text-primary">{bookmarkedOpps.length}</Badge>
+                Saved Opportunities <Badge variant="secondary" className="ml-2 bg-primary/10 text-primary dark:text-accent">{bookmarkedOpps.length}</Badge>
               </TabsTrigger>
             </TabsList>
           )}
@@ -315,7 +315,7 @@ export default function ProfilePage() {
                      <Card className="border shadow-sm">
                        <CardHeader>
                          <CardTitle className="flex items-center gap-2 font-headline">
-                           <User className="h-5 w-5 text-primary" /> Identity Details
+                           <User className="h-5 w-5 text-primary dark:text-accent" /> Identity Details
                          </CardTitle>
                          <CardDescription>Manage your administrative identity.</CardDescription>
                        </CardHeader>
@@ -350,7 +350,7 @@ export default function ProfilePage() {
                    <Card className="border shadow-sm bg-primary/5">
                      <CardHeader>
                        <CardTitle className="text-lg font-headline flex items-center gap-2">
-                         <ShieldAlert className="h-5 w-5 text-primary" /> Security & Access
+                         <ShieldAlert className="h-5 w-5 text-primary dark:text-accent" /> Security & Access
                        </CardTitle>
                      </CardHeader>
                      <CardContent className="space-y-4">
@@ -358,13 +358,13 @@ export default function ProfilePage() {
                          <h4 className="font-bold text-sm mb-1">Administrative Privileges</h4>
                          <p className="text-xs text-muted-foreground mb-3">Your account is granted top-level access to the AlumniConnect framework.</p>
                          <ul className="text-xs space-y-2 font-medium">
-                           <li className="flex items-center gap-2 text-green-600 dark:text-green-500"><CheckCircle className="h-3 w-3" /> Full user moderation</li>
-                           <li className="flex items-center gap-2 text-green-600 dark:text-green-500"><CheckCircle className="h-3 w-3" /> Role assignments</li>
-                           <li className="flex items-center gap-2 text-green-600 dark:text-green-500"><CheckCircle className="h-3 w-3" /> Content lifecycle control</li>
+                           <li className="flex items-center gap-2 text-blue-600 dark:text-blue-500"><CheckCircle className="h-3 w-3" /> Full user moderation</li>
+                           <li className="flex items-center gap-2 text-blue-600 dark:text-blue-500"><CheckCircle className="h-3 w-3" /> Role assignments</li>
+                           <li className="flex items-center gap-2 text-blue-600 dark:text-blue-500"><CheckCircle className="h-3 w-3" /> Content lifecycle control</li>
                          </ul>
                        </div>
                        <div className="bg-white dark:bg-black/20 p-4 rounded-xl border border-primary/10">
-                         <h4 className="font-bold text-sm mb-1 text-primary">System Notification</h4>
+                         <h4 className="font-bold text-sm mb-1 text-primary dark:text-accent">System Notification</h4>
                          <p className="text-xs text-muted-foreground flex items-center gap-2">
                            Remember to lock your terminal when away. All actions taken by your account are logged and directly affect users.
                          </p>
@@ -375,7 +375,7 @@ export default function ProfilePage() {
                    <Card className="border shadow-sm mt-8">
                      <CardHeader>
                        <CardTitle className="text-lg font-headline flex items-center gap-2">
-                         <Settings className="h-5 w-5 text-primary" /> App Preferences
+                         <Settings className="h-5 w-5 text-primary dark:text-accent" /> App Preferences
                        </CardTitle>
                        <CardDescription>Customize your AlumniConnect experience.</CardDescription>
                      </CardHeader>
@@ -472,7 +472,7 @@ export default function ProfilePage() {
                 <Card className="border shadow-sm">
                   <CardHeader>
                     <CardTitle className="text-lg font-headline flex items-center gap-2">
-                      <Briefcase className="h-5 w-5 text-primary" />
+                      <Briefcase className="h-5 w-5 text-primary dark:text-accent" />
                       {role === 'alumni' ? 'Field of Working' : 'Career Interests'}
                     </CardTitle>
                   </CardHeader>
@@ -529,7 +529,7 @@ export default function ProfilePage() {
                   <Card className="border shadow-sm">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2 font-headline">
-                        <GraduationCap className="h-5 w-5 text-primary" /> Personal Information
+                        <GraduationCap className="h-5 w-5 text-primary dark:text-accent" /> Personal Information
                       </CardTitle>
                       <CardDescription>Public identity and academic background.</CardDescription>
                     </CardHeader>
@@ -582,7 +582,7 @@ export default function ProfilePage() {
                 <Card className="border shadow-sm">
                   <CardHeader>
                     <CardTitle className="text-lg font-headline flex items-center gap-2">
-                      <Settings className="h-5 w-5 text-primary" /> App Preferences
+                      <Settings className="h-5 w-5 text-primary dark:text-accent" /> App Preferences
                     </CardTitle>
                     <CardDescription>Customize your AlumniConnect experience.</CardDescription>
                   </CardHeader>
@@ -657,7 +657,7 @@ export default function ProfilePage() {
                         <div>
                           <h3 className="font-headline font-bold text-lg mb-1 leading-tight">{opp.title}</h3>
                           <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-3">
-                            <span className="font-bold text-primary">{opp.company}</span>
+                            <span className="font-bold text-primary dark:text-accent">{opp.company}</span>
                             <span>•</span>
                             <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {opp.location}</span>
                           </div>

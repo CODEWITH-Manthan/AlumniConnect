@@ -328,7 +328,7 @@ function ChatContent() {
   if (!mounted || isUserLoading) {
     return (
       <div className="container mx-auto py-6 px-4 h-[calc(100vh-80px)] flex flex-col items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-primary/20 mb-4" />
+        <Loader2 className="h-10 w-10 animate-spin text-primary dark:text-accent/20 mb-4" />
         <p className="text-muted-foreground text-sm font-medium animate-pulse">Syncing communications...</p>
       </div>
     );
@@ -338,7 +338,7 @@ function ChatContent() {
     return (
       <div className="container mx-auto py-6 px-4 h-[calc(100vh-80px)] flex flex-col items-center justify-center">
         <div className="bg-card p-8 rounded-2xl shadow-xl text-center max-w-md border">
-          <MessageSquare className="h-12 w-12 text-primary/30 mx-auto mb-4" />
+          <MessageSquare className="h-12 w-12 text-primary dark:text-accent/30 mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-2">Sign in to Message</h2>
           <p className="text-muted-foreground mb-6">You need to be logged in to connect with mentors and peers.</p>
           <Button asChild className="w-full h-11">
@@ -364,7 +364,7 @@ function ChatContent() {
         {/* Sidebar */}
         <div className="md:col-span-1 border-r border-border flex flex-col h-full bg-card/30">
           <div className="p-4 border-b">
-            <h2 className="text-xl font-bold mb-4 font-headline text-primary">Messages</h2>
+            <h2 className="text-xl font-bold mb-4 font-headline text-primary dark:text-accent">Messages</h2>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -378,7 +378,7 @@ function ChatContent() {
           </div>
           <ScrollArea className="flex-1">
             {isUsersLoading ? (
-              <div className="p-8 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary/30" /></div>
+              <div className="p-8 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary dark:text-accent/30" /></div>
             ) : (
               <div className="divide-y divide-border/50">
                 {filteredUsers?.map((person) => (
@@ -398,7 +398,7 @@ function ChatContent() {
                         className="relative h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0 border border-primary/20 hover:border-primary transition-colors"
                       >
                         {getInitials(person.firstName, person.lastName)}
-                        <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-card" />
+                        <div className="absolute bottom-0 right-0 h-3 w-3 bg-blue-500 dark:bg-blue-500 rounded-full border-2 border-card" />
                       </button>
                       <button
                         onClick={() => setActiveRecipientId(person.id)}
@@ -453,20 +453,20 @@ function ChatContent() {
                   <div>
                     <h3 className="font-bold text-sm leading-none mb-1">{recipientName}</h3>
                     <div className="flex items-center gap-1.5">
-                      <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                      <div className="h-2 w-2 rounded-full bg-blue-500 dark:bg-blue-500 animate-pulse" />
                       <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Active Now</span>
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-primary" suppressHydrationWarning><MoreVertical className="h-4 w-4" /></Button>
+                  <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-primary dark:text-accent" suppressHydrationWarning><MoreVertical className="h-4 w-4" /></Button>
                 </div>
               </div>
 
               {/* Chat Messages */}
               <ScrollArea ref={scrollAreaRef} className="flex-1 p-6 bg-muted/5 max-h-[calc(100vh-280px)]">
                 {isMessagesLoading ? (
-                  <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary/20" /></div>
+                  <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary dark:text-accent/20" /></div>
                 ) : (
                   <div className="flex flex-col gap-4">
                     {messages && messages.length > 0 ? (

@@ -9,46 +9,46 @@ html {
 @layer base {
   :root {
     --background: 210 20% 98%;
-    --foreground: 142 50% 5%;
+    --foreground: 209 77% 23%;
     --card: 0 0% 100%;
-    --card-foreground: 142 50% 5%;
+    --card-foreground: 209 77% 23%;
     --popover: 0 0% 100%;
-    --popover-foreground: 142 50% 5%;
-    --primary: 142 76% 36%;
+    --popover-foreground: 209 77% 23%;
+    --primary: 209 77% 23%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 142 70% 95%;
-    --secondary-foreground: 142 76% 30%;
-    --muted: 142 20% 95%;
-    --muted-foreground: 142 10% 45%;
-    --accent: 142 70% 90%;
-    --accent-foreground: 142 76% 30%;
+    --secondary: 204 24% 60%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 20% 95%;
+    --muted-foreground: 204 24% 40%;
+    --accent: 204 24% 60%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 142 30% 90%;
-    --input: 142 30% 90%;
-    --ring: 142 76% 36%;
+    --border: 204 24% 80%;
+    --input: 204 24% 80%;
+    --ring: 209 77% 23%;
     --radius: 0.75rem;
   }
   .dark {
-    --background: 0 0% 0%;
+    --background: 0 0% 5%;
     --foreground: 0 0% 100%;
     --card: 0 0% 7%;
     --card-foreground: 0 0% 100%;
     --popover: 0 0% 6%;
     --popover-foreground: 0 0% 100%;
-    --primary: 142 76% 36%;
+    --primary: 209 77% 23%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 142 70% 12%;
-    --secondary-foreground: 142 76% 80%;
-    --muted: 142 30% 10%;
-    --muted-foreground: 142 20% 65%;
-    --accent: 142 70% 15%;
-    --accent-foreground: 142 76% 80%;
+    --secondary: 209 77% 23%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 209 77% 15%;
+    --muted-foreground: 204 24% 80%;
+    --accent: 209 77% 30%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 100%;
-    --border: 142 50% 12%;
-    --input: 142 50% 12%;
-    --ring: 142 76% 36%;
+    --border: 209 77% 23%;
+    --input: 209 77% 23%;
+    --ring: 204 24% 60%;
   }
 }
 
@@ -77,10 +77,10 @@ html {
   .bg-mesh {
     background-color: hsl(var(--background));
     background-image: 
-      radial-gradient(at 0% 0%, hsla(142, 76%, 36%, 0.08) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, hsla(142, 76%, 36%, 0.05) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, hsla(142, 76%, 36%, 0.03) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, hsla(142, 76%, 36%, 0.05) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, hsl(var(--primary) / 0.08) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsl(var(--primary) / 0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsl(var(--primary) / 0.03) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsl(var(--primary) / 0.05) 0px, transparent 50%);
   }
 }
 

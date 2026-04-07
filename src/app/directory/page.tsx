@@ -65,7 +65,7 @@ export default function DirectoryPage() {
     <div className="container mx-auto py-8 px-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2 font-headline text-primary">Alumni Directory</h1>
+          <h1 className="text-3xl font-bold tracking-tight mb-2 font-headline text-primary dark:text-accent">Alumni Directory</h1>
           <p className="text-muted-foreground">Connect with graduates by name, role, or technical expertise.</p>
         </div>
         <div className="flex w-full md:w-auto gap-2">
@@ -96,7 +96,7 @@ export default function DirectoryPage() {
                 <div className="flex justify-between items-center">
                   <h4 className="font-bold font-headline">Refine Directory</h4>
                   {activeFiltersCount > 0 && (
-                    <Button variant="ghost" size="sm" onClick={resetFilters} className="h-8 px-2 text-xs text-muted-foreground hover:text-primary">
+                    <Button variant="ghost" size="sm" onClick={resetFilters} className="h-8 px-2 text-xs text-muted-foreground hover:text-primary dark:text-accent">
                       <RotateCcw className="mr-1 h-3 w-3" /> Reset
                     </Button>
                   )}
@@ -160,7 +160,7 @@ export default function DirectoryPage() {
                       }}
                     />
                   ) : (
-                    <User className="h-8 w-8 text-primary/40" />
+                    <User className="h-8 w-8 text-primary dark:text-accent/40" />
                   )}
                 </button>
                 <div className="flex-1">
@@ -185,7 +185,7 @@ export default function DirectoryPage() {
                   ))}
                 </div>
               </CardContent>
-              <CardFooter className="border-t border-emerald-500/10 bg-emerald-500/5 pt-4 flex justify-between">
+              <CardFooter className="border-t border-blue-500/10 bg-blue-500/5 pt-4 flex justify-between">
                 <div className="flex gap-2">
                   <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
                     <Linkedin className="h-4 w-4" />

@@ -58,7 +58,7 @@ export default function Navbar() {
         <div className="flex h-16 md:h-20 items-center justify-between gap-2 lg:gap-6">
           <div className="flex items-center gap-3 lg:gap-6">
             <Link href="/" className="shrink-0 flex items-center h-full py-2">
-              <div className="bg-white p-1 md:p-1.5 rounded-xl overflow-hidden border border-emerald-500/20 shadow-sm transition-transform hover:scale-105">
+              <div className="bg-white p-1 md:p-1.5 rounded-xl overflow-hidden border border-blue-500/20 shadow-sm transition-transform hover:scale-105">
                 <Image
                   src="/vesit-logo.png"
                   alt="VESIT Logo"
@@ -70,10 +70,10 @@ export default function Navbar() {
               </div>
             </Link>
             <Link href="/" className="flex items-center gap-2 group shrink-0">
-              <div className="bg-emerald-500 p-1.5 rounded-lg transition-all group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(16,185,129,0.4)]">
+              <div className="bg-blue-500 p-1.5 rounded-lg transition-all group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(13,59,102,0.4)]">
                 <GraduationCap className="h-5 w-5 text-white" />
               </div>
-              <span className="text-xl font-headline font-bold text-foreground dark:text-white tracking-tight group-hover:text-emerald-500 transition-colors">
+              <span className="text-xl font-headline font-bold text-foreground dark:text-white tracking-tight group-hover:text-blue-500 transition-colors">
                 AlumniConnect
               </span>
             </Link>
@@ -88,9 +88,9 @@ export default function Navbar() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-1.5 px-2 lg:px-4 py-2 rounded-md text-sm lg:text-base font-medium transition-all hover:bg-emerald-500/10 relative whitespace-nowrap",
+                    "flex items-center gap-1.5 px-2 lg:px-4 py-2 rounded-md text-sm lg:text-base font-medium transition-all hover:bg-blue-500/10 relative whitespace-nowrap",
                     pathname === item.href
-                      ? "text-emerald-400 bg-emerald-500/10"
+                      ? "text-blue-400 bg-blue-500/10"
                       : "text-muted-foreground"
                   )}
                 >
@@ -206,15 +206,15 @@ export default function Navbar() {
                 )}
 
                 {user.emailVerified && (
-                  <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                    <ShieldCheck className="h-3.5 w-3.5 text-green-600 dark:text-green-500" />
-                    <span className="text-xs font-medium text-green-700 dark:text-green-400 hidden lg:inline-block">Verified</span>
+                  <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                    <ShieldCheck className="h-3.5 w-3.5 text-blue-600 dark:text-blue-500" />
+                    <span className="text-xs font-medium text-blue-700 dark:text-blue-400 hidden lg:inline-block">Verified</span>
                   </div>
                 )}
 
                 {isVerified && (
                   <Link href="/profile" className="flex items-center gap-1 md:gap-2 bg-muted hover:bg-muted/80 p-1 md:pr-3 lg:pr-4 rounded-full transition-colors border whitespace-nowrap">
-                    <div className="bg-primary/10 p-1 rounded-full text-primary">
+                    <div className="bg-primary/10 p-1 rounded-full text-primary dark:text-accent">
                       <User className="h-4 w-4 md:h-5 md:w-5" />
                     </div>
                     <span className="text-[10px] md:text-xs lg:text-sm font-medium hidden sm:inline-block">My Profile</span>

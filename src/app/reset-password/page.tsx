@@ -71,8 +71,8 @@ export default function ResetPasswordPage() {
             <div className="container flex items-center justify-center min-h-[calc(100vh-80px)] py-12">
                 <Card className="w-full max-w-md border-none shadow-xl">
                     <CardHeader className="space-y-1 flex flex-col items-center">
-                        <div className="bg-green-100 p-3 rounded-2xl mb-4">
-                            <CheckCircle2 className="h-8 w-8 text-green-600" />
+                        <div className="bg-blue-100 dark:bg-blue-100 p-3 rounded-2xl mb-4">
+                            <CheckCircle2 className="h-8 w-8 text-blue-600 dark:text-blue-600" />
                         </div>
                         <CardTitle className="text-2xl font-bold font-headline">Check your email</CardTitle>
                         <CardDescription className="text-center">
