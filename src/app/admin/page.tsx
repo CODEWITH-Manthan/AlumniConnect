@@ -101,7 +101,7 @@ function UserRow({ user: u, currentUserId, onRoleChange, onRemoveUser }: {
         {u.role || 'student'}
       </Badge>
       {u.uid !== currentUserId && (
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+        <div className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex gap-1">
           {u.role !== 'admin' && (
              <Button
               size="sm"
@@ -441,7 +441,7 @@ export default function AdminPage() {
                 title="Total Users"
                 value={nonAdminUsers.length}
                 icon={Users}
-                color="bg-blue-600 text-white"
+                color="bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-md shadow-blue-500/20"
                 trend="Platform members"
                 subtitle={`${adminUsers.length} admins (excluded)`}
               />
@@ -449,7 +449,7 @@ export default function AdminPage() {
                 title="Alumni & Mentors"
                 value={alumniUsers.length}
                 icon={GraduationCap}
-                color="bg-blue-900/40 border border-blue-500/30 text-blue-400"
+                color="bg-gradient-to-br from-indigo-500 to-indigo-700 text-white shadow-md shadow-indigo-500/20"
                 trend="Verified graduates"
                 subtitle="Active contributors"
               />
@@ -457,7 +457,7 @@ export default function AdminPage() {
                 title="Students"
                 value={studentUsers.length}
                 icon={Award}
-                color="bg-blue-950/60 border border-blue-500/20 text-blue-500"
+                color="bg-gradient-to-br from-violet-500 to-violet-700 text-white shadow-md shadow-violet-500/20"
                 trend="Learners"
                 subtitle="Seeking opportunities"
               />
@@ -465,7 +465,7 @@ export default function AdminPage() {
                 title="Open Roles"
                 value={globalStats?.openRoles ?? 0}
                 icon={Briefcase}
-                color="bg-black border border-blue-500/40 text-blue-400 shadow-[0_0_15px_rgba(13,59,102,0.1)]"
+                color="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white shadow-md shadow-emerald-500/20"
                 trend="Posted by alumni"
               />
             </div>
@@ -618,7 +618,6 @@ export default function AdminPage() {
               {[
                 { label: 'Admin', count: adminUsers.length, color: 'bg-red-50 text-red-700 border-red-200' },
                 { label: 'Alumni', count: allUsers?.filter(u => u.role === 'alumni').length || 0, color: 'bg-primary/10 text-primary border-primary/20' },
-                { label: 'Mentor', count: 0, color: 'bg-secondary/10 text-secondary border-secondary/20' },
                 { label: 'Student', count: studentUsers.length, color: 'bg-muted text-muted-foreground border-border' },
               ].map(item => (
                 <Badge key={item.label} className={cn('px-3 py-1 border text-xs font-bold capitalize', item.color)}>
@@ -812,7 +811,7 @@ export default function AdminPage() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-7 px-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="h-7 px-2 text-xs opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                         onClick={() => {
                           const uid = u.uid || (u as any).id;
                           if (uid) handleRoleChange(uid, 'alumni');

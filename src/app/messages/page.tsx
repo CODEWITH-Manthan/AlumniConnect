@@ -507,7 +507,7 @@ function ChatContent() {
                               {isMe && (
                                 <button
                                   onClick={() => handleDeleteMessage(msg.id)}
-                                  className="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
+                                  className="absolute -left-8 top-1/2 -translate-y-1/2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity p-1 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
                                   title="Delete message"
                                 >
                                   <Trash2 className="h-3.5 w-3.5" />

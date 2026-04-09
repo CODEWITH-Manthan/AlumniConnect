@@ -258,7 +258,7 @@ export default function ProfilePage() {
                   <User className="h-12 w-12" />
                 )}
                 {isEditing && (
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black/60 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <label htmlFor="photo-upload" className="cursor-pointer p-2 bg-blue-500 rounded-full hover:bg-blue-600 transition-colors shadow-lg">
                       <Camera className="h-5 w-5 text-white" />
                       <input
