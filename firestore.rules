@@ -25,7 +25,7 @@ service cloud.firestore {
       // Allow user to update their own profile EXCEPT for protected security fields (role, verifications)
       allow update: if (
           isOwner(userId) && 
-          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'isVerifiedAlumni', 'emailVerified'])
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'isVerifiedAlumni'])
         ) 
         || isAdmin()
         // Allow any signed-in user to update ONLY the hasUnreadMessages field (for message notifications)

@@ -33,7 +33,7 @@ export default function PendingVerificationState() {
               <Clock className="h-4 w-4 shrink-0 text-blue-500 mt-0.5" />
               <span>An administrator has been notified and will manually review your account shortly.</span>
             </p>
-            <p className="text-sm text-muted-foreground flex flex-col items-start gap-1 pb-4">
+            <div className="text-sm text-muted-foreground flex flex-col items-start gap-1 pb-4">
               <span>Once verified, you will instantly gain full access to:</span>
               <ul className="list-disc list-inside mt-1 ml-1 text-foreground space-y-1">
                 <li>The Opportunity Feed</li>
@@ -41,7 +41,7 @@ export default function PendingVerificationState() {
                 <li>Student Mentorship & Guidance</li>
                 <li>Direct Messaging</li>
               </ul>
-            </p>
+            </div>
           </div>
 
           <div className="flex flex-col gap-2">
