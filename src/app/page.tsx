@@ -27,6 +27,7 @@ import { useToast } from '@/hooks/use-toast';
 import LandingHero from '@/components/home/LandingHero';
 import LandingFeatures from '@/components/home/LandingFeatures';
 import LandingAbout from '@/components/home/LandingAbout';
+import PendingVerificationState from '@/components/ui/PendingVerificationState';
 
 const typeImages: Record<string, string[]> = {
   "Internship": [
@@ -198,7 +199,7 @@ export default function Home() {
   const filters = ["All", "Internship", "Project", "Research", "Hackathon"];
 
   // Loading State
-  if (isUserLoading && !user) {
+  if (isUserLoading || (user && isUserDataLoading)) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary dark:text-accent opacity-50" />
@@ -216,6 +217,11 @@ export default function Home() {
         <LandingAbout />
       </div>
     );
+  }
+
+  // Pending Verification State
+  if (userData?.role === 'alumni' && !userData.isVerifiedAlumni) {
+    return <PendingVerificationState />;
   }
 
   // Logged In State (Opportunity Feed)
