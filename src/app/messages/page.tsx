@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
 import UserProfileModal from "@/components/UserProfileModal";
+import PendingVerificationState from "@/components/ui/PendingVerificationState";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { useToast } from "@/hooks/use-toast";
 
@@ -101,6 +102,13 @@ function ChatContent() {
     return query(collection(firestore, 'users'), limit(100));
   }, [firestore, user]);
   const { data: allUsers, isLoading: isAllUsersLoading } = useCollection(allUsersQuery);
+
+  // Get current user data to check verification status
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+  const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
 
   // Helper: check all conversations for remaining unread messages
   // and update the hasUnreadMessages flag accordingly
@@ -325,7 +333,7 @@ function ChatContent() {
     return (f + l).toUpperCase() || '?';
   };
 
-  if (!mounted || isUserLoading) {
+  if (!mounted || isUserLoading || (user && isUserDataLoading)) {
     return (
       <div className="container mx-auto py-6 px-4 h-[calc(100vh-80px)] flex flex-col items-center justify-center">
         <Loader2 className="h-10 w-10 animate-spin text-primary dark:text-accent/20 mb-4" />
@@ -347,6 +355,10 @@ function ChatContent() {
         </div>
       </div>
     );
+  }
+
+  if (userData?.role === 'alumni' && !userData.isVerifiedAlumni) {
+    return <PendingVerificationState />;
   }
 
   const filteredUsers = usersList?.filter(u =>

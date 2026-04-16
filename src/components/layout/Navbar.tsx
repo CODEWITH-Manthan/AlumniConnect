@@ -37,8 +37,20 @@ export default function Navbar() {
   // Check for global unread messages
   const { hasUnread: hasGlobalUnread } = useGlobalUnreadMessages(user?.uid || null);
 
-  // Block navigation for unverified users
-  const isVerified = !user || user.emailVerified;
+  // Core baseline: User must be signed in and email verified.
+  const isEmailVerified = !user || user.emailVerified;
+  
+  // Platform access logic: 
+  // - Students get access if email is verified.
+  // - Alumni get access only if email is verified AND they are dataset-verified.
+  // - Admins get full admin access.
+  const hasPlatformAccess = isEmailVerified && (
+    !userData || 
+    userData.role !== 'alumni' || 
+    userData.isVerifiedAlumni === true
+  );
+
+  const isPendingVerification = isEmailVerified && userData?.role === 'alumni' && !userData.isVerifiedAlumni;
 
   // Sync email verified status to Firestore if needed
   useEffect(() => {
@@ -80,7 +92,7 @@ export default function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center space-x-0.5 flex-1 justify-center overflow-hidden">
-            {isVerified && userData?.role !== 'admin' && navItems.map((item) => {
+            {hasPlatformAccess && userData?.role !== 'admin' && navItems.map((item) => {
               const Icon = item.icon
               const isMessages = item.name === "Messages"
               return (
@@ -104,7 +116,7 @@ export default function Navbar() {
               )
             })}
             {/* Admin link — only visible to verified admins */}
-            {isVerified && userData?.role === 'admin' && (
+            {isEmailVerified && userData?.role === 'admin' && (
               <Link
                 href="/admin"
                 className={cn(
@@ -130,7 +142,7 @@ export default function Navbar() {
               <SheetContent side="right" className="w-64">
                 <div className="flex flex-col gap-6 py-6">
                   <h2 className="text-lg font-bold font-headline">Menu</h2>
-                  {isVerified && userData?.role !== 'admin' && navItems.map((item) => {
+                  {hasPlatformAccess && userData?.role !== 'admin' && navItems.map((item) => {
                     const Icon = item.icon
                     const isMessages = item.name === "Messages"
                     return (
@@ -155,7 +167,7 @@ export default function Navbar() {
                     )
                   })}
                   {/* Admin link — only visible to verified admins */}
-                  {isVerified && userData?.role === 'admin' && (
+                  {isEmailVerified && userData?.role === 'admin' && (
                     <Link
                       href="/admin"
                       onClick={() => setMobileMenuOpen(false)}
@@ -195,24 +207,35 @@ export default function Navbar() {
             ) : user ? (
               <>
                 {/* Email Verification Badge */}
-                {!user.emailVerified && (
+                {!isEmailVerified && (
                   <Link
                     href="/verify-email"
-                    className="hidden sm:flex items-center gap-2 bg-yellow-50 dark:bg-yellow-900/20 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 px-2 md:px-3 py-1.5 rounded-full transition-colors border border-yellow-200 dark:border-yellow-800"
+                    className="hidden sm:flex items-center gap-2 bg-yellow-50 dark:bg-yellow-900/20 hover:bg-yellow-100 dark:bg-yellow-900/30 px-2 md:px-3 py-1.5 rounded-full transition-colors border border-yellow-200 dark:border-yellow-800"
                   >
                     <ShieldAlert className="h-4 w-4 text-yellow-600 dark:text-yellow-500" />
                     <span className="text-xs font-medium text-yellow-700 dark:text-yellow-400 hidden md:inline-block">Verify Email</span>
                   </Link>
                 )}
 
-                {user.emailVerified && (
+                {isEmailVerified && !isPendingVerification && (
                   <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
                     <ShieldCheck className="h-3.5 w-3.5 text-blue-600 dark:text-blue-500" />
-                    <span className="text-xs font-medium text-blue-700 dark:text-blue-400 hidden lg:inline-block">Verified</span>
+                    <span className="text-xs font-medium text-blue-700 dark:text-blue-400 hidden lg:inline-block">
+                      Verified {userData?.role === 'alumni' ? 'Alumni' : ''}
+                    </span>
                   </div>
                 )}
 
-                {isVerified && (
+                {isPendingVerification && (
+                  <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-full bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 shadow-sm animate-pulse">
+                    <ShieldAlert className="h-3.5 w-3.5 text-yellow-600 dark:text-yellow-500" />
+                    <span className="text-xs font-medium text-yellow-700 dark:text-yellow-400 hidden lg:inline-block">
+                      Pending Approval
+                    </span>
+                  </div>
+                )}
+
+                {isEmailVerified && (
                   <Link href="/profile" className="flex items-center gap-1 md:gap-2 bg-muted hover:bg-muted/80 p-1 md:pr-3 lg:pr-4 rounded-full transition-colors border whitespace-nowrap">
                     <div className="bg-primary/10 p-1 rounded-full text-primary dark:text-accent">
                       <User className="h-4 w-4 md:h-5 md:w-5" />

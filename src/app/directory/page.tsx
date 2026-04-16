@@ -11,9 +11,10 @@ import { Label } from "@/components/ui/label"
 import { Search, Filter, Linkedin, Mail, MessageSquare, Loader2, User, X, RotateCcw } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { useFirestore, useMemoFirebase, useCollection, useUser } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { useFirestore, useMemoFirebase, useCollection, useUser, useDoc } from '@/firebase';
+import { collection, query, where, doc } from 'firebase/firestore';
 import UserProfileModal from "@/components/UserProfileModal";
+import PendingVerificationState from "@/components/ui/PendingVerificationState";
 import { cn } from "@/lib/utils"
 
 const DEPARTMENTS = ["CMPN", "IT", "EXTC", "INST", "ETRX", "AIDS", "Other"]
@@ -25,6 +26,12 @@ export default function DirectoryPage() {
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+  const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
 
   const alumniQuery = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -60,6 +67,19 @@ export default function DirectoryPage() {
   };
 
   const activeFiltersCount = selectedDepartment !== "all" ? 1 : 0;
+
+  if (isUserDataLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <p className="text-muted-foreground">Loading directory...</p>
+      </div>
+    );
+  }
+
+  if (userData?.role === 'alumni' && !userData.isVerifiedAlumni) {
+    return <PendingVerificationState />;
+  }
 
   return (
     <div className="container mx-auto py-8 px-4">

@@ -18,6 +18,7 @@ import { incrementStat } from '@/lib/stats';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import UserProfileModal from "@/components/UserProfileModal";
+import PendingVerificationState from "@/components/ui/PendingVerificationState";
 
 function ReplySection({ requestId }: { requestId: string }) {
   const { user } = useUser();
@@ -157,7 +158,7 @@ export default function GuidancePage() {
     if (!firestore || !user) return null;
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
-  const { data: userData } = useDoc(userDocRef);
+  const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
 
   const guidanceQuery = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -165,6 +166,19 @@ export default function GuidancePage() {
   }, [firestore, user]);
 
   const { data: requests, isLoading } = useCollection(guidanceQuery);
+
+  if (isUserDataLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <p className="text-muted-foreground">Loading guidance board...</p>
+      </div>
+    );
+  }
+
+  if (userData?.role === 'alumni' && !userData.isVerifiedAlumni) {
+    return <PendingVerificationState />;
+  }
 
   const handlePostQuestion = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

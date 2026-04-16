@@ -12,5 +12,8 @@
       "bucket": "alumniconnect-app.appspot.com",
       "rules": "storage.rules"
     }
-  ]
+  ],
+  "firestore": {
+    "rules": "firestore.rules"
+  }
 }

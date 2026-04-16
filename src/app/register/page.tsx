@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth, useFirestore } from '@/firebase';
 import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { incrementStat } from '@/lib/stats';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -60,6 +60,37 @@ export default function RegisterPage() {
 
       const user = userCredential.user;
 
+      let isVerifiedAlumni = false;
+
+      // Auto-verification check for alumni
+      if (formData.role === 'alumni') {
+        try {
+          const verifiedRef = collection(db, 'verified_alumni_records');
+          // Important: check names case-insensitively by standardizing them to lower case.
+          // The database SHOULD store these fields in lowercase.
+          const q = query(
+            verifiedRef,
+            where('firstName', '==', formData.firstName.trim().toLowerCase()),
+            where('lastName', '==', formData.lastName.trim().toLowerCase())
+          );
+          
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            querySnapshot.forEach(docSnap => {
+               const data = docSnap.data();
+               const dbYear = data.graduationYear;
+               // If the DB has the exact year OR if the DB explicitly says 'any' (relaxed verification)
+               if (dbYear === formData.gdy.trim() || dbYear === 'any') {
+                 isVerifiedAlumni = true;
+               }
+            });
+          }
+        } catch (autoVerifError) {
+          console.error('Error during automatic verification:', autoVerifError);
+          // Fail safely to manual review
+        }
+      }
+
       // Create user profile in Firestore
       await setDoc(doc(db, 'users', user.uid), {
         id: user.uid,
@@ -73,6 +104,7 @@ export default function RegisterPage() {
         careerInterests: formData.role === 'student' && formData.careerInterests ? formData.careerInterests.split(',').map(s => s.trim()).filter(Boolean) : [],
         jobTitle: formData.role === 'alumni' ? formData.jobTitle.trim() : '',
         fieldOfWorking: formData.role === 'alumni' ? formData.fieldOfWorking.trim() : '',
+        isVerifiedAlumni: formData.role === 'alumni' ? isVerifiedAlumni : null,
         createdAt: new Date().toISOString()
       });
 
@@ -94,11 +126,21 @@ export default function RegisterPage() {
       }
 
       // Always redirect to verification page regardless
+      let desc = emailSentSuccessfully
+        ? "Please check your email to verify your account."
+        : "Account created! Click 'Resend email' on the next page.";
+
+      if (formData.role === 'alumni') {
+        if (isVerifiedAlumni) {
+          desc = "Your alumni status was automatically verified! " + desc;
+        } else {
+          desc = "Your account is pending admin verification. " + desc;
+        }
+      }
+
       toast({
-        title: "Account created!",
-        description: emailSentSuccessfully
-          ? "Please check your email to verify your account."
-          : "Account created! Click 'Resend email' on the next page.",
+        title: formData.role === 'alumni' && isVerifiedAlumni ? "Account created & verified!" : "Account created!",
+        description: desc,
       });
 
       router.push('/verify-email');

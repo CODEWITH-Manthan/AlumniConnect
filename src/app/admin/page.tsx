@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Users, GraduationCap, Briefcase, MessageSquare, Search,
   TrendingUp, Shield, AlertTriangle, CheckCircle, Clock,
@@ -95,7 +96,10 @@ function UserRow({ user: u, currentUserId, onRoleChange, onRemoveUser }: {
           <p className="text-sm font-bold truncate">{u.firstName} {u.lastName}</p>
           {(u as any).emailVerified && <span title="Email Verified"><CheckCircle className="h-3 w-3 text-blue-500" /></span>}
         </div>
-        <p className="text-xs text-muted-foreground truncate">{u.email}</p>
+        <div className="flex items-center gap-2">
+          <p className="text-xs text-muted-foreground truncate">{u.email}</p>
+          {u.role === 'alumni' && !u.isVerifiedAlumni && <Badge className="text-[9px] bg-yellow-500/10 text-yellow-600 border-yellow-500/20 py-0 h-4 px-1.5">Pending</Badge>}
+        </div>
       </div>
       <Badge className={cn('text-[10px] uppercase font-black tracking-wider border capitalize px-2 py-0.5', roleColors[u.role] || roleColors.student)}>
         {u.role || 'student'}
@@ -147,6 +151,9 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'alumni' | 'students' | 'content' | 'activity'>('overview');
   const [searchTerm, setSearchTerm] = useState('');
   const [mounted, setMounted] = useState(false);
+  const [jsonUploadData, setJsonUploadData] = useState('');
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [isUploadingJson, setIsUploadingJson] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -317,6 +324,133 @@ export default function AdminPage() {
     });
   };
 
+  const handleVerifyAlumni = async (uid: string) => {
+    if (!firestore || !uid) return;
+    try {
+      updateDocumentNonBlocking(doc(firestore, 'users', uid), { isVerifiedAlumni: true });
+      toast({
+        title: 'Alumni Verified',
+        description: 'User status successfully updated to verified alumni.',
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to verify alumni status.',
+      });
+    }
+  };
+
+  const parseCSV = (text: string) => {
+    const lines = text.split('\n');
+    const result = [];
+    
+    if (lines.length > 0) {
+      // Keep original headers for better error reporting
+      const originalHeaders = lines[0].split(',').map(h => h.trim());
+      const headers = originalHeaders.map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ''));
+      
+      let fnIdx = headers.findIndex(h => h.includes('first') && h.includes('name'));
+      let lnIdx = headers.findIndex(h => h.includes('last') && h.includes('name'));
+      const nameIdx = headers.findIndex(h => h === 'name' || h === 'fullname' || h === 'studentname');
+      const yrIdx = headers.findIndex(h => h.includes('year') || h.includes('batch') || h.includes('grad') || h.includes('pass') || h.includes('yop') || h.includes('yog'));
+      const deptIdx = headers.findIndex(h => h.includes('dept') || h.includes('department') || h.includes('branch'));
+      
+      if ((fnIdx === -1 || lnIdx === -1) && nameIdx === -1) {
+        throw new Error(`Could not find Name columns. (Found headers: ${originalHeaders.join(', ')}). Must have 'First Name' & 'Last Name' OR 'Name'.`);
+      }
+
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const currentline = lines[i].split(',').map(item => item.trim().replace(/\r/g, ''));
+        if (currentline.length < 2) continue; // need at least name
+        
+        const obj: any = {};
+        
+        if (nameIdx !== -1 && (fnIdx === -1 || lnIdx === -1)) {
+           // We have a single Name column, split it by first space
+           const fullName = currentline[nameIdx] || '';
+           const nameParts = fullName.split(' ').filter(Boolean);
+           obj.firstName = nameParts[0] || '';
+           obj.lastName = nameParts.slice(1).join(' ') || '';
+        } else {
+           // We have separate first and last name columns
+           obj.firstName = currentline[fnIdx] || '';
+           obj.lastName = currentline[lnIdx] || '';
+        }
+        
+        obj.graduationYear = yrIdx !== -1 ? (currentline[yrIdx] || 'any') : 'any';
+        if (deptIdx !== -1) obj.department = currentline[deptIdx] || '';
+        
+        if (obj.firstName) {
+          result.push(obj);
+        }
+      }
+    }
+    return result;
+  };
+
+  const handleUploadData = async () => {
+    if (!firestore) return;
+    try {
+      setIsUploadingJson(true);
+      
+      let data: any[] = [];
+      if (csvFile) {
+        const text = await csvFile.text();
+        data = parseCSV(text);
+      } else if (jsonUploadData.trim()) {
+        data = JSON.parse(jsonUploadData);
+        if (!Array.isArray(data)) {
+          throw new Error("Data must be a JSON array of objects.");
+        }
+      } else {
+        return;
+      }
+      
+      let count = 0;
+      for (const item of data) {
+        if (item.firstName && item.lastName && item.graduationYear) {
+          const cleanFirstName = item.firstName.toString().trim().toLowerCase();
+          const cleanLastName = item.lastName.toString().trim().toLowerCase();
+          const cleanYear = item.graduationYear.toString().trim();
+          
+          if (cleanFirstName && cleanLastName && cleanYear) {
+             // Create unique predictable ID for idempotent uploads and Sanitize slashes
+             const docId = `${cleanFirstName}_${cleanLastName}_${cleanYear}`
+               .replace(/\s+/g, '_')
+               .replace(/\//g, '_')
+               .replace(/\\/g, '_');
+             await setDoc(doc(firestore, 'verified_alumni_records', docId), {
+               firstName: cleanFirstName,
+               lastName: cleanLastName,
+               graduationYear: cleanYear,
+               department: item.department ? item.department.toString().trim() : '',
+             });
+             count++;
+          }
+        }
+      }
+      
+      toast({
+        title: 'Upload Successful',
+        description: `Synced ${count} records to the verification database.`,
+      });
+      setJsonUploadData('');
+      setCsvFile(null);
+      const fileInput = document.getElementById('csv-upload') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
+    } catch (error: any) {
+       toast({
+        variant: "destructive",
+        title: 'Upload Failed',
+        description: error.message || 'Invalid format or data.',
+      });
+    } finally {
+      setIsUploadingJson(false);
+    }
+  };
+
   const handleFixVerifications = async () => {
     if (!firestore || !window.confirm("This will mark all users as Verified in the database. Continue?")) return;
     let count = 0;
@@ -480,7 +614,7 @@ export default function AdminPage() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {[
-                    { label: 'Verified Alumni', count: alumniUsers.filter(u => u.emailVerified).length, total: alumniUsers.length, color: 'bg-blue-500' },
+                    { label: 'Verified Alumni', count: alumniUsers.filter(u => u.isVerifiedAlumni).length, total: alumniUsers.length, color: 'bg-blue-500' },
                     { label: 'Open Opportunities', count: opportunities?.length || 0, total: null, color: 'bg-blue-400' },
                     { label: 'Community Posts', count: guidanceRequests?.length || 0, total: null, color: 'bg-blue-300' },
                   ].map(item => (
@@ -724,6 +858,27 @@ export default function AdminPage() {
                         <CheckCircle className="h-3 w-3" /> Email Verified
                       </div>
                     )}
+                    {u.role === 'alumni' && !u.isVerifiedAlumni && (
+                      <div className="flex flex-col gap-2 mt-3">
+                         <div className="flex items-center gap-1 text-[10px] text-yellow-600 dark:text-yellow-500 font-bold">
+                           <AlertTriangle className="h-3 w-3" /> Pending Alumni Verif
+                         </div>
+                         <Button 
+                           size="sm" 
+                           variant="outline" 
+                           className="w-full text-xs hover:bg-emerald-500/10 hover:text-emerald-600 border-emerald-500/30 text-emerald-600 h-8"
+                           onClick={() => handleVerifyAlumni(u.uid || (u as any).id)}
+                         >
+                           <CheckCircle className="mr-2 h-3 w-3" />
+                           Verify Alumni Status
+                         </Button>
+                      </div>
+                    )}
+                    {u.role === 'alumni' && u.isVerifiedAlumni && (
+                      <div className="flex items-center gap-1 mt-2 text-[10px] text-emerald-600 dark:text-emerald-500 font-bold">
+                        <CheckCircle className="h-3 w-3" /> Verified Alumni
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               )) : (
@@ -900,6 +1055,61 @@ export default function AdminPage() {
                   </Card>
                 ))}
               </div>
+            </div>
+
+            {/* JSON Uploader for Alumni Data */}
+            <div className="mt-8 pt-6 border-t border-border">
+              <h3 className="text-base font-bold mb-4 flex items-center gap-2">
+                <Shield className="h-4 w-4 text-emerald-600 dark:text-emerald-500" /> Database Uploader
+              </h3>
+              <Card className="border-none shadow-sm bg-muted/30">
+                <CardContent className="p-4 space-y-4">
+                  <div>
+                    <h4 className="text-sm font-bold mb-1">Sync Alumni Records</h4>
+                    <p className="text-xs text-muted-foreground mb-4">Upload a CSV file OR paste a JSON array here to instantly authorize them against fake accounts. Required columns: <code>First Name, Last Name, Graduation Year</code>.</p>
+                    
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Upload CSV File</label>
+                        <Input 
+                          id="csv-upload"
+                          type="file" 
+                          accept=".csv"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files.length > 0) {
+                              setCsvFile(e.target.files[0]);
+                              setJsonUploadData('');
+                            }
+                          }}
+                          className="text-xs"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Or Paste JSON</label>
+                        <Textarea 
+                          placeholder='[{"firstName": "John", "lastName": "Doe", "graduationYear": 2024}]' 
+                          className="font-mono text-xs h-9 min-h-0 bg-background resize-y"
+                          value={jsonUploadData}
+                          onChange={(e) => {
+                            setJsonUploadData(e.target.value);
+                            setCsvFile(null);
+                            const fileInput = document.getElementById('csv-upload') as HTMLInputElement;
+                            if (fileInput) fileInput.value = '';
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <Button 
+                    onClick={handleUploadData} 
+                    disabled={isUploadingJson || (!jsonUploadData.trim() && !csvFile)}
+                    className="w-full sm:w-auto"
+                  >
+                    {isUploadingJson ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <TrendingUp className="mr-2 h-4 w-4" />}
+                    Sync To Database
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
           </div>
         )}

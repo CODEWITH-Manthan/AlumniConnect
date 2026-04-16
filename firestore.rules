@@ -13,15 +13,24 @@ service cloud.firestore {
 
     function isAdmin() {
       return isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
     match /users/{userId} {
       allow get, list: if isSignedIn();
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId) || isAdmin()
+      // Allow users to create their own document, but prevent them from setting themselves as admin
+      allow create: if isOwner(userId) && request.resource.data.role != 'admin';
+      
+      // Allow user to update their own profile EXCEPT for protected security fields (role, verifications)
+      allow update: if (
+          isOwner(userId) && 
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'isVerifiedAlumni'])
+        ) 
+        || isAdmin()
         // Allow any signed-in user to update ONLY the hasUnreadMessages field (for message notifications)
         || (isSignedIn() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hasUnreadMessages']));
+        
       allow delete: if isAdmin();
     }
 
@@ -72,6 +81,11 @@ service cloud.firestore {
     match /stats/{docId} {
       allow read: if isSignedIn();
       allow write: if isSignedIn();
+    }
+
+    match /verified_alumni_records/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
   }
 }
