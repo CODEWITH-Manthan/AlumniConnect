@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
-import { User, Mail, MessageSquare, Linkedin, Loader2, Code, Briefcase } from 'lucide-react';
+import { User, Mail, MessageSquare, Linkedin, Loader2, Code, Briefcase, BadgeCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface UserProfileModalProps {
@@ -31,6 +31,8 @@ export default function UserProfileModal({ userId, open, onOpenChange }: UserPro
   const role = userData?.role || 'student';
   const fullName = userData ? `${userData.firstName} ${userData.lastName}` : 'User';
   const userSkills = userData?.skills || [];
+  
+  const isProfileAvailable = userData && !(role === 'alumni' && !userData.isVerifiedAlumni);
 
   if (!open || !userId) return null;
 
@@ -43,7 +45,7 @@ export default function UserProfileModal({ userId, open, onOpenChange }: UserPro
             <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
             <p className="text-muted-foreground">Loading profile...</p>
           </div>
-        ) : userData ? (
+        ) : isProfileAvailable ? (
           <div className="space-y-6">
             {/* Profile Header */}
             <div className="flex flex-col items-center text-center space-y-3">
@@ -65,7 +67,10 @@ export default function UserProfileModal({ userId, open, onOpenChange }: UserPro
                 )}
               </div>
               <div>
-                <h2 className="text-2xl font-bold font-headline">{fullName}</h2>
+                <h2 className="text-2xl font-bold font-headline flex items-center justify-center gap-2">
+                  {fullName}
+                  {userData?.emailVerified && <BadgeCheck className="h-5 w-5 text-blue-500" title="Verified" />}
+                </h2>
                 <div className="flex items-center justify-center gap-2 mt-1">
                   <Badge className={cn(
                     "uppercase text-[10px] tracking-widest",
@@ -134,11 +139,16 @@ export default function UserProfileModal({ userId, open, onOpenChange }: UserPro
                     <Mail className="h-4 w-4" />
                     <span>{userData.email}</span>
                   </div>
-                  {userData?.linkedinUrl && (
+                  {userData?.linkedinUrl ? (
                     <a href={userData.linkedinUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-primary hover:underline">
                       <Linkedin className="h-4 w-4" />
                       <span>LinkedIn Profile</span>
                     </a>
+                  ) : (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground opacity-50">
+                      <Linkedin className="h-4 w-4" />
+                      <span>Not connected</span>
+                    </div>
                   )}
                 </div>
               </div>

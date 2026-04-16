@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { Search, Filter, Linkedin, Mail, MessageSquare, Loader2, User, X, RotateCcw } from "lucide-react"
+import { Search, Filter, Linkedin, Mail, MessageSquare, Loader2, User, X, RotateCcw, BadgeCheck } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useFirestore, useMemoFirebase, useCollection, useUser, useDoc } from '@/firebase';
@@ -41,6 +41,8 @@ export default function DirectoryPage() {
   const { data: allUsers, isLoading } = useCollection(alumniQuery);
 
   const filteredUsers = allUsers?.filter(person => {
+    if (!person.emailVerified || !person.isVerifiedAlumni) return false;
+
     const fullName = `${person.firstName} ${person.lastName}`.toLowerCase();
     const email = (person.email || "").toLowerCase();
     const skills = (person.skills || []).map((s: string) => s.toLowerCase());
@@ -184,8 +186,9 @@ export default function DirectoryPage() {
                   )}
                 </button>
                 <div className="flex-1">
-                  <button onClick={() => { setSelectedUserId(person.id); setIsProfileModalOpen(true); }} className="text-lg font-bold hover:text-primary transition-colors text-left">
+                  <button onClick={() => { setSelectedUserId(person.id); setIsProfileModalOpen(true); }} className="text-lg font-bold hover:text-primary transition-colors text-left flex items-center gap-1">
                     {person.firstName} {person.lastName}
+                    {person.emailVerified && <BadgeCheck className="h-4 w-4 text-blue-500" title="Verified" />}
                   </button>
                   <p className="text-xs font-semibold text-secondary uppercase tracking-wider">{person.role === 'alumni' ? 'Alumni' : person.role}</p>
                   {person.fieldOfWorking && (
@@ -207,11 +210,17 @@ export default function DirectoryPage() {
               </CardContent>
               <CardFooter className="border-t border-blue-500/10 bg-blue-500/5 pt-4 flex justify-between">
                 <div className="flex gap-2">
-                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                    <Linkedin className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                    <Mail className="h-4 w-4" />
+                  {person.linkedinUrl && (
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" asChild>
+                      <a href={person.linkedinUrl} target="_blank" rel="noopener noreferrer">
+                        <Linkedin className="h-4 w-4" />
+                      </a>
+                    </Button>
+                  )}
+                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" asChild>
+                    <a href={`mailto:${person.email}`}>
+                      <Mail className="h-4 w-4" />
+                    </a>
                   </Button>
                 </div>
                 <Button size="sm" variant="default" className="bg-primary" asChild>

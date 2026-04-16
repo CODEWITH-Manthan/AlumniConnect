@@ -363,6 +363,7 @@ function ChatContent() {
 
   const filteredUsers = usersList?.filter(u =>
     u.id !== user?.uid &&
+    !(u.role === 'alumni' && !u.isVerifiedAlumni) &&
     (`${u.firstName || ''} ${u.lastName || ''}`.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
@@ -471,7 +472,6 @@ function ChatContent() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-primary dark:text-accent" suppressHydrationWarning><MoreVertical className="h-4 w-4" /></Button>
                 </div>
               </div>
 

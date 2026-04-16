@@ -72,6 +72,11 @@ export default function Home() {
   // Search and Filter State
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState<string>("All");
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
+
+  const toggleExpand = (id: string) => {
+    setExpandedCards(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -404,7 +409,21 @@ export default function Home() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed">{opp.description}</p>
+                  <p className={cn(
+                    "text-muted-foreground text-sm leading-relaxed whitespace-pre-wrap",
+                    !expandedCards[opp.id] && "line-clamp-3"
+                  )}>
+                    {opp.description}
+                  </p>
+                  {opp.description?.length > 160 && (
+                    <Button 
+                      variant="link" 
+                      className="p-0 h-auto mt-2 font-semibold text-primary/80 hover:text-primary transition-colors text-xs"
+                      onClick={() => toggleExpand(opp.id)}
+                    >
+                      {expandedCards[opp.id] ? "Show Less" : "Read More"}
+                    </Button>
+                  )}
                 </CardContent>
                 <CardFooter className="flex justify-between border-t bg-muted/10 pt-4 px-6">
                   <div className="flex items-center gap-2">

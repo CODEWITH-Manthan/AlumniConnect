@@ -852,6 +852,12 @@ export default function AdminPage() {
                           <p className="font-bold truncate">{u.location}</p>
                         </div>
                       )}
+                      {u.linkedinUrl && (
+                        <div className="bg-muted/30 rounded-lg p-2 col-span-2">
+                          <p className="text-muted-foreground mb-0.5">LinkedIn</p>
+                          <a href={u.linkedinUrl} target="_blank" rel="noopener noreferrer" className="font-bold truncate text-primary hover:underline">{u.linkedinUrl}</a>
+                        </div>
+                      )}
                     </div>
                     {u.emailVerified && (
                       <div className="flex items-center gap-1 mt-3 text-[10px] text-blue-600 dark:text-blue-500 font-bold">
@@ -861,7 +867,7 @@ export default function AdminPage() {
                     {u.role === 'alumni' && !u.isVerifiedAlumni && (
                       <div className="flex flex-col gap-2 mt-3">
                          <div className="flex items-center gap-1 text-[10px] text-yellow-600 dark:text-yellow-500 font-bold">
-                           <AlertTriangle className="h-3 w-3" /> Pending Alumni Verif
+                           <AlertTriangle className="h-3 w-3" /> Pending Alumni Verification
                          </div>
                          <Button 
                            size="sm" 
@@ -937,6 +943,12 @@ export default function AdminPage() {
                         <div className="bg-muted/30 rounded-lg p-2">
                           <p className="text-muted-foreground mb-0.5">Grad Year</p>
                           <p className="font-bold">{u.graduationYear || u.gdy}</p>
+                        </div>
+                      )}
+                      {u.linkedinUrl && (
+                        <div className="bg-muted/30 rounded-lg p-2 col-span-2">
+                          <p className="text-muted-foreground mb-0.5">LinkedIn</p>
+                          <a href={u.linkedinUrl} target="_blank" rel="noopener noreferrer" className="font-bold truncate text-primary hover:underline">{u.linkedinUrl}</a>
                         </div>
                       )}
                     </div>

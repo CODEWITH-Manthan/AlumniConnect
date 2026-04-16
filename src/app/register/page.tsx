@@ -29,6 +29,7 @@ export default function RegisterPage() {
     careerInterests: '' as string,
     jobTitle: '' as string,
     fieldOfWorking: '' as string,
+    linkedinUrl: '' as string,
   });
   const [isLoading, setIsLoading] = useState(false);
   const auth = useAuth();
@@ -104,6 +105,7 @@ export default function RegisterPage() {
         careerInterests: formData.role === 'student' && formData.careerInterests ? formData.careerInterests.split(',').map(s => s.trim()).filter(Boolean) : [],
         jobTitle: formData.role === 'alumni' ? formData.jobTitle.trim() : '',
         fieldOfWorking: formData.role === 'alumni' ? formData.fieldOfWorking.trim() : '',
+        linkedinUrl: formData.linkedinUrl.trim(),
         isVerifiedAlumni: formData.role === 'alumni' ? isVerifiedAlumni : null,
         createdAt: new Date().toISOString()
       });
@@ -294,6 +296,17 @@ export default function RegisterPage() {
                 className="h-8 md:h-10 text-xs md:text-sm"
                 value={formData.gdy}
                 onChange={(e) => setFormData({ ...formData, gdy: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="linkedinUrl" className="text-xs md:text-sm">LinkedIn Profile URL</Label>
+              <Input
+                id="linkedinUrl"
+                placeholder="https://linkedin.com/in/username"
+                className="h-8 md:h-10 text-xs md:text-sm"
+                value={formData.linkedinUrl}
+                onChange={(e) => setFormData({ ...formData, linkedinUrl: e.target.value })}
               />
             </div>
 

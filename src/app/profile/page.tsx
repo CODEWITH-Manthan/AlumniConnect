@@ -161,6 +161,7 @@ export default function ProfilePage() {
       bio: formData.get('bio'),
       department: formData.get('department'),
       graduationYear: formData.get('graduationYear'),
+      linkedinUrl: formData.get('linkedinUrl') || '',
     };
 
     // Include fieldOfWorking for alumni
@@ -551,6 +552,10 @@ export default function ProfilePage() {
                           <Label htmlFor="graduationYear">Graduation Year</Label>
                           <Input id="graduationYear" name="graduationYear" defaultValue={userData?.graduationYear || userData?.gdy || ""} disabled={!isEditing} className="bg-muted/30" suppressHydrationWarning />
                         </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="linkedinUrl">LinkedIn Profile URL</Label>
+                        <Input id="linkedinUrl" name="linkedinUrl" defaultValue={userData?.linkedinUrl || ""} disabled={!isEditing} className="bg-muted/30" placeholder="https://linkedin.com/in/username" suppressHydrationWarning />
                       </div>
                       {role === 'alumni' && (
                         <div className="space-y-2">

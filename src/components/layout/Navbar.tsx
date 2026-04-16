@@ -65,192 +65,214 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-white/5 bg-background shadow-2xl">
-      <div className="container mx-auto px-2 sm:px-4">
-        <div className="flex h-16 md:h-20 items-center justify-between gap-2 lg:gap-6">
-          <div className="flex items-center gap-3 lg:gap-6">
-            <Link href="/" className="shrink-0 flex items-center h-full py-2">
-              <div className="bg-white p-1 md:p-1.5 rounded-xl overflow-hidden border border-blue-500/20 shadow-sm transition-transform hover:scale-105">
+    <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/70 backdrop-blur-xl supports-[backdrop-filter]:bg-background/40 transition-all duration-300">
+      <div className="container mx-auto px-2 sm:px-6">
+        <div className="flex h-16 md:h-20 items-center justify-between gap-4">
+          {/* Logo & Branding */}
+          <div className="flex items-center gap-3 lg:gap-5">
+            <Link href="/" className="shrink-0 flex items-center h-full py-2 group">
+              <div className="bg-white p-1 md:p-1.5 rounded-2xl overflow-hidden border border-border shadow-sm transition-all duration-300 group-hover:shadow-md group-hover:scale-105 group-hover:-rotate-2">
                 <Image
                   src="/vesit-logo.png"
                   alt="VESIT Logo"
                   width={300}
                   height={80}
                   priority
-                  className="h-10 md:h-12 lg:h-14 w-auto object-contain"
+                  className="h-10 md:h-11 lg:h-12 w-auto object-contain"
                 />
               </div>
             </Link>
-            <Link href="/" className="flex items-center gap-2 group shrink-0">
-              <div className="bg-blue-500 p-1.5 rounded-lg transition-all group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(13,59,102,0.4)]">
+            <Link href="/" className="flex items-center gap-2.5 group shrink-0">
+              <div className="bg-gradient-to-tr from-blue-600 to-indigo-500 p-1.5 rounded-xl transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]">
                 <GraduationCap className="h-5 w-5 text-white" />
               </div>
-              <span className="text-xl font-headline font-bold text-foreground dark:text-white tracking-tight group-hover:text-blue-500 transition-colors">
-                AlumniConnect
+              <span className="text-xl font-headline font-black tracking-tight text-foreground dark:text-white transition-colors duration-300">
+                Alumni<span className="text-blue-600 dark:text-blue-400">Connect</span>
               </span>
             </Link>
           </div>
 
-          <div className="hidden md:flex items-center space-x-0.5 flex-1 justify-center overflow-hidden">
+          {/* Core Navigation (Desktop) */}
+          <div className="hidden md:flex items-center p-1 bg-muted/40 border border-border/50 rounded-full">
             {hasPlatformAccess && userData?.role !== 'admin' && navItems.map((item) => {
               const Icon = item.icon
               const isMessages = item.name === "Messages"
+              const isActive = pathname === item.href
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-1.5 px-2 lg:px-4 py-2 rounded-md text-sm lg:text-base font-medium transition-all hover:bg-blue-500/10 relative whitespace-nowrap",
-                    pathname === item.href
-                      ? "text-blue-400 bg-blue-500/10"
-                      : "text-muted-foreground"
+                    "relative flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 group overflow-hidden",
+                    isActive
+                      ? "text-primary bg-background shadow-sm border border-border/50"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                   )}
                 >
-                  <Icon className="h-4 w-4 lg:h-5 lg:w-5" />
+                  <Icon className={cn("h-4 w-4 transition-transform duration-300", isActive ? "scale-110" : "group-hover:scale-110")} />
                   {item.name}
                   {/* Show red dot for Messages if there are unread messages */}
                   {isMessages && hasGlobalUnread && (
-                    <div className="absolute -top-0.5 -right-0.5 h-2 w-2 bg-red-500 rounded-full animate-pulse" />
+                    <div className="absolute top-1.5 right-2 h-2 w-2 bg-red-500 rounded-full animate-bounce shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
                   )}
                 </Link>
               )
             })}
+            
             {/* Admin link — only visible to verified admins */}
             {isEmailVerified && userData?.role === 'admin' && (
               <Link
                 href="/admin"
                 className={cn(
-                  "flex items-center gap-1.5 px-2 lg:px-4 py-2 rounded-md text-sm lg:text-base font-medium transition-all relative whitespace-nowrap",
+                  "relative flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 border",
                   pathname === '/admin'
-                    ? "text-red-600 bg-red-50"
-                    : "text-red-500 hover:bg-red-50 hover:text-red-600"
+                    ? "text-red-700 bg-red-100 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-800/50 shadow-sm"
+                    : "text-red-600 bg-red-50/50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/40 border-transparent hover:border-red-200 dark:hover:border-red-800/50"
                 )}
               >
-                <LayoutDashboard className="h-4 w-4 lg:h-5 lg:w-5" />
-                Admin
+                <LayoutDashboard className="h-4 w-4" />
+                Admin Console
               </Link>
             )}
           </div>
 
+          {/* Mobile Menu */}
           <div className="md:hidden">
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-10 w-10">
-                  <Menu className="h-5 w-5" />
+                <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-border/50 bg-background/50 backdrop-blur-sm">
+                  <Menu className="h-5 w-5 text-foreground" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-64">
-                <div className="flex flex-col gap-6 py-6">
-                  <h2 className="text-lg font-bold font-headline">Menu</h2>
-                  {hasPlatformAccess && userData?.role !== 'admin' && navItems.map((item) => {
-                    const Icon = item.icon
-                    const isMessages = item.name === "Messages"
-                    return (
+              <SheetContent side="right" className="w-72 border-l border-border/50 bg-background/95 backdrop-blur-xl">
+                <div className="flex flex-col gap-6 py-8">
+                  <div className="flex items-center gap-3 pb-4 border-b border-border/50">
+                    <div className="bg-gradient-to-tr from-blue-600 to-indigo-500 p-2 rounded-xl shadow-md">
+                      <GraduationCap className="h-6 w-6 text-white" />
+                    </div>
+                    <span className="text-xl font-headline font-black tracking-tight">Navigation</span>
+                  </div>
+                  
+                  <div className="flex flex-col gap-2">
+                    {hasPlatformAccess && userData?.role !== 'admin' && navItems.map((item) => {
+                      const Icon = item.icon
+                      const isMessages = item.name === "Messages"
+                      const isActive = pathname === item.href
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={cn(
+                            "flex items-center gap-3 px-4 py-3 rounded-xl text-base font-semibold transition-all active:scale-95",
+                            isActive
+                              ? "text-primary bg-primary/10 border border-primary/20 shadow-sm"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                          )}
+                        >
+                          <Icon className={cn("h-5 w-5", isActive && "text-primary")} />
+                          {item.name}
+                          {isMessages && hasGlobalUnread && (
+                            <div className="ml-auto h-2.5 w-2.5 bg-red-500 rounded-full animate-pulse shadow-sm" />
+                          )}
+                        </Link>
+                      )
+                    })}
+                    
+                    {isEmailVerified && userData?.role === 'admin' && (
                       <Link
-                        key={item.href}
-                        href={item.href}
+                        href="/admin"
                         onClick={() => setMobileMenuOpen(false)}
                         className={cn(
-                          "flex items-center gap-3 px-2 py-2 rounded-md text-sm font-medium transition-all relative",
-                          pathname === item.href
-                            ? "text-primary bg-primary/5"
-                            : "text-muted-foreground hover:text-foreground"
+                          "flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all active:scale-95 mt-4 border",
+                          pathname === '/admin'
+                            ? "text-red-700 bg-red-100 dark:bg-red-900/30 border-red-200 dark:border-red-800/50"
+                            : "text-red-600 bg-red-50/50 hover:bg-red-100 dark:bg-red-900/10 border-red-100 dark:border-red-900/30"
                         )}
                       >
-                        <Icon className="h-4 w-4" />
-                        {item.name}
-                        {/* Show red dot for Messages if there are unread messages */}
-                        {isMessages && hasGlobalUnread && (
-                          <div className="ml-auto h-2 w-2 bg-red-500 rounded-full animate-pulse" />
-                        )}
+                        <LayoutDashboard className="h-5 w-5" />
+                        Admin Console
                       </Link>
-                    )
-                  })}
-                  {/* Admin link — only visible to verified admins */}
-                  {isEmailVerified && userData?.role === 'admin' && (
-                    <Link
-                      href="/admin"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={cn(
-                        "flex items-center gap-3 px-2 py-2 rounded-md text-sm font-medium transition-all",
-                        pathname === '/admin'
-                          ? "text-red-600 bg-red-50"
-                          : "text-red-500 hover:text-red-600 hover:bg-red-50"
-                      )}
-                    >
-                      <LayoutDashboard className="h-4 w-4" />
-                      Admin Panel
-                    </Link>
-                  )}
+                    )}
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>
           </div>
 
-          <div className="flex items-center gap-1.5 md:gap-3">
+          {/* Actions & Profiles */}
+          <div className="flex items-center gap-2 md:gap-4 shrink-0">
             <Button
-              variant="ghost"
+              variant="outline"
               size="icon"
-              className="h-9 w-9 rounded-full mr-1 lg:mr-2 shrink-0"
+              className="h-10 w-10 rounded-full border-border/50 bg-background/50 backdrop-blur-sm hidden sm:flex shrink-0 transition-colors hover:bg-muted"
               onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
               aria-label="Toggle theme"
             >
-              {resolvedTheme === 'dark' ? (
-                <Sun className="h-4 w-4 md:h-5 md:w-5" />
-              ) : (
-                <Moon className="h-4 w-4 md:h-5 md:w-5" />
-              )}
+              <div className="relative flex items-center justify-center h-full w-full">
+                {resolvedTheme === 'dark' ? (
+                  <Sun className="h-4 w-4 md:h-5 md:w-5 absolute transition-all rotate-0 scale-100" />
+                ) : (
+                  <Moon className="h-4 w-4 md:h-5 md:w-5 absolute transition-all rotate-0 scale-100" />
+                )}
+              </div>
             </Button>
             
             {isUserLoading ? (
-              <div className="h-8 w-20 md:w-24 bg-muted animate-pulse rounded-md" />
+              <div className="h-10 w-24 bg-muted animate-pulse rounded-full" />
             ) : user ? (
-              <>
+              <div className="flex items-center gap-2">
                 {/* Email Verification Badge */}
                 {!isEmailVerified && (
                   <Link
                     href="/verify-email"
-                    className="hidden sm:flex items-center gap-2 bg-yellow-50 dark:bg-yellow-900/20 hover:bg-yellow-100 dark:bg-yellow-900/30 px-2 md:px-3 py-1.5 rounded-full transition-colors border border-yellow-200 dark:border-yellow-800"
+                    className="hidden sm:flex items-center gap-1.5 bg-yellow-500/10 hover:bg-yellow-500/20 px-3 py-1.5 rounded-full transition-colors border border-yellow-500/20 group"
                   >
-                    <ShieldAlert className="h-4 w-4 text-yellow-600 dark:text-yellow-500" />
-                    <span className="text-xs font-medium text-yellow-700 dark:text-yellow-400 hidden md:inline-block">Verify Email</span>
+                    <ShieldAlert className="h-4 w-4 text-yellow-600 dark:text-yellow-500 group-hover:scale-110 transition-transform" />
+                    <span className="text-xs font-bold text-yellow-700 dark:text-yellow-400 hidden md:inline-block tracking-tight">Verify Email</span>
                   </Link>
                 )}
 
                 {isEmailVerified && !isPendingVerification && (
-                  <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-                    <ShieldCheck className="h-3.5 w-3.5 text-blue-600 dark:text-blue-500" />
-                    <span className="text-xs font-medium text-blue-700 dark:text-blue-400 hidden lg:inline-block">
+                  <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 shadow-sm cursor-default">
+                    <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-500" />
+                    <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 tracking-tight">
                       Verified {userData?.role === 'alumni' ? 'Alumni' : ''}
                     </span>
                   </div>
                 )}
 
                 {isPendingVerification && (
-                  <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-full bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 shadow-sm animate-pulse">
-                    <ShieldAlert className="h-3.5 w-3.5 text-yellow-600 dark:text-yellow-500" />
-                    <span className="text-xs font-medium text-yellow-700 dark:text-yellow-400 hidden lg:inline-block">
-                      Pending Approval
+                  <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 shadow-sm cursor-default">
+                    <div className="relative flex h-3 w-3 items-center justify-center">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                    </div>
+                    <span className="text-xs font-bold text-amber-700 dark:text-amber-400 tracking-tight">
+                      Pending Verification
                     </span>
                   </div>
                 )}
 
                 {isEmailVerified && (
-                  <Link href="/profile" className="flex items-center gap-1 md:gap-2 bg-muted hover:bg-muted/80 p-1 md:pr-3 lg:pr-4 rounded-full transition-colors border whitespace-nowrap">
-                    <div className="bg-primary/10 p-1 rounded-full text-primary dark:text-accent">
-                      <User className="h-4 w-4 md:h-5 md:w-5" />
+                  <Link 
+                    href="/profile" 
+                    className="flex items-center gap-2.5 bg-primary hover:bg-primary/90 text-primary-foreground p-1.5 pr-4 rounded-full transition-all shadow-md hover:shadow-lg active:scale-95 group border border-primary/20"
+                  >
+                    <div className="bg-background/20 p-1.5 rounded-full backdrop-blur-sm group-hover:bg-background/30 transition-colors">
+                      <User className="h-4 w-4" />
                     </div>
-                    <span className="text-[10px] md:text-xs lg:text-sm font-medium hidden sm:inline-block">My Profile</span>
+                    <span className="text-xs lg:text-sm font-bold tracking-tight hidden sm:inline-block">My Profile</span>
                   </Link>
                 )}
-              </>
+              </div>
             ) : (
-              <div className="flex items-center gap-1 md:gap-2">
-                <Button variant="ghost" asChild className="hidden sm:inline-flex h-9 text-xs md:text-sm">
+              <div className="flex items-center gap-3">
+                <Button variant="ghost" asChild className="hidden sm:inline-flex h-10 px-4 text-sm font-semibold rounded-full hover:bg-muted">
                   <Link href="/login">Sign In</Link>
                 </Button>
-                <Button asChild className="h-9 text-xs md:text-sm px-3 md:px-4">
-                  <Link href="/register">Join Now</Link>
+                <Button asChild className="h-10 px-5 text-sm font-bold rounded-full shadow-md hover:shadow-lg transition-all active:scale-95">
+                  <Link href="/register">Join Platform</Link>
                 </Button>
               </div>
             )}
