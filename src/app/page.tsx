@@ -544,48 +544,79 @@ export default function Home() {
         </div>
 
         <div className="space-y-6">
-          <Card className="border-none shadow-sm bg-card overflow-hidden">
-            <CardHeader className="bg-muted/30 border-b">
-              <CardTitle className="text-lg font-headline flex items-center gap-2">
-                <Users className="h-5 w-5 text-primary dark:text-accent" /> Network Overview
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 pt-6">
-              <div className="flex justify-between items-center p-4 bg-primary/5 rounded-xl border border-primary/10">
-                <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Verified Alumni</span>
-                  <span className="text-2xl font-black text-primary dark:text-accent font-headline">
-                    {globalStats ? (globalStats.alumniCount ?? 0).toLocaleString() : "..."}
-                  </span>
-                </div>
-                <div className="bg-primary/10 p-2 rounded-lg">
-                  <Users className="h-5 w-5 text-primary dark:text-accent" />
-                </div>
-              </div>
-              <div className="flex justify-between items-center p-4 bg-secondary/5 rounded-xl border border-secondary/10">
-                <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Open Roles</span>
-                  <span className="text-2xl font-black text-primary dark:text-accent font-headline">
-                    {globalStats ? (globalStats.openRoles ?? 0).toLocaleString() : "..."}
-                  </span>
-                </div>
-                <div className="bg-secondary/10 p-2 rounded-lg">
-                  <Briefcase className="h-5 w-5 text-primary dark:text-accent" />
+          <div className="relative overflow-hidden rounded-[2rem] border border-border/40 bg-card/40 backdrop-blur-3xl shadow-xl w-full group">
+            {/* Glossy top highlight */}
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 dark:via-white/20 to-transparent"></div>
+            
+            {/* Background ambient glow */}
+            <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-primary/20 blur-[60px] opacity-50 group-hover:bg-primary/30 group-hover:scale-110 transition-all duration-700"></div>
+            <div className="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-blue-500/20 dark:bg-cyan-500/20 blur-[60px] opacity-40 group-hover:bg-blue-500/30 transition-all duration-700 delay-100"></div>
+
+            <div className="relative p-6 lg:p-8">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-xl font-bold font-headline flex items-center gap-3">
+                  <div className="bg-primary/10 dark:bg-primary/20 p-2.5 rounded-xl text-primary backdrop-blur-md border border-primary/20 shadow-[inset_0_1px_rgba(255,255,255,0.2)]">
+                    <Users className="h-5 w-5" />
+                  </div>
+                  Platform Pulse
+                </h2>
+                <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                  <div className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </div>
+                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">Live</span>
                 </div>
               </div>
-              <div className="flex justify-between items-center p-4 bg-accent/5 rounded-xl border border-accent/10">
-                <div className="flex flex-col">
-                  <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Active Discussions</span>
-                  <span className="text-2xl font-black text-primary dark:text-accent font-headline">
-                    {globalStats ? (globalStats.activeDiscussions ?? 0).toLocaleString() : "..."}
-                  </span>
+
+              <div className="grid grid-cols-1 gap-3.5">
+                {/* Stat 1: Verified Alumni */}
+                <div className="group/stat relative flex items-center justify-between overflow-hidden rounded-2xl bg-white/50 hover:bg-white/80 dark:bg-black/20 dark:hover:bg-black/40 border border-black/5 dark:border-white/5 hover:border-primary/20 p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+                  <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-0 group-hover/stat:opacity-100 transition-opacity duration-500"></div>
+                  <div className="flex flex-col z-10">
+                    <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground group-hover/stat:text-primary transition-colors">Verified Alumni</span>
+                    <span className="text-4xl font-black tracking-tighter text-foreground mt-1">
+                      {globalStats ? (globalStats.alumniCount ?? 0).toLocaleString() : "..."}
+                    </span>
+                  </div>
+                  <div className="p-3 bg-primary/5 rounded-[1rem] group-hover/stat:bg-primary/10 transition-colors z-10">
+                    <Users className="h-7 w-7 text-primary/40 group-hover/stat:text-primary transition-all group-hover/stat:scale-110 duration-300" />
+                  </div>
+                  <div className="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-primary/10 blur-xl opacity-0 group-hover/stat:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                 </div>
-                <div className="bg-accent/10 p-2 rounded-lg">
-                  <MessageSquareQuote className="h-5 w-5 text-primary dark:text-accent" />
+
+                {/* Stat 2: Open Roles */}
+                <div className="group/stat relative flex items-center justify-between overflow-hidden rounded-2xl bg-white/50 hover:bg-white/80 dark:bg-black/20 dark:hover:bg-black/40 border border-black/5 dark:border-white/5 hover:border-blue-500/20 p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+                  <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-0 group-hover/stat:opacity-100 transition-opacity duration-500"></div>
+                  <div className="flex flex-col z-10">
+                    <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground group-hover/stat:text-blue-500 transition-colors">Open Roles</span>
+                    <span className="text-4xl font-black tracking-tighter text-foreground mt-1">
+                      {globalStats ? (globalStats.openRoles ?? 0).toLocaleString() : "..."}
+                    </span>
+                  </div>
+                  <div className="p-3 bg-blue-500/5 rounded-[1rem] group-hover/stat:bg-blue-500/10 transition-colors z-10">
+                    <Briefcase className="h-7 w-7 text-blue-500/40 group-hover/stat:text-blue-500 transition-all group-hover/stat:scale-110 duration-300" />
+                  </div>
+                  <div className="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-blue-500/10 blur-xl opacity-0 group-hover/stat:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                </div>
+
+                {/* Stat 3: Active Discussions */}
+                <div className="group/stat relative flex items-center justify-between overflow-hidden rounded-2xl bg-white/50 hover:bg-white/80 dark:bg-black/20 dark:hover:bg-black/40 border border-black/5 dark:border-white/5 hover:border-indigo-500/20 p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+                  <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent opacity-0 group-hover/stat:opacity-100 transition-opacity duration-500"></div>
+                  <div className="flex flex-col z-10">
+                    <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground group-hover/stat:text-indigo-500 transition-colors">Discussions</span>
+                    <span className="text-4xl font-black tracking-tighter text-foreground mt-1">
+                      {globalStats ? (globalStats.activeDiscussions ?? 0).toLocaleString() : "..."}
+                    </span>
+                  </div>
+                  <div className="p-3 bg-indigo-500/5 rounded-[1rem] group-hover/stat:bg-indigo-500/10 transition-colors z-10">
+                    <MessageSquareQuote className="h-7 w-7 text-indigo-500/40 group-hover/stat:text-indigo-500 transition-all group-hover/stat:scale-110 duration-300" />
+                  </div>
+                  <div className="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-indigo-500/10 blur-xl opacity-0 group-hover/stat:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           <Card className="bg-primary text-primary-foreground dark:text-accent-foreground border-none shadow-xl overflow-hidden relative">
             <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />

@@ -250,7 +250,7 @@ export default function GuidancePage() {
         
         <Dialog open={isPostDialogOpen} onOpenChange={setIsPostDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-primary hover:bg-primary/90 rounded-full shadow-lg h-11 px-6">
+            <Button className="bg-primary hover:bg-primary/90 rounded-full shadow-lg h-11 px-6 transition-transform active:scale-95 font-bold">
               <Plus className="mr-2 h-5 w-5" /> Ask a Question
             </Button>
           </DialogTrigger>
@@ -300,33 +300,47 @@ export default function GuidancePage() {
 
         <div className="grid gap-6">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="h-10 w-10 animate-spin text-primary dark:text-accent/30 mb-4" />
-              <p className="text-muted-foreground animate-pulse">Gathering community insights...</p>
+            <div className="space-y-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex flex-col border border-border/40 rounded-[2rem] shadow-sm overflow-hidden h-[180px] animate-pulse bg-card/40 backdrop-blur-3xl relative">
+                  <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/5 dark:via-white/5 to-transparent"></div>
+                  <div className="p-6 pb-2">
+                     <div className="h-3 w-16 bg-primary/20 rounded-md mb-4"></div>
+                     <div className="h-6 w-3/4 bg-foreground/10 rounded-md"></div>
+                  </div>
+                  <div className="px-6 pb-6 space-y-2">
+                    <div className="h-3 bg-muted/60 rounded-md w-full"></div>
+                    <div className="h-3 bg-muted/60 rounded-md w-2/3"></div>
+                  </div>
+                  <div className="p-4 bg-muted/10 h-[68px] mt-auto border-t border-border/20"></div>
+                </div>
+              ))}
             </div>
           ) : filteredRequests && filteredRequests.length > 0 ? (
             filteredRequests.map((q) => (
-              <Card key={q.id} className="border shadow-sm hover:shadow-md transition-all group overflow-hidden bg-card/50 backdrop-blur-sm">
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-center mb-3">
-                    <Badge variant="secondary" className="bg-secondary/10 text-secondary border-none uppercase text-[9px] tracking-widest font-black py-0.5">
+              <Card key={q.id} className="group relative border border-border/40 overflow-hidden bg-card/40 backdrop-blur-3xl shadow-sm transition-all duration-500 hover:shadow-xl hover:border-primary/30 rounded-[2rem]">
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-primary/10 blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                <CardHeader className="pb-3 relative z-10">
+                  <div className="flex justify-between items-center mb-4">
+                    <Badge variant="secondary" className="bg-primary/5 text-primary border border-primary/10 uppercase text-[9px] tracking-widest font-black py-0.5 px-3">
                       {q.category || "GENERAL"}
                     </Badge>
-                    <span className="text-[10px] text-muted-foreground font-medium">
-                      {mounted ? new Date(q.datePosted).toLocaleDateString('en-GB', { month: 'short', day: 'numeric', year: 'numeric' }) : '...'}
+                    <span className="text-[10px] text-muted-foreground font-semibold tracking-wider uppercase">
+                      {mounted ? new Date(q.datePosted).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '...'}
                     </span>
                   </div>
                   <CardTitle 
-                    className="text-xl font-headline group-hover:text-primary cursor-pointer transition-colors leading-tight"
+                    className="text-2xl font-headline group-hover:text-primary cursor-pointer transition-colors leading-tight tracking-tight"
                     onClick={() => setSelectedRequestId(q.id)}
                   >
                     {q.title}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="pb-6">
-                  <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed">{q.description}</p>
+                <CardContent className="pb-6 relative z-10">
+                  <p className="text-foreground/70 line-clamp-2 text-base leading-relaxed">{q.description}</p>
                 </CardContent>
-                <CardFooter className="border-t border-blue-500/10 bg-blue-500/5 pt-4 flex justify-between items-center px-6">
+                <CardFooter className="border-t border-border/40 bg-muted/10 pt-4 pb-4 flex justify-between items-center px-6 relative z-10 backdrop-blur-xl">
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs border border-primary/20 shadow-sm">
                       {q.studentName?.[0] || 'S'}
@@ -364,12 +378,17 @@ export default function GuidancePage() {
               </Card>
             ))
           ) : (
-            <div className="text-center py-24 bg-muted/10 rounded-3xl border border-dashed flex flex-col items-center">
-              <MessageCircle className="h-12 w-12 text-muted-foreground opacity-20 mb-4" />
-              <h3 className="text-lg font-bold">The feed is quiet...</h3>
-              <p className="text-muted-foreground max-w-xs mx-auto">Be the first to spark a conversation and help others grow.</p>
-              <Button variant="outline" className="mt-6 rounded-full" onClick={() => setIsPostDialogOpen(true)}>
-                Post a Question
+            <div className="text-center py-24 bg-card/30 backdrop-blur-xl rounded-[2rem] border border-dashed border-border/60 flex flex-col items-center shadow-inner">
+              <div className="relative mb-6">
+                <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full"></div>
+                <div className="bg-background p-4 rounded-full relative border border-border shadow-md">
+                  <MessageCircle className="h-10 w-10 text-muted-foreground" />
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold font-headline mb-2 text-foreground">The feed is quiet...</h3>
+              <p className="text-muted-foreground max-w-sm mx-auto mb-6 text-sm">Be the first to spark a conversation and help others grow.</p>
+              <Button variant="outline" className="rounded-full shadow-sm hover:bg-primary hover:text-primary-foreground transition-all" onClick={() => setIsPostDialogOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" /> Post a Question
               </Button>
             </div>
           )}

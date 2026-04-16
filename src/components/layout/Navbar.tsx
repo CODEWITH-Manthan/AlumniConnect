@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase"
 import { doc } from 'firebase/firestore'
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { useGlobalUnreadMessages } from "@/hooks/useGlobalUnreadMessages"
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates'
 import { useTheme } from '@/components/ThemeProvider'
@@ -82,11 +82,11 @@ export default function Navbar() {
                 />
               </div>
             </Link>
-            <Link href="/" className="flex items-center gap-2.5 group shrink-0">
+            <Link href="/" className="flex items-center gap-2 md:gap-2.5 group shrink-0">
               <div className="bg-gradient-to-tr from-blue-600 to-indigo-500 p-1.5 rounded-xl transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]">
-                <GraduationCap className="h-5 w-5 text-white" />
+                <GraduationCap className="h-4 w-4 md:h-5 md:w-5 text-white" />
               </div>
-              <span className="text-xl font-headline font-black tracking-tight text-foreground dark:text-white transition-colors duration-300">
+              <span className="hidden sm:inline-block text-lg md:text-xl font-headline font-black tracking-tight text-foreground dark:text-white transition-colors duration-300">
                 Alumni<span className="text-blue-600 dark:text-blue-400">Connect</span>
               </span>
             </Link>
@@ -134,70 +134,6 @@ export default function Navbar() {
                 Admin Console
               </Link>
             )}
-          </div>
-
-          {/* Mobile Menu */}
-          <div className="md:hidden">
-            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-border/50 bg-background/50 backdrop-blur-sm">
-                  <Menu className="h-5 w-5 text-foreground" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-72 border-l border-border/50 bg-background/95 backdrop-blur-xl">
-                <div className="flex flex-col gap-6 py-8">
-                  <div className="flex items-center gap-3 pb-4 border-b border-border/50">
-                    <div className="bg-gradient-to-tr from-blue-600 to-indigo-500 p-2 rounded-xl shadow-md">
-                      <GraduationCap className="h-6 w-6 text-white" />
-                    </div>
-                    <span className="text-xl font-headline font-black tracking-tight">Navigation</span>
-                  </div>
-                  
-                  <div className="flex flex-col gap-2">
-                    {hasPlatformAccess && userData?.role !== 'admin' && navItems.map((item) => {
-                      const Icon = item.icon
-                      const isMessages = item.name === "Messages"
-                      const isActive = pathname === item.href
-                      return (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={cn(
-                            "flex items-center gap-3 px-4 py-3 rounded-xl text-base font-semibold transition-all active:scale-95",
-                            isActive
-                              ? "text-primary bg-primary/10 border border-primary/20 shadow-sm"
-                              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                          )}
-                        >
-                          <Icon className={cn("h-5 w-5", isActive && "text-primary")} />
-                          {item.name}
-                          {isMessages && hasGlobalUnread && (
-                            <div className="ml-auto h-2.5 w-2.5 bg-red-500 rounded-full animate-pulse shadow-sm" />
-                          )}
-                        </Link>
-                      )
-                    })}
-                    
-                    {isEmailVerified && userData?.role === 'admin' && (
-                      <Link
-                        href="/admin"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={cn(
-                          "flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all active:scale-95 mt-4 border",
-                          pathname === '/admin'
-                            ? "text-red-700 bg-red-100 dark:bg-red-900/30 border-red-200 dark:border-red-800/50"
-                            : "text-red-600 bg-red-50/50 hover:bg-red-100 dark:bg-red-900/10 border-red-100 dark:border-red-900/30"
-                        )}
-                      >
-                        <LayoutDashboard className="h-5 w-5" />
-                        Admin Console
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
           </div>
 
           {/* Actions & Profiles */}
@@ -267,15 +203,80 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 md:gap-3">
                 <Button variant="ghost" asChild className="hidden sm:inline-flex h-10 px-4 text-sm font-semibold rounded-full hover:bg-muted">
                   <Link href="/login">Sign In</Link>
                 </Button>
-                <Button asChild className="h-10 px-5 text-sm font-bold rounded-full shadow-md hover:shadow-lg transition-all active:scale-95">
+                <Button asChild className="h-9 md:h-10 px-4 md:px-5 text-sm font-bold rounded-full shadow-md hover:shadow-lg transition-all active:scale-95">
                   <Link href="/register">Join Platform</Link>
                 </Button>
               </div>
             )}
+
+            {/* Mobile Menu */}
+            <div className="md:hidden">
+              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="icon" className="h-9 w-9 md:h-10 md:w-10 rounded-xl border-border/50 bg-background/50 backdrop-blur-sm">
+                    <Menu className="h-5 w-5 text-foreground" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-72 border-l border-border/50 bg-background/95 backdrop-blur-xl">
+                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                  <div className="flex flex-col gap-6 py-8">
+                    <div className="flex items-center gap-3 pb-4 border-b border-border/50">
+                      <div className="bg-gradient-to-tr from-blue-600 to-indigo-500 p-2 rounded-xl shadow-md">
+                        <GraduationCap className="h-6 w-6 text-white" />
+                      </div>
+                      <span className="text-xl font-headline font-black tracking-tight">Navigation</span>
+                    </div>
+                    
+                    <div className="flex flex-col gap-2">
+                      {hasPlatformAccess && userData?.role !== 'admin' && navItems.map((item) => {
+                        const Icon = item.icon
+                        const isMessages = item.name === "Messages"
+                        const isActive = pathname === item.href
+                        return (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className={cn(
+                              "flex items-center gap-3 px-4 py-3 rounded-xl text-base font-semibold transition-all active:scale-95",
+                              isActive
+                                ? "text-primary bg-primary/10 border border-primary/20 shadow-sm"
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                          >
+                            <Icon className={cn("h-5 w-5", isActive && "text-primary")} />
+                            {item.name}
+                            {isMessages && hasGlobalUnread && (
+                              <div className="ml-auto h-2.5 w-2.5 bg-red-500 rounded-full animate-pulse shadow-sm" />
+                            )}
+                          </Link>
+                        )
+                      })}
+
+                      {isEmailVerified && userData?.role === 'admin' && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={cn(
+                            "flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all active:scale-95 mt-2 border",
+                            pathname === '/admin'
+                              ? "text-red-700 bg-red-100 dark:bg-red-900/30 border-red-200 dark:border-red-800/50"
+                              : "text-red-600 bg-red-50/50 hover:bg-red-100 dark:bg-red-900/10 border-red-100 dark:border-red-900/30"
+                          )}
+                        >
+                          <LayoutDashboard className="h-5 w-5" />
+                          Admin Console
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
         </div>
       </div>
