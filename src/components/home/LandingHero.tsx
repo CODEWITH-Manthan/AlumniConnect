@@ -3,11 +3,21 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, GraduationCap, Users, Briefcase, Sun, Moon } from "lucide-react"
+import { ArrowRight, GraduationCap, Users, Briefcase, Sun, Moon, MessageSquareQuote } from "lucide-react"
 import { useTheme } from "@/components/ThemeProvider"
+import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 
 export default function LandingHero() {
   const { resolvedTheme, setTheme } = useTheme()
+  const firestore = useFirestore();
+
+  const statsDocRef = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return doc(firestore, 'stats', 'global');
+  }, [firestore]);
+  
+  const { data: globalStats } = useDoc(statsDocRef);
 
   return (
     <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-mesh pt-24 pb-20">
@@ -91,7 +101,7 @@ export default function LandingHero() {
               <Users className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-2xl font-black text-foreground">5000+</p>
+              <p className="text-2xl font-black text-foreground">{globalStats ? (globalStats.alumniCount ?? 0).toLocaleString() : "..."}</p>
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest leading-none">Verified Alumni</p>
             </div>
           </div>
@@ -100,17 +110,17 @@ export default function LandingHero() {
               <Briefcase className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-2xl font-black text-foreground">1200+</p>
+              <p className="text-2xl font-black text-foreground">{globalStats ? (globalStats.openRoles ?? 0).toLocaleString() : "..."}</p>
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest leading-none">Open Careers</p>
             </div>
           </div>
           <div className="p-6 rounded-2xl bg-white/60 dark:bg-white/[0.03] backdrop-blur-lg border border-blue-100 dark:border-white/10 shadow-sm flex items-center gap-4 text-left hover:bg-blue-50 dark:hover:bg-white/[0.05] transition-all">
             <div className="bg-accent/10 p-3 rounded-xl text-accent">
-              <GraduationCap className="h-6 w-6" />
+              <MessageSquareQuote className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-2xl font-black text-foreground">300+</p>
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest leading-none">Grad Projects</p>
+              <p className="text-2xl font-black text-foreground">{globalStats ? (globalStats.activeDiscussions ?? 0).toLocaleString() : "..."}</p>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest leading-none">Discussions</p>
             </div>
           </div>
         </div>

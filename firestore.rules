@@ -77,9 +77,9 @@ service cloud.firestore {
         && (conversationId.split('_')[0] == request.auth.uid || conversationId.split('_')[1] == request.auth.uid)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['unreadBy']);
     }
-    // Global stats counters (read-only for all signed-in users, writable to increment)
+    // Global stats counters (read-only for all users, writable to increment)
     match /stats/{docId} {
-      allow read: if isSignedIn();
+      allow read: if true;
       allow write: if isSignedIn();
     }
 

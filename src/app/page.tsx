@@ -425,19 +425,19 @@ export default function Home() {
                     </Button>
                   )}
                 </CardContent>
-                <CardFooter className="flex justify-between border-t bg-muted/10 pt-4 px-6">
-                  <div className="flex items-center gap-2">
-                    <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary dark:text-accent text-xs font-bold border border-primary/20 shadow-sm">
+                <CardFooter className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-t bg-muted/10 pt-4 px-4 sm:px-6">
+                  <div className="flex items-center gap-2 max-w-full">
+                    <div className="h-9 w-9 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary dark:text-accent text-xs font-bold border border-primary/20 shadow-sm">
                       {opp.postedBy?.split(' ').map((n: string) => n[0]).join('') || 'A'}
                     </div>
-                    <div>
-                      <p className="text-xs font-bold text-foreground">{opp.postedBy}</p>
-                      <p className="text-[9px] text-muted-foreground flex items-center gap-1 uppercase font-black tracking-widest opacity-60">
-                        <Clock className="h-2 w-2" /> {mounted ? new Date(opp.datePosted).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }) : '...'}
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-foreground truncate">{opp.postedBy}</p>
+                      <p className="text-[9px] text-muted-foreground flex items-center gap-1 uppercase font-black tracking-widest opacity-60 truncate">
+                        <Clock className="h-2 w-2 shrink-0" /> {mounted ? new Date(opp.datePosted).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }) : '...'}
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                     <Button
                       variant="ghost"
                       size="icon"
