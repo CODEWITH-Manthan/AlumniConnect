@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Search, Send, MoreVertical, Loader2, MessageSquare, LogIn, Trash2, ImageIcon, X } from "lucide-react"
+import { Search, Send, MoreVertical, Loader2, MessageSquare, LogIn, Trash2, ImageIcon, X, ChevronLeft } from "lucide-react"
 import { useUser, useFirestore, useMemoFirebase, useCollection, useDoc } from '@/firebase';
 import { collection, query, orderBy, doc, limit, getDocs, where, updateDoc, arrayRemove, deleteDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -375,7 +375,10 @@ function ChatContent() {
     <div className="container mx-auto py-6 px-4 h-[calc(100vh-80px)] overflow-hidden">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-border bg-background rounded-xl shadow-2xl h-full overflow-hidden">
         {/* Sidebar */}
-        <div className="md:col-span-1 border-r border-border flex flex-col h-full bg-card/30">
+        <div className={cn(
+          "md:col-span-1 border-r border-border flex flex-col h-full bg-card/30",
+          activeRecipientId ? "hidden md:flex" : "flex"
+        )}>
           <div className="p-4 border-b">
             <h2 className="text-xl font-bold mb-4 font-headline text-primary dark:text-accent">Messages</h2>
             <div className="relative">
@@ -438,7 +441,10 @@ function ChatContent() {
         </div>
 
         {/* Chat Area */}
-        <div className="hidden md:flex md:col-span-2 flex-col h-full bg-background relative">
+        <div className={cn(
+          "md:col-span-2 flex-col h-full bg-background relative",
+          activeRecipientId ? "flex" : "hidden md:flex"
+        )}>
           {!activeRecipientId ? (
             <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8 text-center bg-white/[0.02]">
               <div className="bg-primary/10 p-6 rounded-full mb-4">
@@ -460,6 +466,14 @@ function ChatContent() {
               {/* Chat Header */}
               <div className="p-4 border-b border-border flex justify-between items-center bg-background/80 backdrop-blur-sm z-10 sticky top-0">
                 <div className="flex items-center gap-3">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="md:hidden h-8 w-8 -ml-2 mr-1 text-muted-foreground"
+                    onClick={() => setActiveRecipientId(null)}
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </Button>
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs shrink-0 border border-primary/10">
                     {getInitials(recipientData?.firstName, recipientData?.lastName)}
                   </div>
