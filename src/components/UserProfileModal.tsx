@@ -69,7 +69,7 @@ export default function UserProfileModal({ userId, open, onOpenChange }: UserPro
               <div>
                 <h2 className="text-2xl font-bold font-headline flex items-center justify-center gap-2">
                   {fullName}
-                  {userData?.emailVerified && <BadgeCheck className="h-5 w-5 text-blue-500" title="Verified" />}
+                  {userData?.emailVerified && <span title="Verified"><BadgeCheck className="h-5 w-5 text-blue-500" /></span>}
                 </h2>
                 <div className="flex items-center justify-center gap-2 mt-1">
                   <Badge className={cn(

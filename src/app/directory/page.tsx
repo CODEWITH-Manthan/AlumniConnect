@@ -196,7 +196,7 @@ export default function DirectoryPage() {
                 <div className="flex-1">
                   <button onClick={() => { setSelectedUserId(person.id); setIsProfileModalOpen(true); }} className="text-lg font-bold font-headline group-hover:text-primary transition-colors text-left flex items-center gap-1.5">
                     {person.firstName} {person.lastName}
-                    {person.emailVerified && <BadgeCheck className="h-4 w-4 text-blue-500" title="Verified" />}
+                    {person.emailVerified && <span title="Verified"><BadgeCheck className="h-4 w-4 text-blue-500" /></span>}
                   </button>
                   <p className="text-[11px] font-black text-secondary uppercase tracking-widest mt-0.5">{person.role === 'alumni' ? 'Alumni' : person.role}</p>
                   {person.fieldOfWorking && (
