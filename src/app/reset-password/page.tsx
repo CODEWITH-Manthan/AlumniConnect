@@ -35,10 +35,7 @@ export default function ResetPasswordPage() {
         setIsLoading(true);
 
         try {
-            await sendPasswordResetEmail(auth, email, {
-                url: `${window.location.origin}/login`,
-                handleCodeInApp: false,
-            });
+            await sendPasswordResetEmail(auth, email);
 
             setEmailSent(true);
             toast({

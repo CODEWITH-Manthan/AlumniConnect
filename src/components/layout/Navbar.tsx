@@ -170,21 +170,21 @@ export default function Navbar() {
                 )}
 
                 {isEmailVerified && !isPendingVerification && (
-                  <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 shadow-sm cursor-default">
-                    <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-500" />
-                    <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 tracking-tight">
-                      Verified {userData?.role === 'alumni' ? 'Alumni' : ''}
+                  <div className="flex items-center gap-1.5 px-2 lg:px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 shadow-sm cursor-default">
+                    <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-500 shrink-0" />
+                    <span className="hidden lg:inline-block text-xs font-bold text-emerald-700 dark:text-emerald-400 tracking-tight">
+                      Verified {userData?.role === 'alumni' ? 'Alumni' : 'Student'}
                     </span>
                   </div>
                 )}
 
                 {isPendingVerification && (
-                  <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 shadow-sm cursor-default">
-                    <div className="relative flex h-3 w-3 items-center justify-center">
+                  <div className="flex items-center gap-1.5 px-2 lg:px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 shadow-sm cursor-default">
+                    <div className="relative flex h-3 w-3 items-center justify-center shrink-0">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
                     </div>
-                    <span className="text-xs font-bold text-amber-700 dark:text-amber-400 tracking-tight">
+                    <span className="hidden lg:inline-block text-xs font-bold text-amber-700 dark:text-amber-400 tracking-tight">
                       Pending Verification
                     </span>
                   </div>
