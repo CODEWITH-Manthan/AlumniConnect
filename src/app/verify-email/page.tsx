@@ -54,10 +54,7 @@ export default function VerifyEmailPage() {
 
         setIsResending(true);
         try {
-            await sendEmailVerification(user, {
-                url: `${window.location.origin}/`,
-                handleCodeInApp: false,
-            });
+            await sendEmailVerification(user);
 
             setLastSentTime(Date.now());
             setCooldownSeconds(60); // 60 second cooldown

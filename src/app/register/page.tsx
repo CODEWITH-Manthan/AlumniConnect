@@ -118,10 +118,7 @@ export default function RegisterPage() {
       // Send email verification - always redirect to verification page
       let emailSentSuccessfully = false;
       try {
-        await sendEmailVerification(user, {
-          url: `${window.location.origin}/`,
-          handleCodeInApp: false,
-        });
+        await sendEmailVerification(user);
         emailSentSuccessfully = true;
       } catch (verifyError: any) {
         console.error('Error sending verification email:', verifyError);
